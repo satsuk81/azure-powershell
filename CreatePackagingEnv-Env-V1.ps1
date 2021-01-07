@@ -17,17 +17,17 @@ function CreateRBACConfig {
     $ContributorGroup = Get-AzAdGroup -DisplayName "Packaging-Contributor-RBAC"
     $ReadOnlyGroup = Get-AzAdGroup -DisplayName "Packaging-ReadOnly-RBAC"
 
-    If ($OwnerGroup -eq $null){$Owner = New-AzureADGroup -DisplayName "Packaging-Owner-RBAC" -MailEnabled $false -SecurityEnabled $true -MailNickName "NotSet"}Else{Write-Host "Owner RBAC group already exists"}
-    If ($ContributorGroup -eq $null){$Contributor = New-AzureADGroup -DisplayName "Packaging-Contributor-RBAC" -MailEnabled $false -SecurityEnabled $true -MailNickName "NotSet"}Else{Write-Host "Contributor RBAC group already exists"}
-    If ($ReadOnlyGroup -eq $null){$ReadOnly = New-AzureADGroup -DisplayName "Packaging-ReadOnly-RBAC" -MailEnabled $false -SecurityEnabled $true -MailNickName "NotSet"}Else{Write-Host "ReadOnly RBAC group already exists"}   
+    If ($OwnerGroup -eq $null){$Owner = New-AzADGroup -DisplayName "Packaging-Owner-RBAC" -MailNickName "NotSet"}Else{Write-Host "Owner RBAC group already exists";$Owner=$OwnerGroup}
+    If ($ContributorGroup -eq $null){$Contributor = New-AzADGroup -DisplayName "Packaging-Contributor-RBAC" -MailNickName "NotSet"}Else{Write-Host "Contributor RBAC group already exists";$Contributor=$ContributorGroup}
+    If ($ReadOnlyGroup -eq $null){$ReadOnly = New-AzADGroup -DisplayName "Packaging-ReadOnly-RBAC" -MailNickName "NotSet"}Else{Write-Host "ReadOnly RBAC group already exists";$ReadOnly=$ReadOnlyGroup}   
         
     Start-Sleep -s 20
 
     Try
     {
-        New-AzRoleAssignment -ObjectId $Owner.ObjectId -RoleDefinitionName "Owner" -ResourceGroupName $RGName
-        New-AzRoleAssignment -ObjectId $Contributor.ObjectId -RoleDefinitionName "Contributor" -ResourceGroupName $RGName
-        New-AzRoleAssignment -ObjectId $ReadOnly.ObjectId -RoleDefinitionName "Reader" -ResourceGroupName $RGName
+        New-AzRoleAssignment -ObjectId $Owner.Id -RoleDefinitionName "Owner" -ResourceGroupName $RGName
+        New-AzRoleAssignment -ObjectId $Contributor.Id -RoleDefinitionName "Contributor" -ResourceGroupName $RGName
+        New-AzRoleAssignment -ObjectId $ReadOnly.Id -RoleDefinitionName "Reader" -ResourceGroupName $RGName
     }
     Catch
     {
@@ -46,10 +46,10 @@ function CreateStorageAccount {
         Try
         {
             $Key = Get-AzStorageAccountKey -ResourceGroupName $RGName -AccountName $StorAcc
-            $MapFileContent = (Get-Content -path "$ContainerScripts\$MapFileTmpl").replace("xxxx",$StorAcc) #| Set-Content -path "C:\Temp\PackagingVM\Config\MapDrv.ps1"
-            $MapFileContent.replace("yyyy",$Key.value[0]) | Set-Content -path "C:\Temp\PackagingVM\Config\MapDrv.ps1"      
+            $MapFileContent = (Get-Content -path "$ContainerScripts\$MapFileTmpl").replace("xxxx",$StorAcc) #| Set-Content -path "$ContainerScripts\MapDrv.ps1"
+            $MapFileContent.replace("yyyy",$Key.value[0]) | Set-Content -path "$ContainerScripts\MapDrv.ps1"      
             $RunOnceContent = (Get-Content -path "$ContainerScripts\RunOnceTmpl.ps1").replace("xxxx",$StorAcc)
-            $RunOnceContent.replace("rrrr",$RGName) | Set-Content -path "C:\Temp\PackagingVM\Config\RunOnce.ps1"
+            $RunOnceContent.replace("rrrr",$RGName) | Set-Content -path "$ContainerScripts\RunOnce.ps1"
         }
         Catch
         {

@@ -1,11 +1,13 @@
-﻿$Cred = Get-Credential
+﻿#$Cred = Get-Credential
+$azSubscription = '743e9d63-59c8-42c3-b823-28bb773a88a6'
 
-Connect-AzAccount -Credential $Cred
-Connect-AzureAD -Credential $Cred
+#Connect-AzAccount -Subscription $azSubscription # MFA Account
+#Connect-AzAccount -Credential $Cred -Subscription $azSubscription # Non-MFA
+#Connect-AzureAD -Credential $Cred #Old Module
 
 # General variables
 $location = "UKSouth"                                               # Azure Region for resources to be built into
-$RGName = "HiggCon"                                                 # Resource group name
+$RGName = "PackagingRG"                                                 # Resource group name
 $VNet = "PackagingVNET"                                             # Environment Virtual Network name
 $NsgName = "PackagingNSG"                                           # Network Security Group name (firewall)
 
@@ -13,7 +15,7 @@ $NsgName = "PackagingNSG"                                           # Network Se
 $StorAccRequired = $true                                            # Specifies if a Storage Account and Container should be created
 $StorAcc = "packagingstoracc"                                       # Storage account name (if used)
 $ContainerName = "data"                                             # Storage container name (if used)
-$ContainerScripts = "C:\Temp\PackagingVM\Config"                    # All files in this path will be copied up to the Storage Account Container, so available to be run on the remote VMs (includes template script for packaging share mapping
+$ContainerScripts = "C:\Users\d.ames\OneDrive - Avanade\Documents\GitHub\azure-powershell\PackagingFactoryConfig-main" # All files in this path will be copied up to the Storage Account Container, so available to be run on the remote VMs (includes template script for packaging share mapping
 $MapFileTmpl = "MapDrvTmpl.ps1"                                       # Filename of Script template for mapping drive to Packaging file share
 #$MapDriveCmd = 'New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce" -Name "MapPackagingDrive" -Value 'powershell -ExecutionPolicy Unrestricted -Command cmd.exe /C "cmdkey /add:`"xxxx.file.core.windows.net`" /user:`"Azure\xxxx`" /pass:`"yyyy`"" ; New-PSDrive -Name L -PSProvider FileSystem -Root "\\xxxx.file.core.windows.net\packaging" -Persist' -PropertyType "String"'                                  
 
@@ -44,10 +46,10 @@ If ($RG.ResourceGroupName -eq $RGName) {Write-Host "Resource Group created succe
 # Call additional scripts
 
 # Environment Script
-.\CreatePackagingEnv-Env-V1.ps1
+#.\CreatePackagingEnv-Env-V1.ps1
 
 # Environment Script
-.\CreatePackagingEnv-PackagingVms-V1.ps1
+#.\CreatePackagingEnv-PackagingVms-V1.ps1
 
 # Environment Script
 .\CreatePackagingEnv-HyperVServer-V1.ps1

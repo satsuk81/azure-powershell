@@ -24,7 +24,7 @@
         If ($AutoShutdown)
            {
             $VMName = $VMCreate.Name
-            $SubscriptionId = (Get-AzSubscription).Id
+            $SubscriptionId = (Get-AzContext).Subscription.Id
             $VMResourceId = $VMCreate.Id
             $ScheduledShutdownResourceId = "/subscriptions/$SubscriptionId/resourceGroups/$RGName/providers/microsoft.devtestlab/schedules/shutdown-computevm-$VMName"
 
@@ -39,7 +39,7 @@
             }
         $NewVm = Get-AzADServicePrincipal -displayname $VMName
         $Group = Get-AzADGroup -searchstring "Packaging-Contributor-RBAC"
-        Add-AzureADGroupMember -ObjectId $Group.Id -RefObjectId $NewVm.Id
+        Add-AzADGroupMember -TargetGroupObjectId $Group.Id -MemberObjectId $NewVm.Id
         }
     Else
     {
@@ -89,3 +89,4 @@ Update-AzVM -VM $VMName -ResourceGroupName $RGName
 
 $VirtualMachine = Get-AzVM -Name $VM
 Restart-AzVm -ResourceGroupName $RGName -Name $VM
+RunVMConfig "$VM" "https://$StorAcc.blob.core.windows.net/data/EnableHyperV.ps1" "EnableHyperV.ps1"

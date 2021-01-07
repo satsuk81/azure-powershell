@@ -24,7 +24,7 @@
         If ($AutoShutdown)
            {
             $VMName = $VMCreate.Name
-            $SubscriptionId = (Get-AzSubscription).Id
+            $SubscriptionId = (Get-AzContext).Subscription.Id
             $VMResourceId = $VMCreate.Id
             $ScheduledShutdownResourceId = "/subscriptions/$SubscriptionId/resourceGroups/$RGName/providers/microsoft.devtestlab/schedules/shutdown-computevm-$VMName"
 
@@ -39,7 +39,7 @@
             }
         $NewVm = Get-AzADServicePrincipal -displayname $VMName
         $Group = Get-AzADGroup -searchstring "Packaging-Contributor-RBAC"
-        Add-AzureADGroupMember -ObjectId $Group.Id -RefObjectId $NewVm.Id
+        Add-AzADGroupMember -TargetGroupObjectId $Group.Id -MemberObjectId $NewVm.Id
         }
     Else
     {
@@ -75,14 +75,14 @@ While ($Count -le $NumberOfVMs)
     $VM = $VmNamePrefix + $VmNumberStart
     CreateVMp "$VM"
     Restart-AzVm -ResourceGroupName $RGName -Name $VM
-    RunVMConfig "$VM" "https://packagingstoracc.blob.core.windows.net/data/RunOnce.ps1" "RunOnce.ps1"
-    RunVMConfig "$VM" "https://packagingstoracc.blob.core.windows.net/data/VMConfig.ps1" "VMConfig.ps1"
+    RunVMConfig "$VM" "https://$StorAcc.blob.core.windows.net/data/RunOnce.ps1" "RunOnce.ps1"
+    RunVMConfig "$VM" "https://$StorAcc.blob.core.windows.net/data/VMConfig.ps1" "VMConfig.ps1"
     
     # Shutdown VM if $VmShutdown is true
     If ($VmShutdown)
         {
         $Stopvm = Stop-AzVM -ResourceGroupName $RGName -Name $VM -Force
-        If ($RG.ResourceGroupName -eq $RGName) {Write-Host "VM $VM shutdown successfully"}Else{Write-Host "*** Unable to shutdown VM $VM! ***"}
+        If ($Stopvm.Status -eq "Succeeded") {Write-Host "VM $VM shutdown successfully"}Else{Write-Host "*** Unable to shutdown VM $VM! ***"}
         }
     $Count++
     $VmNumberStart++
