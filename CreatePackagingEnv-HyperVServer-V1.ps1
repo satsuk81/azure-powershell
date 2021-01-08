@@ -88,5 +88,8 @@ $VMName = Add-AzVMDataDisk -VM $VMName -Name $dataDiskName -CreateOption Attach 
 Update-AzVM -VM $VMName -ResourceGroupName $RGName
 
 $VirtualMachine = Get-AzVM -Name $VM
-Restart-AzVm -ResourceGroupName $RGName -Name $VM
+#Restart-AzVm -ResourceGroupName $RGName -Name $VM
+RunVMConfig "$VM" "https://$StorAcc.blob.core.windows.net/data/ConfigureDataDisk.ps1" "ConfigureDataDisk.ps1"
 RunVMConfig "$VM" "https://$StorAcc.blob.core.windows.net/data/EnableHyperV.ps1" "EnableHyperV.ps1"
+Restart-AzVm -ResourceGroupName $RGName -Name $VM
+RunVMConfig "$VM" "https://$StorAcc.blob.core.windows.net/data/Build-VM.ps1" "Build-VM.ps1"

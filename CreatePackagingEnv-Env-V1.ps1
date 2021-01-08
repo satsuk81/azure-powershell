@@ -56,7 +56,7 @@ function CreateStorageAccount {
             Write-Error "An error occured trying to create the Map script for the packaging share."
             Write-Error $_.Exception.Message
         }
-        Get-ChildItem -Path $ContainerScripts -File -Recurse | Set-AzStorageBlobContent -Container "data" -Context $ctx
+        Get-ChildItem -Path $ContainerScripts -File -Recurse | Set-AzStorageBlobContent -Container "data" -Context $ctx | fl
         }
         Else
         {

@@ -46,10 +46,10 @@ If ($RG.ResourceGroupName -eq $RGName) {Write-Host "Resource Group created succe
 # Call additional scripts
 
 # Environment Script
-#.\CreatePackagingEnv-Env-V1.ps1
+.\CreatePackagingEnv-Env-V1.ps1
 
 # Environment Script
-#.\CreatePackagingEnv-PackagingVms-V1.ps1
+.\CreatePackagingEnv-PackagingVms-V1.ps1
 
 # Environment Script
 .\CreatePackagingEnv-HyperVServer-V1.ps1
