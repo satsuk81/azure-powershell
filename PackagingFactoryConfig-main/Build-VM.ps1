@@ -1,7 +1,17 @@
-Import-Module Hyper-V
-
-New-VMSwitch -Name "Packaging Switch" -SwitchType Internal
-
+Try {
+    $scriptname = "Build-VM.ps1"
+    $EventlogName = "HigginsonConsultancy"
+    $EventlogSource = "VM Build Script"
+    New-EventLog -LogName $EventlogName -Source $EventlogSource
+    Limit-EventLog -OverflowAction OverWriteAsNeeded -MaximumSize 64KB -LogName $EventlogName
+    Write-EventLog -LogName $EventlogName -Source $EventlogSource -EventID 25101 -EntryType Information -Message "Running $scriptname Script"
+  
+    Import-Module Hyper-V -Scope Local -Force
+    New-VMSwitch -Name "Packaging Switch" -SwitchType Internal
+}
+catch {
+    Write-EventLog -LogName $EventlogName -Source $EventlogSource -EventID 25101 -EntryType Error -Message $error[0].Exception
+}
 function Delete-VM {
     $VMName = "VMNAME1"
     
@@ -38,7 +48,10 @@ function Create-VM {
 }
 
 Create-VM
-
 #Delete-VM
-
-
+try {
+    Write-EventLog -LogName $EventlogName -Source $EventlogSource -EventID 25101 -EntryType Information -Message "Completed $scriptname"
+}
+catch {
+    Write-EventLog -LogName $EventlogName -Source $EventlogSource -EventID 25101 -EntryType Error -Message $error[0].Exception
+}
