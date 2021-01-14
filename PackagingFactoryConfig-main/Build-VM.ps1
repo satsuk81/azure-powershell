@@ -1,12 +1,19 @@
+$scriptname = "Build-VM.ps1"
+$EventlogName = "HigginsonConsultancy"
+$EventlogSource = "VM Build Script"
+
+New-EventLog -LogName $EventlogName -Source $EventlogSource
+Limit-EventLog -OverflowAction OverWriteAsNeeded -MaximumSize 64KB -LogName $EventlogName
+Write-EventLog -LogName $EventlogName -Source $EventlogSource -EventId 25101 -EntryType Information -Message "Running $scriptname Script"
+ 
 Try {
-    $scriptname = "Build-VM.ps1"
-    $EventlogName = "HigginsonConsultancy"
-    $EventlogSource = "VM Build Script"
-    New-EventLog -LogName $EventlogName -Source $EventlogSource
-    Limit-EventLog -OverflowAction OverWriteAsNeeded -MaximumSize 64KB -LogName $EventlogName
-    Write-EventLog -LogName $EventlogName -Source $EventlogSource -EventID 25101 -EntryType Information -Message "Running $scriptname Script"
-  
-    Import-Module Hyper-V -Scope Local -Force
+    Import-Module Hyper-V -Force
+}
+catch {
+    Write-EventLog -LogName $EventlogName -Source $EventlogSource -EventId 25101 -EntryType Error -Message $error[0].Exception
+}
+
+Try { 
     New-VMSwitch -Name "Packaging Switch" -SwitchType Internal
 }
 catch {
@@ -47,11 +54,12 @@ function Create-VM {
     Get-VM -Name $VMName | Checkpoint-VM -SnapshotName "Base Config ($Date - $Time)"
 }
 
-Create-VM
-#Delete-VM
 try {
-    Write-EventLog -LogName $EventlogName -Source $EventlogSource -EventID 25101 -EntryType Information -Message "Completed $scriptname"
+    Create-VM
 }
 catch {
-    Write-EventLog -LogName $EventlogName -Source $EventlogSource -EventID 25101 -EntryType Error -Message $error[0].Exception
+    Write-EventLog -LogName $EventlogName -Source $EventlogSource -EventId 25101 -EntryType Error -Message $error[0].Exception
 }
+#Delete-VM
+
+Write-EventLog -LogName $EventlogName -Source $EventlogSource -EventID 25101 -EntryType Information -Message "Completed $scriptname"

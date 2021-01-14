@@ -92,4 +92,6 @@ $VirtualMachine = Get-AzVM -Name $VM
 RunVMConfig "$VM" "https://$StorAcc.blob.core.windows.net/data/ConfigureDataDisk.ps1" "ConfigureDataDisk.ps1"
 RunVMConfig "$VM" "https://$StorAcc.blob.core.windows.net/data/EnableHyperV.ps1" "EnableHyperV.ps1"
 Restart-AzVm -ResourceGroupName $RGName -Name $VM
+Start-Sleep -Seconds 120
+RunVMConfig "$VM" "https://$StorAcc.blob.core.windows.net/data/ModuleList.ps1" "ModuleList.ps1"
 RunVMConfig "$VM" "https://$StorAcc.blob.core.windows.net/data/Build-VM.ps1" "Build-VM.ps1"
