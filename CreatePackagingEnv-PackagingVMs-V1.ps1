@@ -2,13 +2,13 @@
     $PublicIpAddressName = $VMName + "-ip"
 
     $Params = @{
-    ResourceGroupName = $RGName
+    ResourceGroupName = $RGNameUAT
     Name = $VMName
     Size = $VmSize
     Location = $Location
-    VirtualNetworkName = $VNet
+    VirtualNetworkName = $VNetUAT
     SubnetName = "default"
-    SecurityGroupName = $NsgName
+    SecurityGroupName = $NsgNameUAT
     PublicIpAddressName = $PublicIpAddressName
     ImageName = $VmImage
     Credential = $VMCred
@@ -26,7 +26,7 @@
             $VMName = $VMCreate.Name
             $SubscriptionId = (Get-AzContext).Subscription.Id
             $VMResourceId = $VMCreate.Id
-            $ScheduledShutdownResourceId = "/subscriptions/$SubscriptionId/resourceGroups/$RGName/providers/microsoft.devtestlab/schedules/shutdown-computevm-$VMName"
+            $ScheduledShutdownResourceId = "/subscriptions/$SubscriptionId/resourceGroups/$RGNameUAT/providers/microsoft.devtestlab/schedules/shutdown-computevm-$VMName"
 
             $Properties = @{}
             $Properties.Add('status', 'Enabled')
@@ -50,7 +50,7 @@
 function RunVMConfig($VMName, $BlobFilePath, $Blob) {
 
     $Params = @{
-    ResourceGroupName = $RGName
+    ResourceGroupName = $RGNameUAT
     VMName = $VMName
     Location = $Location
     FileUri = $BlobFilePath
@@ -74,14 +74,14 @@ While ($Count -le $NumberOfVMs)
     Write-Host "Creating and configuring $Count of $NumberofVMs VMs"
     $VM = $VmNamePrefix + $VmNumberStart
     CreateVMp "$VM"
-    Restart-AzVm -ResourceGroupName $RGName -Name $VM
+    Restart-AzVm -ResourceGroupName $RGNameUAT -Name $VM
     RunVMConfig "$VM" "https://$StorAcc.blob.core.windows.net/data/RunOnce.ps1" "RunOnce.ps1"
     RunVMConfig "$VM" "https://$StorAcc.blob.core.windows.net/data/VMConfig.ps1" "VMConfig.ps1"
     
     # Shutdown VM if $VmShutdown is true
     If ($VmShutdown)
         {
-        $Stopvm = Stop-AzVM -ResourceGroupName $RGName -Name $VM -Force
+        $Stopvm = Stop-AzVM -ResourceGroupName $RGNameUAT -Name $VM -Force
         If ($Stopvm.Status -eq "Succeeded") {Write-Host "VM $VM shutdown successfully"}Else{Write-Host "*** Unable to shutdown VM $VM! ***"}
         }
     $Count++

@@ -49,7 +49,7 @@ Try
     {
     Write-EventLog -LogName $EventlogName -Source $EventlogSource -EventID 25101 -EntryType Information -Message "Atempting to download MapDrv.ps1 from Azure storage account to C:\Windows\Temp"
 
-    $StorAcc = get-azstorageaccount -resourcegroupname PackagingRG -name packagingstoracc
+    $StorAcc = get-azstorageaccount -resourcegroupname rg-wl-uat-eucpackaging -name eucpackagingstoracc01
     $Result = Get-AzStorageBlobContent -Container data -Blob "MapDrv.ps1" -destination "c:\Windows\temp\" -context $StorAcc.context
     If ($Result.Name -eq "MapDrv.ps1") 
 	{
