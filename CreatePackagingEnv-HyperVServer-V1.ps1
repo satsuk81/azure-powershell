@@ -35,7 +35,8 @@
             $Properties.Add('timeZoneId', "GMT Standard Time")
             $Properties.Add('notificationSettings', @{status='Disabled'; timeInMinutes=15})
             $Properties.Add('targetResourceId', $VMResourceId)
-            New-AzResource -Location $location -ResourceId $ScheduledShutdownResourceId -Properties $Properties -Force
+            New-AzResource -Location $location -ResourceId $ScheduledShutdownResourceId -Properties $Properties -Force | Out-Null
+            Write-Host "Auto Shutdown Enabled for 1900"
             }
         $NewVm = Get-AzADServicePrincipal -displayname $VMName
         $Group = Get-AzADGroup -searchstring "Packaging-Contributor-RBAC"
@@ -68,11 +69,11 @@ function RunVMConfig($VMName, $BlobFilePath, $Blob) {
 # Main Script
 
 # Create Hyper-V server
-$NumberofVMs = 1                                                    # Specify number of VMs to be provisioned
-$VmNamePrefix = "euc-hyperv-"                                            # Specifies the first part of the VM name (usually alphabetic)
-$VmNumberStart = 01                                                # Specifies the second part of the VM name (usually numeric)
-$VmSize = "Standard_D2_v3"                                            # Specifies Azure Size to use for the VM
-$VmImage = "MicrosoftWindowsServer:WindowsServer:2019-Datacenter:latest"     # Specifies the Publisher, Offer, SKU and Version of the image to be used to provision the VM
+$NumberofVMs = 1                                                            # Specify number of VMs to be provisioned
+$VmNamePrefix = "euc-hyperv-"                                               # Specifies the first part of the VM name (usually alphabetic)
+$VmNumberStart = 01                                                         # Specifies the second part of the VM name (usually numeric)
+$VmSize = "Standard_D2_v3"                                                  # Specifies Azure Size to use for the VM
+$VmImage = "MicrosoftWindowsServer:WindowsServer:2019-Datacenter:latest"    # Specifies the Publisher, Offer, SKU and Version of the image to be used to provision the VM
 $VmShutdown = $False
 $VM = $VmNamePrefix + $VmNumberStart  
 
@@ -91,7 +92,9 @@ $VirtualMachine = Get-AzVM -Name $VM
 #Restart-AzVm -ResourceGroupName $RGNamePROD -Name $VM
 RunVMConfig "$VM" "https://$StorAcc.blob.core.windows.net/data/ConfigureDataDisk.ps1" "ConfigureDataDisk.ps1"
 RunVMConfig "$VM" "https://$StorAcc.blob.core.windows.net/data/EnableHyperV.ps1" "EnableHyperV.ps1"
-Restart-AzVm -ResourceGroupName $RGNamePROD -Name $VM
+Restart-AzVM -ResourceGroupName $RGNamePROD -Name $VM | Out-Null    
+Write-Host "Restarting VM..."
 Start-Sleep -Seconds 120
 RunVMConfig "$VM" "https://$StorAcc.blob.core.windows.net/data/ModuleList.ps1" "ModuleList.ps1"
 RunVMConfig "$VM" "https://$StorAcc.blob.core.windows.net/data/Build-VM.ps1" "Build-VM.ps1"
+RunVMConfig "$VM" "https://$StorAcc.blob.core.windows.net/data/RunOnce.ps1" "RunOnce.ps1"

@@ -33,13 +33,15 @@ function CreateRBACConfig {
 
     Try
     {
-        New-AzRoleAssignment -ObjectId $Owner.Id -RoleDefinitionName "Owner" -ResourceGroupName $RGNameUAT
-        New-AzRoleAssignment -ObjectId $Contributor.Id -RoleDefinitionName "Contributor" -ResourceGroupName $RGNameUAT
-        New-AzRoleAssignment -ObjectId $ReadOnly.Id -RoleDefinitionName "Reader" -ResourceGroupName $RGNameUAT
+        New-AzRoleAssignment -ObjectId $Owner.Id -RoleDefinitionName "Owner" -ResourceGroupName $RGNameUAT | Out-Null
+        New-AzRoleAssignment -ObjectId $Contributor.Id -RoleDefinitionName "Contributor" -ResourceGroupName $RGNameUAT | Out-Null
+        New-AzRoleAssignment -ObjectId $ReadOnly.Id -RoleDefinitionName "Reader" -ResourceGroupName $RGNameUAT | Out-Null
 
-        New-AzRoleAssignment -ObjectId $Owner.Id -RoleDefinitionName "Owner" -ResourceGroupName $RGNamePROD
-        New-AzRoleAssignment -ObjectId $Contributor.Id -RoleDefinitionName "Contributor" -ResourceGroupName $RGNamePROD
-        New-AzRoleAssignment -ObjectId $ReadOnly.Id -RoleDefinitionName "Reader" -ResourceGroupName $RGNamePROD
+        New-AzRoleAssignment -ObjectId $Owner.Id -RoleDefinitionName "Owner" -ResourceGroupName $RGNamePROD | Out-Null
+        New-AzRoleAssignment -ObjectId $Contributor.Id -RoleDefinitionName "Contributor" -ResourceGroupName $RGNamePROD | Out-Null
+        New-AzRoleAssignment -ObjectId $ReadOnly.Id -RoleDefinitionName "Reader" -ResourceGroupName $RGNamePROD | Out-Null
+
+        Write-Host "Role Assignments Set"
     }
     Catch
     {
@@ -52,7 +54,7 @@ function CreateStorageAccount {
         {
         $storageAccount = New-AzStorageAccount -ResourceGroupName $RGNameUAT -AccountName $StorAcc -Location uksouth -SkuName Standard_LRS
         $ctx = $storageAccount.Context
-        $Container = New-AzStorageContainer -Name $ContainerName -Context $ctx -Permission Container
+        $Container = New-AzStorageContainer -Name $ContainerName -Context $ctx -Permission Blob
         If ($storageAccount.StorageAccountName -eq $StorAcc -and $Container.Name -eq $ContainerName) {Write-Host "Storage Account and container created successfully"}Else{Write-Host "*** Unable to create the Storage Account or container! ***"}    
         #$BlobUpload = Set-AzStorageBlobContent -File $BlobFilePath -Container $ContainerName -Blob $Blob -Context $ctx 
         Try

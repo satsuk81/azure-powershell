@@ -35,7 +35,8 @@
             $Properties.Add('timeZoneId', "GMT Standard Time")
             $Properties.Add('notificationSettings', @{status='Disabled'; timeInMinutes=15})
             $Properties.Add('targetResourceId', $VMResourceId)
-            New-AzResource -Location $location -ResourceId $ScheduledShutdownResourceId -Properties $Properties -Force
+            New-AzResource -Location $location -ResourceId $ScheduledShutdownResourceId -Properties $Properties -Force | Out-Null
+            Write-Host "Auto Shutdown Enabled for 1900"
             }
         $NewVm = Get-AzADServicePrincipal -displayname $VMName
         $Group = Get-AzADGroup -searchstring "Packaging-Contributor-RBAC"
@@ -74,7 +75,8 @@ While ($Count -le $NumberOfVMs)
     Write-Host "Creating and configuring $Count of $NumberofVMs VMs"
     $VM = $VmNamePrefix + $VmNumberStart
     CreateVMp "$VM"
-    Restart-AzVm -ResourceGroupName $RGNameUAT -Name $VM
+    Restart-AzVm -ResourceGroupName $RGNameUAT -Name $VM | Out-Null
+    Write-Host "Restarting VM..."
     RunVMConfig "$VM" "https://$StorAcc.blob.core.windows.net/data/RunOnce.ps1" "RunOnce.ps1"
     RunVMConfig "$VM" "https://$StorAcc.blob.core.windows.net/data/VMConfig.ps1" "VMConfig.ps1"
     
