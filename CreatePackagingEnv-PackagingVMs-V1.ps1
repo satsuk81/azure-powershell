@@ -31,12 +31,12 @@
             $Properties = @{}
             $Properties.Add('status', 'Enabled')
             $Properties.Add('taskType', 'ComputeVmShutdownTask')
-            $Properties.Add('dailyRecurrence', @{'time'= 1900})
+            $Properties.Add('dailyRecurrence', @{'time'= 1800})
             $Properties.Add('timeZoneId', "GMT Standard Time")
             $Properties.Add('notificationSettings', @{status='Disabled'; timeInMinutes=15})
             $Properties.Add('targetResourceId', $VMResourceId)
             New-AzResource -Location $location -ResourceId $ScheduledShutdownResourceId -Properties $Properties -Force | Out-Null
-            Write-Host "Auto Shutdown Enabled for 1900"
+            Write-Host "Auto Shutdown Enabled for 1800"
             }
         $NewVm = Get-AzADServicePrincipal -displayname $VMName
         $Group = Get-AzADGroup -searchstring "Packaging-Contributor-RBAC"
