@@ -15,6 +15,11 @@ $VNetPROD = "PackagingVnetPROD"                                     # Environmen
 $NsgNameUAT = "PackagingNsgUAT"                                     # Network Security Group name (firewall)
 $NsgNamePROD = "PackagingNsgPROD"                                   # Network Security Group name (firewall)
 
+# Environment variables
+$rbacOwner = "Packaging-Owner-RBAC"
+$rbacContributor = "Packaging-Contributor-RBAC"
+$rbacReadOnly = "Packaging-ReadOnly-RBAC"
+
 # Storage account and container names
 $StorAccRequired = $true                                            # Specifies if a Storage Account and Container should be created
 $StorAcc = "eucpackagingstoracc01"                                  # Storage account name (if used)
@@ -55,7 +60,8 @@ If ($RG.ResourceGroupName -eq $RGNamePROD) { Write-Host "PROD Resource Group cre
 .\CreatePackagingEnv-Env-V1.ps1
 
 # Environment Script
-.\CreatePackagingEnv-PackagingVms-V1.ps1
+#.\CreatePackagingEnv-PackagingVms-V1.ps1
 
 # Environment Script
 .\CreatePackagingEnv-HyperVServer-V1.ps1
+Write-Host "All Scripts Completed"

@@ -39,7 +39,7 @@
             Write-Host "Auto Shutdown Enabled for 1800"
             }
         $NewVm = Get-AzADServicePrincipal -displayname $VMName
-        $Group = Get-AzADGroup -searchstring "Packaging-Contributor-RBAC"
+        $Group = Get-AzADGroup -searchstring $rbacContributor
         Add-AzADGroupMember -TargetGroupObjectId $Group.Id -MemberObjectId $NewVm.Id
         }
     Else
@@ -72,16 +72,19 @@ function RunVMConfig($VMName, $BlobFilePath, $Blob) {
 $NumberofVMs = 1                                                            # Specify number of VMs to be provisioned
 $VmNamePrefix = "euc-hyperv-"                                               # Specifies the first part of the VM name (usually alphabetic)
 $VmNumberStart = 01                                                         # Specifies the second part of the VM name (usually numeric)
-$VmSize = "Standard_D2_v3"                                                  # Specifies Azure Size to use for the VM
+$VmSize = "Standard_D16s_v4"                                                  # Specifies Azure Size to use for the VM
 $VmImage = "MicrosoftWindowsServer:WindowsServer:2019-Datacenter:latest"    # Specifies the Publisher, Offer, SKU and Version of the image to be used to provision the VM
-$VmShutdown = $False
-$VM = $VmNamePrefix + $VmNumberStart  
+$VmShutdown = $true
+$VM = $VmNamePrefix + $VmNumberStart 
+$dataDiskTier = "P50" 
+$dataDiskSKU = "Premium_LRS"
+$dataDiskSize = 4096
 
 CreateVMp "$VM"
 
 # Add Data disk to Hyper-V server
 $dataDiskName = $VM + '_datadisk1'
-$diskConfig = New-AzDiskConfig -SkuName "Standard_LRS" -Location $location -CreateOption Empty -DiskSizeGB 128
+$diskConfig = New-AzDiskConfig -SkuName $dataDiskSKU -Location $location -CreateOption Empty -DiskSizeGB $dataDiskSize
 $dataDisk1 = New-AzDisk -DiskName $dataDiskName -Disk $diskConfig -ResourceGroupName $RGNamePROD
 $VMName = Get-AzVM -Name $VM -ResourceGroupName $RGNamePROD
 $VMName = Add-AzVMDataDisk -VM $VMName -Name $dataDiskName -CreateOption Attach -ManagedDiskId $dataDisk1.Id -Lun 1
@@ -98,3 +101,4 @@ Start-Sleep -Seconds 120
 RunVMConfig "$VM" "https://$StorAcc.blob.core.windows.net/data/ModuleList.ps1" "ModuleList.ps1"
 RunVMConfig "$VM" "https://$StorAcc.blob.core.windows.net/data/Build-VM.ps1" "Build-VM.ps1"
 RunVMConfig "$VM" "https://$StorAcc.blob.core.windows.net/data/RunOnce.ps1" "RunOnce.ps1"
+Write-Host "Hyper-V Script Completed"

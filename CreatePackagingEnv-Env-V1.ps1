@@ -21,13 +21,13 @@
 }
 
 function CreateRBACConfig {
-    $OwnerGroup = Get-AzAdGroup -DisplayName "Packaging-Owner-RBAC"
-    $ContributorGroup = Get-AzAdGroup -DisplayName "Packaging-Contributor-RBAC"
-    $ReadOnlyGroup = Get-AzAdGroup -DisplayName "Packaging-ReadOnly-RBAC"
+    $OwnerGroup = Get-AzAdGroup -DisplayName $rbacOwner
+    $ContributorGroup = Get-AzAdGroup -DisplayName $rbacContributor
+    $ReadOnlyGroup = Get-AzAdGroup -DisplayName $rbacReadOnly
 
-    If ($OwnerGroup -eq $null){$Owner = New-AzADGroup -DisplayName "Packaging-Owner-RBAC" -MailNickName "NotSet"}Else{Write-Host "Owner RBAC group already exists";$Owner=$OwnerGroup}
-    If ($ContributorGroup -eq $null){$Contributor = New-AzADGroup -DisplayName "Packaging-Contributor-RBAC" -MailNickName "NotSet"}Else{Write-Host "Contributor RBAC group already exists";$Contributor=$ContributorGroup}
-    If ($ReadOnlyGroup -eq $null){$ReadOnly = New-AzADGroup -DisplayName "Packaging-ReadOnly-RBAC" -MailNickName "NotSet"}Else{Write-Host "ReadOnly RBAC group already exists";$ReadOnly=$ReadOnlyGroup}   
+    If ($OwnerGroup -eq $null){$Owner = New-AzADGroup -DisplayName $rbacOwner -MailNickName "NotSet"}Else{Write-Host "Owner RBAC group already exists";$Owner=$OwnerGroup}
+    If ($ContributorGroup -eq $null){$Contributor = New-AzADGroup -DisplayName $rbacContributor -MailNickName "NotSet"}Else{Write-Host "Contributor RBAC group already exists";$Contributor=$ContributorGroup}
+    If ($ReadOnlyGroup -eq $null){$ReadOnly = New-AzADGroup -DisplayName $rbacReadOnly -MailNickName "NotSet"}Else{Write-Host "ReadOnly RBAC group already exists";$ReadOnly=$ReadOnlyGroup}   
         
     Start-Sleep -s 20
 

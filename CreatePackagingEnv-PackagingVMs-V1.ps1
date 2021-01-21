@@ -39,7 +39,7 @@
             Write-Host "Auto Shutdown Enabled for 1800"
             }
         $NewVm = Get-AzADServicePrincipal -displayname $VMName
-        $Group = Get-AzADGroup -searchstring "Packaging-Contributor-RBAC"
+        $Group = Get-AzADGroup -searchstring $rbacContributor
         Add-AzADGroupMember -TargetGroupObjectId $Group.Id -MemberObjectId $NewVm.Id
         }
     Else
@@ -89,3 +89,4 @@ While ($Count -le $NumberOfVMs)
     $Count++
     $VmNumberStart++
     }
+Write-Host "Packaging VM Script Completed"
