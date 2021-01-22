@@ -70,15 +70,15 @@ function RunVMConfig($VMName, $BlobFilePath, $Blob) {
 
 # Create Hyper-V server
 $NumberofVMs = 1                                                            # Specify number of VMs to be provisioned
-$VmNamePrefix = "euc-hyperv-"                                               # Specifies the first part of the VM name (usually alphabetic)
+$VmNamePrefix = "vmwleuchyperv"                                             # Specifies the first part of the VM name (usually alphabetic)
 $VmNumberStart = 01                                                         # Specifies the second part of the VM name (usually numeric)
-$VmSize = "Standard_D16s_v4"                                                  # Specifies Azure Size to use for the VM
+$VmSize = "Standard_D16s_v4"                                                # Specifies Azure Size to use for the VM
 $VmImage = "MicrosoftWindowsServer:WindowsServer:2019-Datacenter:latest"    # Specifies the Publisher, Offer, SKU and Version of the image to be used to provision the VM
 $VmShutdown = $true
 $VM = $VmNamePrefix + $VmNumberStart 
-$dataDiskTier = "P50" 
-$dataDiskSKU = "Premium_LRS"
-$dataDiskSize = 4096
+$dataDiskTier = "S10"
+$dataDiskSKU = "Standard_LRS"
+$dataDiskSize = 128
 
 CreateVMp "$VM"
 

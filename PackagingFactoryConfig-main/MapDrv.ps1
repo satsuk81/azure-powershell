@@ -1,2 +1,2 @@
-cmd.exe /C cmdkey /add:`"eucpackagingstoracc01.file.core.windows.net`" /user:`"Azure\eucpackagingstoracc01`" /pass:`"GUiAVTi5OvEdlhmmd3C/eG3qRnQ2FWdQrnsw/5DiAdE7UZdptg6lp4mXPM+sldmyh+gJwIGjIQc7CsoPrF+VgA==`"
-New-PSDrive -Name Z -PSProvider FileSystem -Root "\\eucpackagingstoracc01.file.core.windows.net\packaging" -Persist
+cmd.exe /C cmdkey /add:`"stwleucpackaging01.file.core.windows.net`" /user:`"Azure\stwleucpackaging01`" /pass:`"uxtz0lWKgLP+DUIXvxTXxo65vzkaFjz9k4cu3tizjeynsJxn8uXvFiMEaLE3+nU8GxZpAF05gN3evD1BbmNBfw==`"
+New-PSDrive -Name Z -PSProvider FileSystem -Root "\\stwleucpackaging01.file.core.windows.net\packaging" -Persist

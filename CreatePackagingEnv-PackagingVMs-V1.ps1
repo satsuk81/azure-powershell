@@ -6,9 +6,9 @@
     Name = $VMName
     Size = $VmSize
     Location = $Location
-    VirtualNetworkName = $VNetUAT
+    VirtualNetworkName = $VNetPROD
     SubnetName = "default"
-    SecurityGroupName = $NsgNameUAT
+    SecurityGroupName = $NsgNamePROD
     PublicIpAddressName = $PublicIpAddressName
     ImageName = $VmImage
     Credential = $VMCred
