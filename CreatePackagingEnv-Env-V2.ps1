@@ -83,7 +83,7 @@ function UpdateStorage {
             Write-Error "An error occured trying to create the customised scripts for the packaging share."
             Write-Error $_.Exception.Message
         }
-        . .\SyncFiles.ps1 -CallFromCreatePackaging -Recurse             # Sync Files to Storage Blob
+        . .\SyncFiles.ps1 -CallFromCreatePackaging             # Sync Files to Storage Blob
         Write-Host "Storage Account has been Updated with files"
     }
 }

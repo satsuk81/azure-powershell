@@ -24,14 +24,14 @@
             VirtualNetworkName  = $VNetPROD
             SubnetName          = $SubnetName
             SecurityGroupName   = $NsgNamePROD
+            PublicIpAddressName = $PublicIpAddressName
             ImageName           = $VMImage
             Credential          = $VMCred
         }
     }
 
     $VMCreate = New-AzVm @Params -SystemAssignedIdentity
-    
-
+    if (!$requirePublicIPs) { Remove-AzPublicIpAddress -Name $PublicIpAddressName -ResourceGroupName $RGNameUAT }
 
     If ($VMCreate.ProvisioningState -eq "Succeeded") 
         {
@@ -89,14 +89,14 @@ function CreateAdminStudioVMp($VMName) {
             VirtualNetworkName  = $VNetPROD
             SubnetName          = $SubnetName
             SecurityGroupName   = $NsgNamePROD
+            PublicIpAddressName = $PublicIpAddressName
             ImageName           = $VMImage
             Credential          = $VMCred
         }
     }
 
     $VMCreate = New-AzVM @Params -SystemAssignedIdentity
-    
-
+    if (!$requirePublicIPs) { Remove-AzPublicIpAddress -Name $PublicIpAddressName -ResourceGroupName $RGNameUAT }
 
     If ($VMCreate.ProvisioningState -eq "Succeeded") {
         Write-Host "Virtual Machine $VMName created successfully"
