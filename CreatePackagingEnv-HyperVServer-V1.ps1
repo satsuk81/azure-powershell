@@ -1,17 +1,32 @@
 ﻿function CreateVMp($VMName) {
     $PublicIpAddressName = $VMName + "-ip"
 
-    $Params = @{
-    ResourceGroupName = $RGNamePROD
-    Name = $VMName
-    Size = $VmSize
-    Location = $Location
-    VirtualNetworkName = $VNetPROD
-    SubnetName = "default"
-    SecurityGroupName = $NsgNamePROD
-    PublicIpAddressName = $PublicIpAddressName
-    ImageName = $VmImage
-    Credential = $VMCred
+    if($RequirePublicIPs) {
+        $Params = @{
+            ResourceGroupName   = $RGNamePROD
+            Name                = $VMName
+            Size                = $VmSize
+            Location            = $Location
+            VirtualNetworkName  = $VNetPROD
+            SubnetName          = $SubnetName
+            SecurityGroupName   = $NsgNamePROD
+            PublicIpAddressName = $PublicIpAddressName
+            ImageName           = $VmImage
+            Credential          = $VMCred
+        }
+    }
+    else {
+        $Params = @{
+            ResourceGroupName   = $RGNamePROD
+            Name                = $VMName
+            Size                = $VmSize
+            Location            = $Location
+            VirtualNetworkName  = $VNetPROD
+            SubnetName          = $SubnetName
+            SecurityGroupName   = $NsgNamePROD
+            ImageName           = $VmImage
+            Credential          = $VMCred
+        }   
     }
 
     $VMCreate = New-AzVm @Params -SystemAssignedIdentity
