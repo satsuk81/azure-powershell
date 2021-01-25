@@ -1,37 +1,26 @@
 ﻿function CreateStandardVMp($VMName) {
     $PublicIpAddressName = $VMName + "-ip"
 
-    if($requirePublicIPs) {
-        $Params = @{
-            ResourceGroupName   = $RGNameUAT
-            Name                = $VMName
-            Size                = $VMSizeStandard
-            Location            = $Location
-            VirtualNetworkName  = $VNetPROD
-            SubnetName          = $SubnetName
-            SecurityGroupName   = $NsgNamePROD
-            PublicIpAddressName = $PublicIpAddressName
-            ImageName           = $VMImage
-            Credential          = $VMCred
-        }
-    }
-    else {
-        $Params = @{
-            ResourceGroupName   = $RGNameUAT
-            Name                = $VMName
-            Size                = $VMSizeStandard
-            Location            = $Location
-            VirtualNetworkName  = $VNetPROD
-            SubnetName          = $SubnetName
-            SecurityGroupName   = $NsgNamePROD
-            PublicIpAddressName = $PublicIpAddressName
-            ImageName           = $VMImage
-            Credential          = $VMCred
-        }
+    $Params = @{
+        ResourceGroupName   = $RGNameUAT
+        Name                = $VMName
+        Size                = $VMSizeStandard
+        Location            = $Location
+        VirtualNetworkName  = $VNetPROD
+        SubnetName          = $SubnetName
+        SecurityGroupName   = $NsgNamePROD
+        PublicIpAddressName = $PublicIpAddressName
+        ImageName           = $VMImage
+        Credential          = $VMCred
     }
 
     $VMCreate = New-AzVm @Params -SystemAssignedIdentity
-    if (!$requirePublicIPs) { Remove-AzPublicIpAddress -Name $PublicIpAddressName -ResourceGroupName $RGNameUAT }
+    if (!$requirePublicIPs) { 
+        $VMNic = Get-AzNetworkInterface -Name $VMCreate.Name -ResourceGroup $RGNameUAT
+        $VMNic.IpConfigurations.publicipaddress.id = $null
+        Set-AzNetworkInterface -NetworkInterface $VMNic | Out-Null
+        Remove-AzPublicIpAddress -Name $PublicIpAddressName -ResourceGroupName $RGNameUAT -Force
+    }
 
     If ($VMCreate.ProvisioningState -eq "Succeeded") 
         {
@@ -66,37 +55,26 @@
 function CreateAdminStudioVMp($VMName) {
     $PublicIpAddressName = $VMName + "-ip"
 
-    if($requirePublicIPs) {
-        $Params = @{
-            ResourceGroupName   = $RGNameUAT
-            Name                = $VMName
-            Size                = $VMSizeAdminStudio
-            Location            = $Location
-            VirtualNetworkName  = $VNetPROD
-            SubnetName          = $SubnetName
-            SecurityGroupName   = $NsgNamePROD
-            PublicIpAddressName = $PublicIpAddressName
-            ImageName           = $VMImage
-            Credential          = $VMCred
-        }
-    }
-    else {
-        $Params = @{
-            ResourceGroupName   = $RGNameUAT
-            Name                = $VMName
-            Size                = $VMSizeAdminStudio
-            Location            = $Location
-            VirtualNetworkName  = $VNetPROD
-            SubnetName          = $SubnetName
-            SecurityGroupName   = $NsgNamePROD
-            PublicIpAddressName = $PublicIpAddressName
-            ImageName           = $VMImage
-            Credential          = $VMCred
-        }
+    $Params = @{
+        ResourceGroupName   = $RGNameUAT
+        Name                = $VMName
+        Size                = $VMSizeAdminStudio
+        Location            = $Location
+        VirtualNetworkName  = $VNetPROD
+        SubnetName          = $SubnetName
+        SecurityGroupName   = $NsgNamePROD
+        PublicIpAddressName = $PublicIpAddressName
+        ImageName           = $VMImage
+        Credential          = $VMCred
     }
 
     $VMCreate = New-AzVM @Params -SystemAssignedIdentity
-    if (!$requirePublicIPs) { Remove-AzPublicIpAddress -Name $PublicIpAddressName -ResourceGroupName $RGNameUAT }
+    if (!$requirePublicIPs) { 
+        $VMNic = Get-AzNetworkInterface -Name $VMCreate.Name -ResourceGroup $RGNameUAT
+        $VMNic.IpConfigurations.publicipaddress.id = $null
+        Set-AzNetworkInterface -NetworkInterface $VMNic | Out-Null
+        Remove-AzPublicIpAddress -Name $PublicIpAddressName -ResourceGroupName $RGNameUAT -Force
+    }
 
     If ($VMCreate.ProvisioningState -eq "Succeeded") {
         Write-Host "Virtual Machine $VMName created successfully"

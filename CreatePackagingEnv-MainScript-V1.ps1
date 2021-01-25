@@ -8,8 +8,8 @@ $RequireVNET = $false
 #$RequireNSG = $false
 $RequirePublicIPs = $false
 $RequireHyperV = $false
-$RequireStandardVMs = $false
-$RequireAdminStudioVMs = $true
+$RequireStandardVMs = $true
+$RequireAdminStudioVMs = $false
 
 # Subscription ID If Required
 $azSubscription = '743e9d63-59c8-42c3-b823-28bb773a88a6'
@@ -42,11 +42,11 @@ $password = ConvertTo-SecureString “Password1234” -AsPlainText -Force       
 $VMCred = New-Object System.Management.Automation.PSCredential (“AppPackager”, $password)   # Local Admin User for VMs
 
 # VM Count and Name
-$NumberofStandardVMs = 2                                            # Specify number of Standard VMs to be provisioned
+$NumberofStandardVMs = 1                                            # Specify number of Standard VMs to be provisioned
 $NumberofAdminStudioVMs = 1                                         # Specify number of AdminStudio VMs to be provisioned
 $VMNamePrefixStandard = "vmwleucvan"                                # Specifies the first part of the Standard VM name (usually alphabetic)
 $VMNamePrefixAdminStudio = "vmwleucas"                              # Specifies the first part of the Admin Studio VM name (usually alphabetic)
-$VMNumberStartStandard = 101                                        # Specifies the second part of the Standard VM name (usually numeric)
+$VMNumberStartStandard = 105                                        # Specifies the second part of the Standard VM name (usually numeric)
 $VMNumberStartAdminStudio = 201                                     # Specifies the second part of the Admin Studio VM name (usually numeric)
 $VMSizeStandard = "Standard_B2s"                                    # Specifies Azure Size to use for the Standard VM
 $VMSizeAdminStudio = "Standard_D2_v2"                               # Specifies Azure Size to use for the Admin Studio VM
