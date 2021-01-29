@@ -54,39 +54,29 @@
 
 function CreateStandardVM-Terraform($VMName) {
     #$VMCreate = New-AzVM @Params -SystemAssignedIdentity
-    $ARGUinit = "init"
-    $ARGUplan = "plan -var vmname=" + [char]34 + "$VMName" + [char]34 + " -var vmnic=" + [char]34 + "$VMName-nic" + [char]34 + " -var vmip=" + [char]34 + "$VMName-ip" + [char]34 + " -var vmosdisk=" + [char]34 + "$VMName-osdisk" + [char]34 + " -out .\$VMName.tfplan"
-    $ARGUapply = "apply -auto-approve .\$VMName.tfplan"
-    Start-Process -FilePath .\terraform.exe -ArgumentList $ARGUinit -Wait
-    Start-Process -FilePath .\terraform.exe -ArgumentList $ARGUplan -Wait -RedirectStandardOutput .\$VMName-plan.txt
-    Start-Process -FilePath .\terraform.exe -ArgumentList $ARGUapply -Wait -RedirectStandardOutput .\$VMName-apply.txt
+    #$ARGUinit = "init"
+    #$ARGUplan = "plan -var vmname=" + [char]34 + "$VMName" + [char]34 + " -var vmnic=" + [char]34 + "$VMName-nic" + [char]34 + " -var vmip=" + [char]34 + "$VMName-ip" + [char]34 + " -var vmosdisk=" + [char]34 + "$VMName-osdisk" + [char]34 + " -out .\$VMName.tfplan"
+    #$ARGUapply = "apply -auto-approve .\$VMName.tfplan"
+    #Start-Process -FilePath .\terraform.exe -ArgumentList $ARGUinit -Wait
+    #Start-Process -FilePath .\terraform.exe -ArgumentList $ARGUplan -Wait -RedirectStandardOutput .\$VMName-plan.txt
+    #Start-Process -FilePath .\terraform.exe -ArgumentList $ARGUapply -Wait -RedirectStandardOutput .\$VMName-apply.txt
 
-    $VMCreate = Get-AzVM -Name "$VMName" -ResourceGroup $RGNameUAT
-    If ($VMCreate.ProvisioningState -eq "Succeeded") {
-        Write-Host "Virtual Machine $VMName created successfully"
-        If ($AutoShutdown) {
-            $VMName = $VMCreate.Name
-            $SubscriptionId = (Get-AzContext).Subscription.Id
-            $VMResourceId = $VMCreate.Id
-            $ScheduledShutdownResourceId = "/subscriptions/$SubscriptionId/resourceGroups/$RGNameUAT/providers/microsoft.devtestlab/schedules/shutdown-computevm-$VMName"
+    mkdir -Path ".\Terraform\" -Name "$VMName" -Force
+    $TerraformVM = (Get-Content -path ".\Terraform\template\variables.tf").Replace("xxx",$VMName) | Set-Content -path ".\Terraform\$VMName\variables.tf"
 
-            $Properties = @{}
-            $Properties.Add('status', 'Enabled')
-            $Properties.Add('taskType', 'ComputeVmShutdownTask')
-            $Properties.Add('dailyRecurrence', @{'time' = 1800 })
-            $Properties.Add('timeZoneId', "GMT Standard Time")
-            $Properties.Add('notificationSettings', @{status = 'Disabled'; timeInMinutes = 15 })
-            $Properties.Add('targetResourceId', $VMResourceId)
-            New-AzResource -Location $location -ResourceId $ScheduledShutdownResourceId -Properties $Properties -Force | Out-Null
-            Write-Host "Auto Shutdown Enabled for 1800"
-        }
-        $NewVm = Get-AzADServicePrincipal -DisplayName $VMName
-        $Group = Get-AzADGroup -searchstring $rbacContributor
-        Add-AzADGroupMember -TargetGroupObjectId $Group.Id -MemberObjectId $NewVm.Id
-    }
-    Else {
-        Write-Host "*** Unable to create Virtual Machine $VMName! ***"
-    }
+    $TerraformText = "
+module "+[char]34+$VMName+[char]34+" {
+  source = "+[char]34+"./"+$VMName+[char]34+"
+
+  myterraformgroupName = module.environment.myterraformgroup.name
+  myterraformsubnetID = module.environment.myterraformsubnet.id
+  myterraformnsgID = module.environment.myterraformnsg.id
+}"
+
+    $TerraformMain = Get-Content -Path ".\Terraform\main.tf"
+    #$TerraformMain = $TerraformMain[0..($TerraformMain.Length - 2)]
+    #$TerraformMain | Set-Content -Path ".\Terraform\main.tf"
+    $TerraformText | Add-Content -Path ".\Terraform\main.tf"
 }
 
 function CreateAdminStudioVM-Script($VMName) {

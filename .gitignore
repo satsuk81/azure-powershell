@@ -3,3 +3,6 @@
 *.tfplan
 *.tfstate
 *.hcl
+*.info
+*.info
+*.zip
