@@ -1,1 +1,5 @@
 *.exe
+*.backup
+*.tfplan
+*.tfstate
+*.hcl

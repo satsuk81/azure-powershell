@@ -3,20 +3,21 @@ $RequireResourceGroups = $false
 $RequireUserGroups = $false
 $RequireRBAC = $false
 $RequireStorageAccount = $false
-$RequireUpdateStorage = $true
+$RequireUpdateStorage = $false
 $RequireVNET = $false
 #$RequireNSG = $false
-$RequirePublicIPs = $false
+$RequirePublicIPs = $true
 $RequireHyperV = $false
 $RequireStandardVMs = $true
 $RequireAdminStudioVMs = $false
 
+$UseTerraform = $true
 # Subscription ID If Required
-$azSubscription = '743e9d63-59c8-42c3-b823-28bb773a88a6'
-#$azSubscription = '1c3b43a4-90da-4988-9598-cab119913f5d'
+#$azSubscription = '743e9d63-59c8-42c3-b823-28bb773a88a6'
+$azSubscription = '1c3b43a4-90da-4988-9598-cab119913f5d'
 
 # General Variables
-$location = "UKSouth"                                               # Azure Region for resources to be built into
+$location = "eastus"                                               # Azure Region for resources to be built into
 $RGNameUAT = "rg-wl-prod-eucpackaging"                              # UAT Resource group name
 $RGNamePROD = "rg-wl-prod-eucpackaging"                             # PROD Resource group name
 $VNetUAT = "PackagingVnetUAT"                                       # Environment Virtual Network name

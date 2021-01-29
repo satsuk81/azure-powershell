@@ -1,0 +1,110 @@
+[0m[1mazurerm_resource_group.myterraformgroup: Refreshing state... [id=/subscriptions/1c3b43a4-90da-4988-9598-cab119913f5d/resourceGroups/rg-wl-prod-eucpackaging][0m
+[0m[1mazurerm_network_security_group.myterraformnsg: Refreshing state... [id=/subscriptions/1c3b43a4-90da-4988-9598-cab119913f5d/resourceGroups/rg-wl-prod-eucpackaging/providers/Microsoft.Network/networkSecurityGroups/PackagingNsgPROD][0m
+[0m[1mazurerm_public_ip.myterraformpublicip: Refreshing state... [id=/subscriptions/1c3b43a4-90da-4988-9598-cab119913f5d/resourceGroups/rg-wl-prod-eucpackaging/providers/Microsoft.Network/publicIPAddresses/vmwleucvan106-ip][0m
+[0m[1mazurerm_virtual_network.myterraformnetwork: Refreshing state... [id=/subscriptions/1c3b43a4-90da-4988-9598-cab119913f5d/resourceGroups/rg-wl-prod-eucpackaging/providers/Microsoft.Network/virtualNetworks/PackagingVnetPROD][0m
+[0m[1mazurerm_subnet.myterraformsubnet: Refreshing state... [id=/subscriptions/1c3b43a4-90da-4988-9598-cab119913f5d/resourceGroups/rg-wl-prod-eucpackaging/providers/Microsoft.Network/virtualNetworks/PackagingVnetPROD/subnets/default][0m
+[0m[1mazurerm_network_interface.myterraformnic: Refreshing state... [id=/subscriptions/1c3b43a4-90da-4988-9598-cab119913f5d/resourceGroups/rg-wl-prod-eucpackaging/providers/Microsoft.Network/networkInterfaces/vmwleucvan106-nic][0m
+[0m[1mazurerm_network_interface_security_group_association.example: Refreshing state... [id=/subscriptions/1c3b43a4-90da-4988-9598-cab119913f5d/resourceGroups/rg-wl-prod-eucpackaging/providers/Microsoft.Network/networkInterfaces/vmwleucvan106-nic|/subscriptions/1c3b43a4-90da-4988-9598-cab119913f5d/resourceGroups/rg-wl-prod-eucpackaging/providers/Microsoft.Network/networkSecurityGroups/PackagingNsgPROD][0m
+[0m[1mazurerm_windows_virtual_machine.myterraformvm: Refreshing state... [id=/subscriptions/1c3b43a4-90da-4988-9598-cab119913f5d/resourceGroups/rg-wl-prod-eucpackaging/providers/Microsoft.Compute/virtualMachines/vmwleucvan106][0m
+
+An execution plan has been generated and is shown below.
+Resource actions are indicated with the following symbols:
+[31m-[0m/[32m+[0m destroy and then create replacement
+[0m
+Terraform will perform the following actions:
+
+[1m  # azurerm_network_interface.myterraformnic[0m must be [1m[31mreplaced[0m[0m
+[0m[31m-[0m/[32m+[0m[0m resource "azurerm_network_interface" "myterraformnic" {
+      [33m~[0m [0m[1m[0mapplied_dns_servers[0m[0m           = [] [33m->[0m [0m(known after apply)
+      [33m~[0m [0m[1m[0mdns_servers[0m[0m                   = [] [33m->[0m [0m(known after apply)
+      [33m~[0m [0m[1m[0mid[0m[0m                            = "/subscriptions/1c3b43a4-90da-4988-9598-cab119913f5d/resourceGroups/rg-wl-prod-eucpackaging/providers/Microsoft.Network/networkInterfaces/vmwleucvan106-nic" [33m->[0m [0m(known after apply)
+      [32m+[0m [0m[1m[0minternal_dns_name_label[0m[0m       = (known after apply)
+      [32m+[0m [0m[1m[0minternal_domain_name_suffix[0m[0m   = (known after apply)
+      [33m~[0m [0m[1m[0mmac_address[0m[0m                   = "00-0D-3A-10-E1-89" [33m->[0m [0m(known after apply)
+      [33m~[0m [0m[1m[0mname[0m[0m                          = "vmwleucvan106-nic" [33m->[0m [0m"vmwleucvan105-nic" [31m# forces replacement[0m[0m
+      [33m~[0m [0m[1m[0mprivate_ip_address[0m[0m            = "10.0.1.4" [33m->[0m [0m(known after apply)
+      [33m~[0m [0m[1m[0mprivate_ip_addresses[0m[0m          = [
+          [31m-[0m [0m"10.0.1.4",
+        ] [33m->[0m [0m(known after apply)
+        [1m[0mtags[0m[0m                          = {
+            "environment" = "Terraform Demo"
+        }
+      [33m~[0m [0m[1m[0mvirtual_machine_id[0m[0m            = "/subscriptions/1c3b43a4-90da-4988-9598-cab119913f5d/resourceGroups/rg-wl-prod-eucpackaging/providers/Microsoft.Compute/virtualMachines/vmwleucvan106" [33m->[0m [0m(known after apply)
+        [90m# (4 unchanged attributes hidden)[0m[0m
+
+      [33m~[0m [0mip_configuration {
+            [1m[0mname[0m[0m                          = "myNicConfiguration"
+          [33m~[0m [0m[1m[0mprimary[0m[0m                       = true [33m->[0m [0m(known after apply)
+          [33m~[0m [0m[1m[0mprivate_ip_address[0m[0m            = "10.0.1.4" [33m->[0m [0m(known after apply)
+          [33m~[0m [0m[1m[0mprivate_ip_address_allocation[0m[0m = "Dynamic" [33m->[0m [0m"dynamic"
+          [33m~[0m [0m[1m[0mpublic_ip_address_id[0m[0m          = "/subscriptions/1c3b43a4-90da-4988-9598-cab119913f5d/resourceGroups/rg-wl-prod-eucpackaging/providers/Microsoft.Network/publicIPAddresses/vmwleucvan106-ip" [33m->[0m [0m(known after apply)
+            [90m# (2 unchanged attributes hidden)[0m[0m
+        }
+    }
+
+[1m  # azurerm_network_interface_security_group_association.example[0m must be [1m[31mreplaced[0m[0m
+[0m[31m-[0m/[32m+[0m[0m resource "azurerm_network_interface_security_group_association" "example" {
+      [33m~[0m [0m[1m[0mid[0m[0m                        = "/subscriptions/1c3b43a4-90da-4988-9598-cab119913f5d/resourceGroups/rg-wl-prod-eucpackaging/providers/Microsoft.Network/networkInterfaces/vmwleucvan106-nic|/subscriptions/1c3b43a4-90da-4988-9598-cab119913f5d/resourceGroups/rg-wl-prod-eucpackaging/providers/Microsoft.Network/networkSecurityGroups/PackagingNsgPROD" [33m->[0m [0m(known after apply)
+      [33m~[0m [0m[1m[0mnetwork_interface_id[0m[0m      = "/subscriptions/1c3b43a4-90da-4988-9598-cab119913f5d/resourceGroups/rg-wl-prod-eucpackaging/providers/Microsoft.Network/networkInterfaces/vmwleucvan106-nic" [33m->[0m [0m(known after apply) [31m# forces replacement[0m[0m
+        [90m# (1 unchanged attribute hidden)[0m[0m
+    }
+
+[1m  # azurerm_public_ip.myterraformpublicip[0m must be [1m[31mreplaced[0m[0m
+[0m[31m-[0m/[32m+[0m[0m resource "azurerm_public_ip" "myterraformpublicip" {
+      [32m+[0m [0m[1m[0mfqdn[0m[0m                    = (known after apply)
+      [33m~[0m [0m[1m[0mid[0m[0m                      = "/subscriptions/1c3b43a4-90da-4988-9598-cab119913f5d/resourceGroups/rg-wl-prod-eucpackaging/providers/Microsoft.Network/publicIPAddresses/vmwleucvan106-ip" [33m->[0m [0m(known after apply)
+      [32m+[0m [0m[1m[0mip_address[0m[0m              = (known after apply)
+      [33m~[0m [0m[1m[0mname[0m[0m                    = "vmwleucvan106-ip" [33m->[0m [0m"vmwleucvan105-ip" [31m# forces replacement[0m[0m
+        [1m[0mtags[0m[0m                    = {
+            "environment" = "Terraform Demo"
+        }
+      [31m-[0m [0m[1m[0mzones[0m[0m                   = [] [90m->[0m [0m[90mnull[0m[0m
+        [90m# (6 unchanged attributes hidden)[0m[0m
+    }
+
+[1m  # azurerm_windows_virtual_machine.myterraformvm[0m must be [1m[31mreplaced[0m[0m
+[0m[31m-[0m/[32m+[0m[0m resource "azurerm_windows_virtual_machine" "myterraformvm" {
+      [31m-[0m [0m[1m[0mencryption_at_host_enabled[0m[0m = false [90m->[0m [0m[90mnull[0m[0m
+      [33m~[0m [0m[1m[0mid[0m[0m                         = "/subscriptions/1c3b43a4-90da-4988-9598-cab119913f5d/resourceGroups/rg-wl-prod-eucpackaging/providers/Microsoft.Compute/virtualMachines/vmwleucvan106" [33m->[0m [0m(known after apply)
+      [33m~[0m [0m[1m[0mname[0m[0m                       = "vmwleucvan106" [33m->[0m [0m"vmwleucvan105" [31m# forces replacement[0m[0m
+      [33m~[0m [0m[1m[0mnetwork_interface_ids[0m[0m      = [
+          [31m-[0m [0m"/subscriptions/1c3b43a4-90da-4988-9598-cab119913f5d/resourceGroups/rg-wl-prod-eucpackaging/providers/Microsoft.Network/networkInterfaces/vmwleucvan106-nic",
+        ] [33m->[0m [0m(known after apply)
+      [33m~[0m [0m[1m[0mprivate_ip_address[0m[0m         = "10.0.1.4" [33m->[0m [0m(known after apply)
+      [33m~[0m [0m[1m[0mprivate_ip_addresses[0m[0m       = [
+          [31m-[0m [0m"10.0.1.4",
+        ] [33m->[0m [0m(known after apply)
+      [32m+[0m [0m[1m[0mpublic_ip_address[0m[0m          = (known after apply)
+      [33m~[0m [0m[1m[0mpublic_ip_addresses[0m[0m        = [] [33m->[0m [0m(known after apply)
+        [1m[0mtags[0m[0m                       = {
+            "environment" = "Terraform Demo"
+        }
+      [33m~[0m [0m[1m[0mvirtual_machine_id[0m[0m         = "4aa030bf-3caa-4e5a-ad1f-98560738c825" [33m->[0m [0m(known after apply)
+      [32m+[0m [0m[1m[0mzone[0m[0m                       = (known after apply)
+        [90m# (13 unchanged attributes hidden)[0m[0m
+
+      [33m~[0m [0midentity {
+          [31m-[0m [0m[1m[0midentity_ids[0m[0m = [] [90m->[0m [0m[90mnull[0m[0m
+          [33m~[0m [0m[1m[0mprincipal_id[0m[0m = "91879e3f-9f96-45ce-a046-154978192a22" [33m->[0m [0m(known after apply)
+          [33m~[0m [0m[1m[0mtenant_id[0m[0m    = "cf36141c-ddd7-45a7-b073-111f66d0b30c" [33m->[0m [0m(known after apply)
+            [90m# (1 unchanged attribute hidden)[0m[0m
+        }
+
+      [33m~[0m [0mos_disk {
+          [33m~[0m [0m[1m[0mdisk_size_gb[0m[0m              = 127 [33m->[0m [0m(known after apply)
+          [33m~[0m [0m[1m[0mname[0m[0m                      = "vmwleucvan106-osdisk" [33m->[0m [0m"vmwleucvan105-osdisk" [31m# forces replacement[0m[0m
+            [90m# (3 unchanged attributes hidden)[0m[0m
+        }
+
+        [90m# (1 unchanged block hidden)[0m[0m
+    }
+
+[0m[1mPlan:[0m 4 to add, 0 to change, 4 to destroy.[0m
+
+------------------------------------------------------------------------
+
+This plan was saved to: .\vmwleucvan105.tfplan
+
+To perform exactly these actions, run the following command to apply:
+    terraform apply ".\\vmwleucvan105.tfplan"
+
