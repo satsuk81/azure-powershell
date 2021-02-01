@@ -43,7 +43,7 @@ $password = ConvertTo-SecureString “Password1234” -AsPlainText -Force       
 $VMCred = New-Object System.Management.Automation.PSCredential (“AppPackager”, $password)   # Local Admin User for VMs
 
 # VM Count and Name
-$NumberofStandardVMs = 12                                            # Specify number of Standard VMs to be provisioned
+$NumberofStandardVMs = 3                                            # Specify number of Standard VMs to be provisioned
 $NumberofAdminStudioVMs = 1                                         # Specify number of AdminStudio VMs to be provisioned
 $VMNamePrefixStandard = "vmwleucvan"                                # Specifies the first part of the Standard VM name (usually alphabetic)
 $VMNamePrefixAdminStudio = "vmwleucas"                              # Specifies the first part of the Admin Studio VM name (usually alphabetic)

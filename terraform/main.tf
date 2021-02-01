@@ -33,3 +33,27 @@ variable "vmosdisk" {
 module "environment" {
   source = "./environment"
 }
+
+module "vmwleucvan101" {
+  source = "./vmwleucvan101"
+
+  myterraformgroupName = module.environment.myterraformgroup.name
+  myterraformsubnetID = module.environment.myterraformsubnet.id
+  myterraformnsgID = module.environment.myterraformnsg.id
+}
+
+module "vmwleucvan102" {
+  source = "./vmwleucvan102"
+
+  myterraformgroupName = module.environment.myterraformgroup.name
+  myterraformsubnetID = module.environment.myterraformsubnet.id
+  myterraformnsgID = module.environment.myterraformnsg.id
+}
+
+module "vmwleucvan103" {
+  source = "./vmwleucvan103"
+
+  myterraformgroupName = module.environment.myterraformgroup.name
+  myterraformsubnetID = module.environment.myterraformsubnet.id
+  myterraformnsgID = module.environment.myterraformnsg.id
+}

@@ -202,6 +202,9 @@ if($RequireStandardVMs) {
     # Create VMs
     $Count = 1
     $VMNumberStart = $VMNumberStartStandard
+    if($UseTerraform) {
+        $TerraformMainTemplate = Get-Content -Path ".\Terraform\Root Template\main.tf" | Set-Content -Path ".\Terraform\main.tf"
+    }
     While ($Count -le $NumberofStandardVMs) {
         Write-Host "Creating $Count of $NumberofStandardVMs VMs"
         $VM = $VMNamePrefixStandard + $VMNumberStart
@@ -231,7 +234,7 @@ if($RequireStandardVMs) {
         $ARGUapply = "apply -auto-approve .\terraform.tfplan"
         Start-Process -FilePath .\terraform.exe -ArgumentList $ARGUinit -Wait -RedirectStandardOutput .\terraform-init.txt -RedirectStandardError .\terraform-error-init.txt
         Start-Process -FilePath .\terraform.exe -ArgumentList $ARGUplan -Wait -RedirectStandardOutput .\terraform-plan.txt -RedirectStandardError .\terraform-error-plan.txt
-        #Start-Process -FilePath .\terraform.exe -ArgumentList $ARGUapply -Wait -RedirectStandardOutput .\terraform-apply.txt -RedirectStandardError .\terraform-error-apply.txt
+        Start-Process -FilePath .\terraform.exe -ArgumentList $ARGUapply -Wait -RedirectStandardOutput .\terraform-apply.txt -RedirectStandardError .\terraform-error-apply.txt
     }
 
     # Configure VMs
@@ -242,7 +245,7 @@ if($RequireStandardVMs) {
         $VM = $VMNamePrefixStandard + $VMNumberStart
 
         if ($UseTerraform) {
-            #ConfigureStandardVM-Terraform "$VM"
+            ConfigureStandardVM-Terraform "$VM"
         }
         else {
             #$VMCheck = Get-AzVM -Name "$VM" -ResourceGroup $RGNameUAT
