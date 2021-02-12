@@ -46,11 +46,145 @@ Terraform will perform the following actions:
         }
     }
 
+[1m  # module.environment.azurerm_storage_account.mystorageaccount[0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "azurerm_storage_account" "mystorageaccount" {
+      [32m+[0m [0m[1m[0maccess_tier[0m[0m                      = (known after apply)
+      [32m+[0m [0m[1m[0maccount_kind[0m[0m                     = "StorageV2"
+      [32m+[0m [0m[1m[0maccount_replication_type[0m[0m         = "LRS"
+      [32m+[0m [0m[1m[0maccount_tier[0m[0m                     = "Standard"
+      [32m+[0m [0m[1m[0mallow_blob_public_access[0m[0m         = true
+      [32m+[0m [0m[1m[0menable_https_traffic_only[0m[0m        = true
+      [32m+[0m [0m[1m[0mid[0m[0m                               = (known after apply)
+      [32m+[0m [0m[1m[0mis_hns_enabled[0m[0m                   = false
+      [32m+[0m [0m[1m[0mlarge_file_share_enabled[0m[0m         = (known after apply)
+      [32m+[0m [0m[1m[0mlocation[0m[0m                         = "eastus"
+      [32m+[0m [0m[1m[0mmin_tls_version[0m[0m                  = "TLS1_0"
+      [32m+[0m [0m[1m[0mname[0m[0m                             = "stwleucpackaging01"
+      [32m+[0m [0m[1m[0mprimary_access_key[0m[0m               = (sensitive value)
+      [32m+[0m [0m[1m[0mprimary_blob_connection_string[0m[0m   = (sensitive value)
+      [32m+[0m [0m[1m[0mprimary_blob_endpoint[0m[0m            = (known after apply)
+      [32m+[0m [0m[1m[0mprimary_blob_host[0m[0m                = (known after apply)
+      [32m+[0m [0m[1m[0mprimary_connection_string[0m[0m        = (sensitive value)
+      [32m+[0m [0m[1m[0mprimary_dfs_endpoint[0m[0m             = (known after apply)
+      [32m+[0m [0m[1m[0mprimary_dfs_host[0m[0m                 = (known after apply)
+      [32m+[0m [0m[1m[0mprimary_file_endpoint[0m[0m            = (known after apply)
+      [32m+[0m [0m[1m[0mprimary_file_host[0m[0m                = (known after apply)
+      [32m+[0m [0m[1m[0mprimary_location[0m[0m                 = (known after apply)
+      [32m+[0m [0m[1m[0mprimary_queue_endpoint[0m[0m           = (known after apply)
+      [32m+[0m [0m[1m[0mprimary_queue_host[0m[0m               = (known after apply)
+      [32m+[0m [0m[1m[0mprimary_table_endpoint[0m[0m           = (known after apply)
+      [32m+[0m [0m[1m[0mprimary_table_host[0m[0m               = (known after apply)
+      [32m+[0m [0m[1m[0mprimary_web_endpoint[0m[0m             = (known after apply)
+      [32m+[0m [0m[1m[0mprimary_web_host[0m[0m                 = (known after apply)
+      [32m+[0m [0m[1m[0mresource_group_name[0m[0m              = "rg-wl-prod-eucpackaging"
+      [32m+[0m [0m[1m[0msecondary_access_key[0m[0m             = (sensitive value)
+      [32m+[0m [0m[1m[0msecondary_blob_connection_string[0m[0m = (sensitive value)
+      [32m+[0m [0m[1m[0msecondary_blob_endpoint[0m[0m          = (known after apply)
+      [32m+[0m [0m[1m[0msecondary_blob_host[0m[0m              = (known after apply)
+      [32m+[0m [0m[1m[0msecondary_connection_string[0m[0m      = (sensitive value)
+      [32m+[0m [0m[1m[0msecondary_dfs_endpoint[0m[0m           = (known after apply)
+      [32m+[0m [0m[1m[0msecondary_dfs_host[0m[0m               = (known after apply)
+      [32m+[0m [0m[1m[0msecondary_file_endpoint[0m[0m          = (known after apply)
+      [32m+[0m [0m[1m[0msecondary_file_host[0m[0m              = (known after apply)
+      [32m+[0m [0m[1m[0msecondary_location[0m[0m               = (known after apply)
+      [32m+[0m [0m[1m[0msecondary_queue_endpoint[0m[0m         = (known after apply)
+      [32m+[0m [0m[1m[0msecondary_queue_host[0m[0m             = (known after apply)
+      [32m+[0m [0m[1m[0msecondary_table_endpoint[0m[0m         = (known after apply)
+      [32m+[0m [0m[1m[0msecondary_table_host[0m[0m             = (known after apply)
+      [32m+[0m [0m[1m[0msecondary_web_endpoint[0m[0m           = (known after apply)
+      [32m+[0m [0m[1m[0msecondary_web_host[0m[0m               = (known after apply)
+      [32m+[0m [0m[1m[0mtags[0m[0m                             = {
+          [32m+[0m [0m"environment" = "Terraform Demo"
+        }
+
+      [32m+[0m [0mblob_properties {
+          [32m+[0m [0mcors_rule {
+              [32m+[0m [0m[1m[0mallowed_headers[0m[0m    = (known after apply)
+              [32m+[0m [0m[1m[0mallowed_methods[0m[0m    = (known after apply)
+              [32m+[0m [0m[1m[0mallowed_origins[0m[0m    = (known after apply)
+              [32m+[0m [0m[1m[0mexposed_headers[0m[0m    = (known after apply)
+              [32m+[0m [0m[1m[0mmax_age_in_seconds[0m[0m = (known after apply)
+            }
+
+          [32m+[0m [0mdelete_retention_policy {
+              [32m+[0m [0m[1m[0mdays[0m[0m = (known after apply)
+            }
+        }
+
+      [32m+[0m [0midentity {
+          [32m+[0m [0m[1m[0mprincipal_id[0m[0m = (known after apply)
+          [32m+[0m [0m[1m[0mtenant_id[0m[0m    = (known after apply)
+          [32m+[0m [0m[1m[0mtype[0m[0m         = (known after apply)
+        }
+
+      [32m+[0m [0mnetwork_rules {
+          [32m+[0m [0m[1m[0mbypass[0m[0m                     = (known after apply)
+          [32m+[0m [0m[1m[0mdefault_action[0m[0m             = (known after apply)
+          [32m+[0m [0m[1m[0mip_rules[0m[0m                   = (known after apply)
+          [32m+[0m [0m[1m[0mvirtual_network_subnet_ids[0m[0m = (known after apply)
+        }
+
+      [32m+[0m [0mqueue_properties {
+          [32m+[0m [0mcors_rule {
+              [32m+[0m [0m[1m[0mallowed_headers[0m[0m    = (known after apply)
+              [32m+[0m [0m[1m[0mallowed_methods[0m[0m    = (known after apply)
+              [32m+[0m [0m[1m[0mallowed_origins[0m[0m    = (known after apply)
+              [32m+[0m [0m[1m[0mexposed_headers[0m[0m    = (known after apply)
+              [32m+[0m [0m[1m[0mmax_age_in_seconds[0m[0m = (known after apply)
+            }
+
+          [32m+[0m [0mhour_metrics {
+              [32m+[0m [0m[1m[0menabled[0m[0m               = (known after apply)
+              [32m+[0m [0m[1m[0minclude_apis[0m[0m          = (known after apply)
+              [32m+[0m [0m[1m[0mretention_policy_days[0m[0m = (known after apply)
+              [32m+[0m [0m[1m[0mversion[0m[0m               = (known after apply)
+            }
+
+          [32m+[0m [0mlogging {
+              [32m+[0m [0m[1m[0mdelete[0m[0m                = (known after apply)
+              [32m+[0m [0m[1m[0mread[0m[0m                  = (known after apply)
+              [32m+[0m [0m[1m[0mretention_policy_days[0m[0m = (known after apply)
+              [32m+[0m [0m[1m[0mversion[0m[0m               = (known after apply)
+              [32m+[0m [0m[1m[0mwrite[0m[0m                 = (known after apply)
+            }
+
+          [32m+[0m [0mminute_metrics {
+              [32m+[0m [0m[1m[0menabled[0m[0m               = (known after apply)
+              [32m+[0m [0m[1m[0minclude_apis[0m[0m          = (known after apply)
+              [32m+[0m [0m[1m[0mretention_policy_days[0m[0m = (known after apply)
+              [32m+[0m [0m[1m[0mversion[0m[0m               = (known after apply)
+            }
+        }
+    }
+
+[1m  # module.environment.azurerm_storage_container.mystoragecontainer[0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "azurerm_storage_container" "mystoragecontainer" {
+      [32m+[0m [0m[1m[0mcontainer_access_type[0m[0m   = "blob"
+      [32m+[0m [0m[1m[0mhas_immutability_policy[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mhas_legal_hold[0m[0m          = (known after apply)
+      [32m+[0m [0m[1m[0mid[0m[0m                      = (known after apply)
+      [32m+[0m [0m[1m[0mmetadata[0m[0m                = (known after apply)
+      [32m+[0m [0m[1m[0mname[0m[0m                    = "data"
+      [32m+[0m [0m[1m[0mresource_manager_id[0m[0m     = (known after apply)
+      [32m+[0m [0m[1m[0mstorage_account_name[0m[0m    = "stwleucpackaging01"
+    }
+
+[1m  # module.environment.azurerm_storage_share.mystorageshare[0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "azurerm_storage_share" "mystorageshare" {
+      [32m+[0m [0m[1m[0mid[0m[0m                   = (known after apply)
+      [32m+[0m [0m[1m[0mmetadata[0m[0m             = (known after apply)
+      [32m+[0m [0m[1m[0mname[0m[0m                 = "packaging"
+      [32m+[0m [0m[1m[0mquota[0m[0m                = 50
+      [32m+[0m [0m[1m[0mresource_manager_id[0m[0m  = (known after apply)
+      [32m+[0m [0m[1m[0mstorage_account_name[0m[0m = "stwleucpackaging01"
+      [32m+[0m [0m[1m[0murl[0m[0m                  = (known after apply)
+    }
+
 [1m  # module.environment.azurerm_subnet.myterraformsubnet[0m will be created[0m[0m
 [0m  [32m+[0m[0m resource "azurerm_subnet" "myterraformsubnet" {
       [32m+[0m [0m[1m[0maddress_prefix[0m[0m                                 = (known after apply)
       [32m+[0m [0m[1m[0maddress_prefixes[0m[0m                               = [
-          [32m+[0m [0m"10.0.1.0/24",
+          [32m+[0m [0m"10.22.255.128/26",
         ]
       [32m+[0m [0m[1m[0menforce_private_link_endpoint_network_policies[0m[0m = false
       [32m+[0m [0m[1m[0menforce_private_link_service_network_policies[0m[0m  = false
@@ -63,7 +197,7 @@ Terraform will perform the following actions:
 [1m  # module.environment.azurerm_virtual_network.myterraformnetwork[0m will be created[0m[0m
 [0m  [32m+[0m[0m resource "azurerm_virtual_network" "myterraformnetwork" {
       [32m+[0m [0m[1m[0maddress_space[0m[0m         = [
-          [32m+[0m [0m"10.0.0.0/16",
+          [32m+[0m [0m"10.22.0.0/16",
         ]
       [32m+[0m [0m[1m[0mguid[0m[0m                  = (known after apply)
       [32m+[0m [0m[1m[0mid[0m[0m                    = (known after apply)
@@ -182,7 +316,7 @@ Terraform will perform the following actions:
         }
     }
 
-[1m  # module.vmwleucvan102.azurerm_network_interface.myterraformnic[0m will be created[0m[0m
+[1m  # module.vmwleucvan201.azurerm_network_interface.myterraformnic[0m will be created[0m[0m
 [0m  [32m+[0m[0m resource "azurerm_network_interface" "myterraformnic" {
       [32m+[0m [0m[1m[0mapplied_dns_servers[0m[0m           = (known after apply)
       [32m+[0m [0m[1m[0mdns_servers[0m[0m                   = (known after apply)
@@ -193,7 +327,7 @@ Terraform will perform the following actions:
       [32m+[0m [0m[1m[0minternal_domain_name_suffix[0m[0m   = (known after apply)
       [32m+[0m [0m[1m[0mlocation[0m[0m                      = "eastus"
       [32m+[0m [0m[1m[0mmac_address[0m[0m                   = (known after apply)
-      [32m+[0m [0m[1m[0mname[0m[0m                          = "vmwleucvan102-nic"
+      [32m+[0m [0m[1m[0mname[0m[0m                          = "vmwleucvan201-nic"
       [32m+[0m [0m[1m[0mprivate_ip_address[0m[0m            = (known after apply)
       [32m+[0m [0m[1m[0mprivate_ip_addresses[0m[0m          = (known after apply)
       [32m+[0m [0m[1m[0mresource_group_name[0m[0m           = "rg-wl-prod-eucpackaging"
@@ -213,14 +347,14 @@ Terraform will perform the following actions:
         }
     }
 
-[1m  # module.vmwleucvan102.azurerm_network_interface_security_group_association.example[0m will be created[0m[0m
+[1m  # module.vmwleucvan201.azurerm_network_interface_security_group_association.example[0m will be created[0m[0m
 [0m  [32m+[0m[0m resource "azurerm_network_interface_security_group_association" "example" {
       [32m+[0m [0m[1m[0mid[0m[0m                        = (known after apply)
       [32m+[0m [0m[1m[0mnetwork_interface_id[0m[0m      = (known after apply)
       [32m+[0m [0m[1m[0mnetwork_security_group_id[0m[0m = (known after apply)
     }
 
-[1m  # module.vmwleucvan102.azurerm_public_ip.myterraformpublicip[0m will be created[0m[0m
+[1m  # module.vmwleucvan201.azurerm_public_ip.myterraformpublicip[0m will be created[0m[0m
 [0m  [32m+[0m[0m resource "azurerm_public_ip" "myterraformpublicip" {
       [32m+[0m [0m[1m[0mallocation_method[0m[0m       = "Dynamic"
       [32m+[0m [0m[1m[0mfqdn[0m[0m                    = (known after apply)
@@ -229,7 +363,7 @@ Terraform will perform the following actions:
       [32m+[0m [0m[1m[0mip_address[0m[0m              = (known after apply)
       [32m+[0m [0m[1m[0mip_version[0m[0m              = "IPv4"
       [32m+[0m [0m[1m[0mlocation[0m[0m                = "eastus"
-      [32m+[0m [0m[1m[0mname[0m[0m                    = "vmwleucvan102-ip"
+      [32m+[0m [0m[1m[0mname[0m[0m                    = "vmwleucvan201-ip"
       [32m+[0m [0m[1m[0mresource_group_name[0m[0m     = "rg-wl-prod-eucpackaging"
       [32m+[0m [0m[1m[0msku[0m[0m                     = "Basic"
       [32m+[0m [0m[1m[0mtags[0m[0m                    = {
@@ -237,18 +371,18 @@ Terraform will perform the following actions:
         }
     }
 
-[1m  # module.vmwleucvan102.azurerm_windows_virtual_machine.myterraformvm[0m will be created[0m[0m
+[1m  # module.vmwleucvan201.azurerm_windows_virtual_machine.myterraformvm[0m will be created[0m[0m
 [0m  [32m+[0m[0m resource "azurerm_windows_virtual_machine" "myterraformvm" {
       [32m+[0m [0m[1m[0madmin_password[0m[0m             = (sensitive value)
       [32m+[0m [0m[1m[0madmin_username[0m[0m             = "apppackager"
       [32m+[0m [0m[1m[0mallow_extension_operations[0m[0m = true
-      [32m+[0m [0m[1m[0mcomputer_name[0m[0m              = "vmwleucvan102"
+      [32m+[0m [0m[1m[0mcomputer_name[0m[0m              = "vmwleucvan201"
       [32m+[0m [0m[1m[0menable_automatic_updates[0m[0m   = true
       [32m+[0m [0m[1m[0mextensions_time_budget[0m[0m     = "PT1H30M"
       [32m+[0m [0m[1m[0mid[0m[0m                         = (known after apply)
       [32m+[0m [0m[1m[0mlocation[0m[0m                   = "eastus"
       [32m+[0m [0m[1m[0mmax_bid_price[0m[0m              = -1
-      [32m+[0m [0m[1m[0mname[0m[0m                       = "vmwleucvan102"
+      [32m+[0m [0m[1m[0mname[0m[0m                       = "vmwleucvan201"
       [32m+[0m [0m[1m[0mnetwork_interface_ids[0m[0m      = (known after apply)
       [32m+[0m [0m[1m[0mpatch_mode[0m[0m                 = "AutomaticByOS"
       [32m+[0m [0m[1m[0mpriority[0m[0m                   = "Regular"
@@ -274,7 +408,7 @@ Terraform will perform the following actions:
       [32m+[0m [0mos_disk {
           [32m+[0m [0m[1m[0mcaching[0m[0m                   = "ReadWrite"
           [32m+[0m [0m[1m[0mdisk_size_gb[0m[0m              = (known after apply)
-          [32m+[0m [0m[1m[0mname[0m[0m                      = "vmwleucvan102-osdisk"
+          [32m+[0m [0m[1m[0mname[0m[0m                      = "vmwleucvan201-osdisk"
           [32m+[0m [0m[1m[0mstorage_account_type[0m[0m      = "Premium_LRS"
           [32m+[0m [0m[1m[0mwrite_accelerator_enabled[0m[0m = false
         }
@@ -287,112 +421,11 @@ Terraform will perform the following actions:
         }
     }
 
-[1m  # module.vmwleucvan103.azurerm_network_interface.myterraformnic[0m will be created[0m[0m
-[0m  [32m+[0m[0m resource "azurerm_network_interface" "myterraformnic" {
-      [32m+[0m [0m[1m[0mapplied_dns_servers[0m[0m           = (known after apply)
-      [32m+[0m [0m[1m[0mdns_servers[0m[0m                   = (known after apply)
-      [32m+[0m [0m[1m[0menable_accelerated_networking[0m[0m = false
-      [32m+[0m [0m[1m[0menable_ip_forwarding[0m[0m          = false
-      [32m+[0m [0m[1m[0mid[0m[0m                            = (known after apply)
-      [32m+[0m [0m[1m[0minternal_dns_name_label[0m[0m       = (known after apply)
-      [32m+[0m [0m[1m[0minternal_domain_name_suffix[0m[0m   = (known after apply)
-      [32m+[0m [0m[1m[0mlocation[0m[0m                      = "eastus"
-      [32m+[0m [0m[1m[0mmac_address[0m[0m                   = (known after apply)
-      [32m+[0m [0m[1m[0mname[0m[0m                          = "vmwleucvan103-nic"
-      [32m+[0m [0m[1m[0mprivate_ip_address[0m[0m            = (known after apply)
-      [32m+[0m [0m[1m[0mprivate_ip_addresses[0m[0m          = (known after apply)
-      [32m+[0m [0m[1m[0mresource_group_name[0m[0m           = "rg-wl-prod-eucpackaging"
-      [32m+[0m [0m[1m[0mtags[0m[0m                          = {
-          [32m+[0m [0m"environment" = "Terraform Demo"
-        }
-      [32m+[0m [0m[1m[0mvirtual_machine_id[0m[0m            = (known after apply)
+[0m[1mPlan:[0m 15 to add, 0 to change, 0 to destroy.[0m
+[33m
+[1m[33mWarning: [0m[0m[1m"skip_credentials_validation": [DEPRECATED] This field is deprecated and will be removed in version 3.0 of the Azure Provider[0m
 
-      [32m+[0m [0mip_configuration {
-          [32m+[0m [0m[1m[0mname[0m[0m                          = "myNicConfiguration"
-          [32m+[0m [0m[1m[0mprimary[0m[0m                       = (known after apply)
-          [32m+[0m [0m[1m[0mprivate_ip_address[0m[0m            = (known after apply)
-          [32m+[0m [0m[1m[0mprivate_ip_address_allocation[0m[0m = "dynamic"
-          [32m+[0m [0m[1m[0mprivate_ip_address_version[0m[0m    = "IPv4"
-          [32m+[0m [0m[1m[0mpublic_ip_address_id[0m[0m          = (known after apply)
-          [32m+[0m [0m[1m[0msubnet_id[0m[0m                     = (known after apply)
-        }
-    }
-
-[1m  # module.vmwleucvan103.azurerm_network_interface_security_group_association.example[0m will be created[0m[0m
-[0m  [32m+[0m[0m resource "azurerm_network_interface_security_group_association" "example" {
-      [32m+[0m [0m[1m[0mid[0m[0m                        = (known after apply)
-      [32m+[0m [0m[1m[0mnetwork_interface_id[0m[0m      = (known after apply)
-      [32m+[0m [0m[1m[0mnetwork_security_group_id[0m[0m = (known after apply)
-    }
-
-[1m  # module.vmwleucvan103.azurerm_public_ip.myterraformpublicip[0m will be created[0m[0m
-[0m  [32m+[0m[0m resource "azurerm_public_ip" "myterraformpublicip" {
-      [32m+[0m [0m[1m[0mallocation_method[0m[0m       = "Dynamic"
-      [32m+[0m [0m[1m[0mfqdn[0m[0m                    = (known after apply)
-      [32m+[0m [0m[1m[0mid[0m[0m                      = (known after apply)
-      [32m+[0m [0m[1m[0midle_timeout_in_minutes[0m[0m = 4
-      [32m+[0m [0m[1m[0mip_address[0m[0m              = (known after apply)
-      [32m+[0m [0m[1m[0mip_version[0m[0m              = "IPv4"
-      [32m+[0m [0m[1m[0mlocation[0m[0m                = "eastus"
-      [32m+[0m [0m[1m[0mname[0m[0m                    = "vmwleucvan103-ip"
-      [32m+[0m [0m[1m[0mresource_group_name[0m[0m     = "rg-wl-prod-eucpackaging"
-      [32m+[0m [0m[1m[0msku[0m[0m                     = "Basic"
-      [32m+[0m [0m[1m[0mtags[0m[0m                    = {
-          [32m+[0m [0m"environment" = "Terraform Demo"
-        }
-    }
-
-[1m  # module.vmwleucvan103.azurerm_windows_virtual_machine.myterraformvm[0m will be created[0m[0m
-[0m  [32m+[0m[0m resource "azurerm_windows_virtual_machine" "myterraformvm" {
-      [32m+[0m [0m[1m[0madmin_password[0m[0m             = (sensitive value)
-      [32m+[0m [0m[1m[0madmin_username[0m[0m             = "apppackager"
-      [32m+[0m [0m[1m[0mallow_extension_operations[0m[0m = true
-      [32m+[0m [0m[1m[0mcomputer_name[0m[0m              = "vmwleucvan103"
-      [32m+[0m [0m[1m[0menable_automatic_updates[0m[0m   = true
-      [32m+[0m [0m[1m[0mextensions_time_budget[0m[0m     = "PT1H30M"
-      [32m+[0m [0m[1m[0mid[0m[0m                         = (known after apply)
-      [32m+[0m [0m[1m[0mlocation[0m[0m                   = "eastus"
-      [32m+[0m [0m[1m[0mmax_bid_price[0m[0m              = -1
-      [32m+[0m [0m[1m[0mname[0m[0m                       = "vmwleucvan103"
-      [32m+[0m [0m[1m[0mnetwork_interface_ids[0m[0m      = (known after apply)
-      [32m+[0m [0m[1m[0mpatch_mode[0m[0m                 = "AutomaticByOS"
-      [32m+[0m [0m[1m[0mpriority[0m[0m                   = "Regular"
-      [32m+[0m [0m[1m[0mprivate_ip_address[0m[0m         = (known after apply)
-      [32m+[0m [0m[1m[0mprivate_ip_addresses[0m[0m       = (known after apply)
-      [32m+[0m [0m[1m[0mprovision_vm_agent[0m[0m         = true
-      [32m+[0m [0m[1m[0mpublic_ip_address[0m[0m          = (known after apply)
-      [32m+[0m [0m[1m[0mpublic_ip_addresses[0m[0m        = (known after apply)
-      [32m+[0m [0m[1m[0mresource_group_name[0m[0m        = "rg-wl-prod-eucpackaging"
-      [32m+[0m [0m[1m[0msize[0m[0m                       = "Standard_B2s"
-      [32m+[0m [0m[1m[0mtags[0m[0m                       = {
-          [32m+[0m [0m"environment" = "Terraform Demo"
-        }
-      [32m+[0m [0m[1m[0mvirtual_machine_id[0m[0m         = (known after apply)
-      [32m+[0m [0m[1m[0mzone[0m[0m                       = (known after apply)
-
-      [32m+[0m [0midentity {
-          [32m+[0m [0m[1m[0mprincipal_id[0m[0m = (known after apply)
-          [32m+[0m [0m[1m[0mtenant_id[0m[0m    = (known after apply)
-          [32m+[0m [0m[1m[0mtype[0m[0m         = "SystemAssigned"
-        }
-
-      [32m+[0m [0mos_disk {
-          [32m+[0m [0m[1m[0mcaching[0m[0m                   = "ReadWrite"
-          [32m+[0m [0m[1m[0mdisk_size_gb[0m[0m              = (known after apply)
-          [32m+[0m [0m[1m[0mname[0m[0m                      = "vmwleucvan103-osdisk"
-          [32m+[0m [0m[1m[0mstorage_account_type[0m[0m      = "Premium_LRS"
-          [32m+[0m [0m[1m[0mwrite_accelerator_enabled[0m[0m = false
-        }
-
-      [32m+[0m [0msource_image_reference {
-          [32m+[0m [0m[1m[0moffer[0m[0m     = "Windows-10"
-          [32m+[0m [0m[1m[0mpublisher[0m[0m = "MicrosoftWindowsDesktop"
-          [32m+[0m [0m[1m[0msku[0m[0m       = "20h2-ent"
-          [32m+[0m [0m[1m[0mversion[0m[0m   = "latest"
-        }
-    }
-
-[0m[1mPlan:[0m 16 to add, 0 to change, 0 to destroy.[0m
+[0m[0m[0m
 
 ------------------------------------------------------------------------
 

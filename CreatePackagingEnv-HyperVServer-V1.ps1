@@ -1,4 +1,4 @@
-﻿function CreateVMp($VMName) {
+﻿function CreateHyperVVM-Terraform($VMName) {
     $PublicIpAddressName = $VMName + "-ip"
 
     if($RequirePublicIPs) {
@@ -63,6 +63,68 @@
     }
 }
 
+function CreateHyperVVM-Script($VMName) {
+    $PublicIpAddressName = $VMName + "-ip"
+
+    if ($RequirePublicIPs) {
+        $Params = @{
+            ResourceGroupName   = $RGNamePROD
+            Name                = $VMName
+            Size                = $VmSize
+            Location            = $Location
+            VirtualNetworkName  = $VNetPROD
+            SubnetName          = $SubnetName
+            SecurityGroupName   = $NsgNamePROD
+            PublicIpAddressName = $PublicIpAddressName
+            ImageName           = $VmImage
+            Credential          = $VMCred
+        }
+    }
+    else {
+        $Params = @{
+            ResourceGroupName  = $RGNamePROD
+            Name               = $VMName
+            Size               = $VmSize
+            Location           = $Location
+            VirtualNetworkName = $VNetPROD
+            SubnetName         = $SubnetName
+            SecurityGroupName  = $NsgNamePROD
+            ImageName          = $VmImage
+            Credential         = $VMCred
+        }   
+    }
+
+    $VMCreate = New-AzVM @Params -SystemAssignedIdentity
+    
+
+
+    If ($VMCreate.ProvisioningState -eq "Succeeded") {
+        Write-Host "Virtual Machine $VMName created successfully"
+        If ($AutoShutdown) {
+            $VMName = $VMCreate.Name
+            $SubscriptionId = (Get-AzContext).Subscription.Id
+            $VMResourceId = $VMCreate.Id
+            $ScheduledShutdownResourceId = "/subscriptions/$SubscriptionId/resourceGroups/$RGNamePROD/providers/microsoft.devtestlab/schedules/shutdown-computevm-$VMName"
+
+            $Properties = @{}
+            $Properties.Add('status', 'Enabled')
+            $Properties.Add('taskType', 'ComputeVmShutdownTask')
+            $Properties.Add('dailyRecurrence', @{'time' = 1800 })
+            $Properties.Add('timeZoneId', "GMT Standard Time")
+            $Properties.Add('notificationSettings', @{status = 'Disabled'; timeInMinutes = 15 })
+            $Properties.Add('targetResourceId', $VMResourceId)
+            New-AzResource -Location $location -ResourceId $ScheduledShutdownResourceId -Properties $Properties -Force | Out-Null
+            Write-Host "Auto Shutdown Enabled for 1800"
+        }
+        $NewVm = Get-AzADServicePrincipal -DisplayName $VMName
+        $Group = Get-AzADGroup -searchstring $rbacContributor
+        Add-AzADGroupMember -TargetGroupObjectId $Group.Id -MemberObjectId $NewVm.Id
+    }
+    Else {
+        Write-Host "*** Unable to create Virtual Machine $VMName! ***"
+    }
+}
+
 function RunVMConfig($VMName, $BlobFilePath, $Blob) {
 
     $Params = @{
@@ -78,15 +140,53 @@ function RunVMConfig($VMName, $BlobFilePath, $Blob) {
     If ($VMConfigure.IsSuccessStatusCode -eq $True) {Write-Host "Virtual Machine $VMName configured successfully"}Else{Write-Host "*** Unable to configure Virtual Machine $VMName! ***"}
 }
 
+function TerraformBuild {
+    # Build Hyper-V Server VM
+    if ($RequireHyperV) {
+        $Count = 1
+        $VMNumberStart = $VMHyperVNumberStart
+        While ($Count -le $NumberofHyperVVMs) {
+            Write-Host "Creating $Count of $NumberofHyperVVMs VMs"
+            $VM = $VMHyperVNamePrefix + $VMNumberStart
+
+            CreateHyperVVM-Terraform "$VM"
+            $Count++
+            $VMNumberStart++
+        }
+    }
+}
+
+function ScriptBuild {
+    # Build Standard VMs
+    if ($RequireHyperV) {
+        # Create VMs
+        $Count = 1
+        $VMNumberStart = $VMHyperVNumberStart
+        While ($Count -le $NumberofHyperVVMs) {
+            Write-Host "Creating $Count of $NumberofHyperVVMs VMs"
+            $VM = $VMHyperVNamePrefix + $VMNumberStart
+            $VMCheck = Get-AzVM -Name "$VM" -ResourceGroup $RGNameUAT
+            if (!$VMCheck) {
+                CreateHyperVVM-Script "$VM"
+            }
+            else {
+                Write-Host "Virtual Machine $VM already exists!"
+                break
+            }
+            $Count++
+            $VMNumberStart++
+        }
+    }
+}
 
 #=======================================================================================================================================================
 
 # Main Script
 
 # Create Hyper-V server
-$NumberofVMs = 1                                                            # Specify number of VMs to be provisioned
-$VmNamePrefix = "vmwleuchyperv"                                             # Specifies the first part of the VM name (usually alphabetic)
-$VmNumberStart = 01                                                         # Specifies the second part of the VM name (usually numeric)
+$NumberofHyperVVMs = 1                                                            # Specify number of VMs to be provisioned
+$VMHyperVNamePrefix = "vmwleuchyperv"                                             # Specifies the first part of the VM name (usually alphabetic)
+$VmHyperVNumberStart = 01                                                         # Specifies the second part of the VM name (usually numeric)
 $VmSize = "Standard_D16s_v4"                                                # Specifies Azure Size to use for the VM
 $VmImage = "MicrosoftWindowsServer:WindowsServer:2019-Datacenter:latest"    # Specifies the Publisher, Offer, SKU and Version of the image to be used to provision the VM
 $VmShutdown = $true

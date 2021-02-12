@@ -69,25 +69,6 @@ function CreateStorageAccount {
     } 
 }
 
-function UpdateStorage {
-    if($RequireUpdateStorage) {
-        Try {
-            $Key = Get-AzStorageAccountKey -ResourceGroupName $RGNameUAT -AccountName $StorAcc
-            $MapFileContent = (Get-Content -path "$ContainerScripts\$MapFileTmpl").replace("xxxx",$StorAcc) #| Set-Content -path "$ContainerScripts\MapDrv.ps1"
-            $MapFileContent.replace("yyyy",$Key.value[0]) | Set-Content -path "$ContainerScripts\MapDrv.ps1"      
-            $RunOnceContent = (Get-Content -path "$ContainerScripts\RunOnceTmpl.ps1").replace("xxxx",$StorAcc)
-            $RunOnceContent.replace("rrrr",$RGNameUAT) | Set-Content -path "$ContainerScripts\RunOnce.ps1"
-            $AdminStudioContent = (Get-Content -Path "$ContainerScripts\AdminStudioTmpl.ps1").replace("xxxx", $StorAcc)
-            $AdminStudioContent.replace("rrrr", $RGNameUAT) | Set-Content -Path "$ContainerScripts\AdminStudio.ps1"
-        } Catch {
-            Write-Error "An error occured trying to create the customised scripts for the packaging share."
-            Write-Error $_.Exception.Message
-        }
-        . .\SyncFiles.ps1 -CallFromCreatePackaging             # Sync Files to Storage Blob
-        Write-Host "Storage Account has been Updated with files"
-    }
-}
-
 #=======================================================================================================================================================
 
 # Main Script
@@ -100,6 +81,3 @@ ConfigureNetwork
 
 # Create Storage Account
 CreateStorageAccount
-
-# Update Storage Blob with copied media
-UpdateStorage

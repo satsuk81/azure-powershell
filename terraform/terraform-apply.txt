@@ -1,145 +1,109 @@
 [0m[1mmodule.environment.azurerm_resource_group.myterraformgroup: Creating...[0m[0m
 [0m[1mmodule.environment.azurerm_resource_group.myterraformgroup: Creation complete after 1s [id=/subscriptions/1c3b43a4-90da-4988-9598-cab119913f5d/resourceGroups/rg-wl-prod-eucpackaging][0m[0m
 [0m[1mmodule.environment.azurerm_virtual_network.myterraformnetwork: Creating...[0m[0m
-[0m[1mmodule.vmwleucvan103.azurerm_public_ip.myterraformpublicip: Creating...[0m[0m
-[0m[1mmodule.vmwleucvan102.azurerm_public_ip.myterraformpublicip: Creating...[0m[0m
+[0m[1mmodule.vmwleucvan201.azurerm_public_ip.myterraformpublicip: Creating...[0m[0m
 [0m[1mmodule.vmwleucvan101.azurerm_public_ip.myterraformpublicip: Creating...[0m[0m
 [0m[1mmodule.environment.azurerm_network_security_group.myterraformnsg: Creating...[0m[0m
-[0m[1mmodule.vmwleucvan101.azurerm_public_ip.myterraformpublicip: Creation complete after 6s [id=/subscriptions/1c3b43a4-90da-4988-9598-cab119913f5d/resourceGroups/rg-wl-prod-eucpackaging/providers/Microsoft.Network/publicIPAddresses/vmwleucvan101-ip][0m[0m
-[0m[1mmodule.vmwleucvan103.azurerm_public_ip.myterraformpublicip: Creation complete after 6s [id=/subscriptions/1c3b43a4-90da-4988-9598-cab119913f5d/resourceGroups/rg-wl-prod-eucpackaging/providers/Microsoft.Network/publicIPAddresses/vmwleucvan103-ip][0m[0m
-[0m[1mmodule.vmwleucvan102.azurerm_public_ip.myterraformpublicip: Creation complete after 6s [id=/subscriptions/1c3b43a4-90da-4988-9598-cab119913f5d/resourceGroups/rg-wl-prod-eucpackaging/providers/Microsoft.Network/publicIPAddresses/vmwleucvan102-ip][0m[0m
+[0m[1mmodule.environment.azurerm_storage_account.mystorageaccount: Creating...[0m[0m
+[0m[1mmodule.vmwleucvan201.azurerm_public_ip.myterraformpublicip: Creation complete after 5s [id=/subscriptions/1c3b43a4-90da-4988-9598-cab119913f5d/resourceGroups/rg-wl-prod-eucpackaging/providers/Microsoft.Network/publicIPAddresses/vmwleucvan201-ip][0m[0m
+[0m[1mmodule.vmwleucvan101.azurerm_public_ip.myterraformpublicip: Creation complete after 5s [id=/subscriptions/1c3b43a4-90da-4988-9598-cab119913f5d/resourceGroups/rg-wl-prod-eucpackaging/providers/Microsoft.Network/publicIPAddresses/vmwleucvan101-ip][0m[0m
 [0m[1mmodule.environment.azurerm_virtual_network.myterraformnetwork: Creation complete after 7s [id=/subscriptions/1c3b43a4-90da-4988-9598-cab119913f5d/resourceGroups/rg-wl-prod-eucpackaging/providers/Microsoft.Network/virtualNetworks/PackagingVnetPROD][0m[0m
 [0m[1mmodule.environment.azurerm_subnet.myterraformsubnet: Creating...[0m[0m
-[0m[1mmodule.environment.azurerm_network_security_group.myterraformnsg: Creation complete after 8s [id=/subscriptions/1c3b43a4-90da-4988-9598-cab119913f5d/resourceGroups/rg-wl-prod-eucpackaging/providers/Microsoft.Network/networkSecurityGroups/PackagingNsgPROD][0m[0m
-[0m[1mmodule.environment.azurerm_subnet.myterraformsubnet: Creation complete after 5s [id=/subscriptions/1c3b43a4-90da-4988-9598-cab119913f5d/resourceGroups/rg-wl-prod-eucpackaging/providers/Microsoft.Network/virtualNetworks/PackagingVnetPROD/subnets/default][0m[0m
-[0m[1mmodule.vmwleucvan103.azurerm_network_interface.myterraformnic: Creating...[0m[0m
+[0m[1mmodule.environment.azurerm_network_security_group.myterraformnsg: Creation complete after 7s [id=/subscriptions/1c3b43a4-90da-4988-9598-cab119913f5d/resourceGroups/rg-wl-prod-eucpackaging/providers/Microsoft.Network/networkSecurityGroups/PackagingNsgPROD][0m[0m
+[0m[1mmodule.environment.azurerm_storage_account.mystorageaccount: Still creating... [10s elapsed][0m[0m
+[0m[1mmodule.environment.azurerm_subnet.myterraformsubnet: Creation complete after 4s [id=/subscriptions/1c3b43a4-90da-4988-9598-cab119913f5d/resourceGroups/rg-wl-prod-eucpackaging/providers/Microsoft.Network/virtualNetworks/PackagingVnetPROD/subnets/default][0m[0m
 [0m[1mmodule.vmwleucvan101.azurerm_network_interface.myterraformnic: Creating...[0m[0m
-[0m[1mmodule.vmwleucvan102.azurerm_network_interface.myterraformnic: Creating...[0m[0m
-[0m[1mmodule.vmwleucvan102.azurerm_network_interface.myterraformnic: Creation complete after 4s [id=/subscriptions/1c3b43a4-90da-4988-9598-cab119913f5d/resourceGroups/rg-wl-prod-eucpackaging/providers/Microsoft.Network/networkInterfaces/vmwleucvan102-nic][0m[0m
-[0m[1mmodule.vmwleucvan102.azurerm_network_interface_security_group_association.example: Creating...[0m[0m
-[0m[1mmodule.vmwleucvan102.azurerm_windows_virtual_machine.myterraformvm: Creating...[0m[0m
-[0m[1mmodule.vmwleucvan102.azurerm_network_interface_security_group_association.example: Creation complete after 1s [id=/subscriptions/1c3b43a4-90da-4988-9598-cab119913f5d/resourceGroups/rg-wl-prod-eucpackaging/providers/Microsoft.Network/networkInterfaces/vmwleucvan102-nic|/subscriptions/1c3b43a4-90da-4988-9598-cab119913f5d/resourceGroups/rg-wl-prod-eucpackaging/providers/Microsoft.Network/networkSecurityGroups/PackagingNsgPROD][0m[0m
-[0m[1mmodule.vmwleucvan101.azurerm_network_interface.myterraformnic: Creation complete after 7s [id=/subscriptions/1c3b43a4-90da-4988-9598-cab119913f5d/resourceGroups/rg-wl-prod-eucpackaging/providers/Microsoft.Network/networkInterfaces/vmwleucvan101-nic][0m[0m
+[0m[1mmodule.vmwleucvan201.azurerm_network_interface.myterraformnic: Creating...[0m[0m
+[0m[1mmodule.vmwleucvan101.azurerm_network_interface.myterraformnic: Creation complete after 4s [id=/subscriptions/1c3b43a4-90da-4988-9598-cab119913f5d/resourceGroups/rg-wl-prod-eucpackaging/providers/Microsoft.Network/networkInterfaces/vmwleucvan101-nic][0m[0m
 [0m[1mmodule.vmwleucvan101.azurerm_network_interface_security_group_association.example: Creating...[0m[0m
 [0m[1mmodule.vmwleucvan101.azurerm_windows_virtual_machine.myterraformvm: Creating...[0m[0m
-[0m[1mmodule.vmwleucvan101.azurerm_network_interface_security_group_association.example: Creation complete after 1s [id=/subscriptions/1c3b43a4-90da-4988-9598-cab119913f5d/resourceGroups/rg-wl-prod-eucpackaging/providers/Microsoft.Network/networkInterfaces/vmwleucvan101-nic|/subscriptions/1c3b43a4-90da-4988-9598-cab119913f5d/resourceGroups/rg-wl-prod-eucpackaging/providers/Microsoft.Network/networkSecurityGroups/PackagingNsgPROD][0m[0m
-[0m[1mmodule.vmwleucvan103.azurerm_network_interface.myterraformnic: Creation complete after 9s [id=/subscriptions/1c3b43a4-90da-4988-9598-cab119913f5d/resourceGroups/rg-wl-prod-eucpackaging/providers/Microsoft.Network/networkInterfaces/vmwleucvan103-nic][0m[0m
-[0m[1mmodule.vmwleucvan103.azurerm_network_interface_security_group_association.example: Creating...[0m[0m
-[0m[1mmodule.vmwleucvan103.azurerm_windows_virtual_machine.myterraformvm: Creating...[0m[0m
-[0m[1mmodule.vmwleucvan103.azurerm_network_interface_security_group_association.example: Creation complete after 1s [id=/subscriptions/1c3b43a4-90da-4988-9598-cab119913f5d/resourceGroups/rg-wl-prod-eucpackaging/providers/Microsoft.Network/networkInterfaces/vmwleucvan103-nic|/subscriptions/1c3b43a4-90da-4988-9598-cab119913f5d/resourceGroups/rg-wl-prod-eucpackaging/providers/Microsoft.Network/networkSecurityGroups/PackagingNsgPROD][0m[0m
-[0m[1mmodule.vmwleucvan102.azurerm_windows_virtual_machine.myterraformvm: Still creating... [10s elapsed][0m[0m
+[0m[1mmodule.vmwleucvan101.azurerm_network_interface_security_group_association.example: Creation complete after 2s [id=/subscriptions/1c3b43a4-90da-4988-9598-cab119913f5d/resourceGroups/rg-wl-prod-eucpackaging/providers/Microsoft.Network/networkInterfaces/vmwleucvan101-nic|/subscriptions/1c3b43a4-90da-4988-9598-cab119913f5d/resourceGroups/rg-wl-prod-eucpackaging/providers/Microsoft.Network/networkSecurityGroups/PackagingNsgPROD][0m[0m
+[0m[1mmodule.vmwleucvan201.azurerm_network_interface.myterraformnic: Creation complete after 7s [id=/subscriptions/1c3b43a4-90da-4988-9598-cab119913f5d/resourceGroups/rg-wl-prod-eucpackaging/providers/Microsoft.Network/networkInterfaces/vmwleucvan201-nic][0m[0m
+[0m[1mmodule.vmwleucvan201.azurerm_network_interface_security_group_association.example: Creating...[0m[0m
+[0m[1mmodule.vmwleucvan201.azurerm_windows_virtual_machine.myterraformvm: Creating...[0m[0m
+[0m[1mmodule.vmwleucvan201.azurerm_network_interface_security_group_association.example: Creation complete after 1s [id=/subscriptions/1c3b43a4-90da-4988-9598-cab119913f5d/resourceGroups/rg-wl-prod-eucpackaging/providers/Microsoft.Network/networkInterfaces/vmwleucvan201-nic|/subscriptions/1c3b43a4-90da-4988-9598-cab119913f5d/resourceGroups/rg-wl-prod-eucpackaging/providers/Microsoft.Network/networkSecurityGroups/PackagingNsgPROD][0m[0m
+[0m[1mmodule.environment.azurerm_storage_account.mystorageaccount: Still creating... [20s elapsed][0m[0m
+[0m[1mmodule.environment.azurerm_storage_account.mystorageaccount: Creation complete after 23s [id=/subscriptions/1c3b43a4-90da-4988-9598-cab119913f5d/resourceGroups/rg-wl-prod-eucpackaging/providers/Microsoft.Storage/storageAccounts/stwleucpackaging01][0m[0m
+[0m[1mmodule.environment.azurerm_storage_container.mystoragecontainer: Creating...[0m[0m
+[0m[1mmodule.environment.azurerm_storage_share.mystorageshare: Creating...[0m[0m
+[0m[1mmodule.environment.azurerm_storage_container.mystoragecontainer: Creation complete after 0s [id=https://stwleucpackaging01.blob.core.windows.net/data][0m[0m
+[0m[1mmodule.environment.azurerm_storage_share.mystorageshare: Creation complete after 1s [id=https://stwleucpackaging01.file.core.windows.net/packaging][0m[0m
 [0m[1mmodule.vmwleucvan101.azurerm_windows_virtual_machine.myterraformvm: Still creating... [10s elapsed][0m[0m
-[0m[1mmodule.vmwleucvan103.azurerm_windows_virtual_machine.myterraformvm: Still creating... [10s elapsed][0m[0m
-[0m[1mmodule.vmwleucvan102.azurerm_windows_virtual_machine.myterraformvm: Still creating... [20s elapsed][0m[0m
+[0m[1mmodule.vmwleucvan201.azurerm_windows_virtual_machine.myterraformvm: Still creating... [10s elapsed][0m[0m
 [0m[1mmodule.vmwleucvan101.azurerm_windows_virtual_machine.myterraformvm: Still creating... [20s elapsed][0m[0m
-[0m[1mmodule.vmwleucvan103.azurerm_windows_virtual_machine.myterraformvm: Still creating... [20s elapsed][0m[0m
-[0m[1mmodule.vmwleucvan102.azurerm_windows_virtual_machine.myterraformvm: Still creating... [30s elapsed][0m[0m
+[0m[1mmodule.vmwleucvan201.azurerm_windows_virtual_machine.myterraformvm: Still creating... [20s elapsed][0m[0m
 [0m[1mmodule.vmwleucvan101.azurerm_windows_virtual_machine.myterraformvm: Still creating... [30s elapsed][0m[0m
-[0m[1mmodule.vmwleucvan103.azurerm_windows_virtual_machine.myterraformvm: Still creating... [30s elapsed][0m[0m
-[0m[1mmodule.vmwleucvan102.azurerm_windows_virtual_machine.myterraformvm: Still creating... [40s elapsed][0m[0m
+[0m[1mmodule.vmwleucvan201.azurerm_windows_virtual_machine.myterraformvm: Still creating... [30s elapsed][0m[0m
 [0m[1mmodule.vmwleucvan101.azurerm_windows_virtual_machine.myterraformvm: Still creating... [40s elapsed][0m[0m
-[0m[1mmodule.vmwleucvan103.azurerm_windows_virtual_machine.myterraformvm: Still creating... [40s elapsed][0m[0m
-[0m[1mmodule.vmwleucvan102.azurerm_windows_virtual_machine.myterraformvm: Still creating... [50s elapsed][0m[0m
+[0m[1mmodule.vmwleucvan201.azurerm_windows_virtual_machine.myterraformvm: Still creating... [40s elapsed][0m[0m
 [0m[1mmodule.vmwleucvan101.azurerm_windows_virtual_machine.myterraformvm: Still creating... [50s elapsed][0m[0m
-[0m[1mmodule.vmwleucvan103.azurerm_windows_virtual_machine.myterraformvm: Still creating... [50s elapsed][0m[0m
-[0m[1mmodule.vmwleucvan102.azurerm_windows_virtual_machine.myterraformvm: Still creating... [1m0s elapsed][0m[0m
+[0m[1mmodule.vmwleucvan201.azurerm_windows_virtual_machine.myterraformvm: Still creating... [50s elapsed][0m[0m
 [0m[1mmodule.vmwleucvan101.azurerm_windows_virtual_machine.myterraformvm: Still creating... [1m0s elapsed][0m[0m
-[0m[1mmodule.vmwleucvan103.azurerm_windows_virtual_machine.myterraformvm: Still creating... [1m0s elapsed][0m[0m
-[0m[1mmodule.vmwleucvan102.azurerm_windows_virtual_machine.myterraformvm: Still creating... [1m10s elapsed][0m[0m
+[0m[1mmodule.vmwleucvan201.azurerm_windows_virtual_machine.myterraformvm: Still creating... [1m0s elapsed][0m[0m
 [0m[1mmodule.vmwleucvan101.azurerm_windows_virtual_machine.myterraformvm: Still creating... [1m10s elapsed][0m[0m
-[0m[1mmodule.vmwleucvan103.azurerm_windows_virtual_machine.myterraformvm: Still creating... [1m10s elapsed][0m[0m
-[0m[1mmodule.vmwleucvan102.azurerm_windows_virtual_machine.myterraformvm: Still creating... [1m20s elapsed][0m[0m
+[0m[1mmodule.vmwleucvan201.azurerm_windows_virtual_machine.myterraformvm: Still creating... [1m10s elapsed][0m[0m
 [0m[1mmodule.vmwleucvan101.azurerm_windows_virtual_machine.myterraformvm: Still creating... [1m20s elapsed][0m[0m
-[0m[1mmodule.vmwleucvan103.azurerm_windows_virtual_machine.myterraformvm: Still creating... [1m20s elapsed][0m[0m
-[0m[1mmodule.vmwleucvan102.azurerm_windows_virtual_machine.myterraformvm: Still creating... [1m30s elapsed][0m[0m
+[0m[1mmodule.vmwleucvan201.azurerm_windows_virtual_machine.myterraformvm: Still creating... [1m20s elapsed][0m[0m
 [0m[1mmodule.vmwleucvan101.azurerm_windows_virtual_machine.myterraformvm: Still creating... [1m30s elapsed][0m[0m
-[0m[1mmodule.vmwleucvan103.azurerm_windows_virtual_machine.myterraformvm: Still creating... [1m30s elapsed][0m[0m
-[0m[1mmodule.vmwleucvan102.azurerm_windows_virtual_machine.myterraformvm: Still creating... [1m40s elapsed][0m[0m
+[0m[1mmodule.vmwleucvan201.azurerm_windows_virtual_machine.myterraformvm: Still creating... [1m30s elapsed][0m[0m
 [0m[1mmodule.vmwleucvan101.azurerm_windows_virtual_machine.myterraformvm: Still creating... [1m40s elapsed][0m[0m
-[0m[1mmodule.vmwleucvan103.azurerm_windows_virtual_machine.myterraformvm: Still creating... [1m40s elapsed][0m[0m
-[0m[1mmodule.vmwleucvan102.azurerm_windows_virtual_machine.myterraformvm: Still creating... [1m50s elapsed][0m[0m
+[0m[1mmodule.vmwleucvan201.azurerm_windows_virtual_machine.myterraformvm: Still creating... [1m40s elapsed][0m[0m
 [0m[1mmodule.vmwleucvan101.azurerm_windows_virtual_machine.myterraformvm: Still creating... [1m50s elapsed][0m[0m
-[0m[1mmodule.vmwleucvan103.azurerm_windows_virtual_machine.myterraformvm: Still creating... [1m50s elapsed][0m[0m
-[0m[1mmodule.vmwleucvan102.azurerm_windows_virtual_machine.myterraformvm: Still creating... [2m0s elapsed][0m[0m
+[0m[1mmodule.vmwleucvan201.azurerm_windows_virtual_machine.myterraformvm: Still creating... [1m50s elapsed][0m[0m
 [0m[1mmodule.vmwleucvan101.azurerm_windows_virtual_machine.myterraformvm: Still creating... [2m0s elapsed][0m[0m
-[0m[1mmodule.vmwleucvan103.azurerm_windows_virtual_machine.myterraformvm: Still creating... [2m0s elapsed][0m[0m
-[0m[1mmodule.vmwleucvan102.azurerm_windows_virtual_machine.myterraformvm: Still creating... [2m10s elapsed][0m[0m
+[0m[1mmodule.vmwleucvan201.azurerm_windows_virtual_machine.myterraformvm: Still creating... [2m0s elapsed][0m[0m
 [0m[1mmodule.vmwleucvan101.azurerm_windows_virtual_machine.myterraformvm: Still creating... [2m10s elapsed][0m[0m
-[0m[1mmodule.vmwleucvan103.azurerm_windows_virtual_machine.myterraformvm: Still creating... [2m10s elapsed][0m[0m
-[0m[1mmodule.vmwleucvan102.azurerm_windows_virtual_machine.myterraformvm: Still creating... [2m20s elapsed][0m[0m
+[0m[1mmodule.vmwleucvan201.azurerm_windows_virtual_machine.myterraformvm: Still creating... [2m10s elapsed][0m[0m
 [0m[1mmodule.vmwleucvan101.azurerm_windows_virtual_machine.myterraformvm: Still creating... [2m20s elapsed][0m[0m
-[0m[1mmodule.vmwleucvan103.azurerm_windows_virtual_machine.myterraformvm: Still creating... [2m20s elapsed][0m[0m
-[0m[1mmodule.vmwleucvan102.azurerm_windows_virtual_machine.myterraformvm: Still creating... [2m30s elapsed][0m[0m
+[0m[1mmodule.vmwleucvan201.azurerm_windows_virtual_machine.myterraformvm: Still creating... [2m20s elapsed][0m[0m
 [0m[1mmodule.vmwleucvan101.azurerm_windows_virtual_machine.myterraformvm: Still creating... [2m30s elapsed][0m[0m
-[0m[1mmodule.vmwleucvan103.azurerm_windows_virtual_machine.myterraformvm: Still creating... [2m30s elapsed][0m[0m
-[0m[1mmodule.vmwleucvan102.azurerm_windows_virtual_machine.myterraformvm: Still creating... [2m40s elapsed][0m[0m
+[0m[1mmodule.vmwleucvan201.azurerm_windows_virtual_machine.myterraformvm: Still creating... [2m30s elapsed][0m[0m
 [0m[1mmodule.vmwleucvan101.azurerm_windows_virtual_machine.myterraformvm: Still creating... [2m40s elapsed][0m[0m
-[0m[1mmodule.vmwleucvan103.azurerm_windows_virtual_machine.myterraformvm: Still creating... [2m40s elapsed][0m[0m
-[0m[1mmodule.vmwleucvan102.azurerm_windows_virtual_machine.myterraformvm: Still creating... [2m50s elapsed][0m[0m
+[0m[1mmodule.vmwleucvan201.azurerm_windows_virtual_machine.myterraformvm: Still creating... [2m40s elapsed][0m[0m
 [0m[1mmodule.vmwleucvan101.azurerm_windows_virtual_machine.myterraformvm: Still creating... [2m50s elapsed][0m[0m
-[0m[1mmodule.vmwleucvan103.azurerm_windows_virtual_machine.myterraformvm: Still creating... [2m50s elapsed][0m[0m
-[0m[1mmodule.vmwleucvan102.azurerm_windows_virtual_machine.myterraformvm: Still creating... [3m0s elapsed][0m[0m
+[0m[1mmodule.vmwleucvan201.azurerm_windows_virtual_machine.myterraformvm: Still creating... [2m50s elapsed][0m[0m
 [0m[1mmodule.vmwleucvan101.azurerm_windows_virtual_machine.myterraformvm: Still creating... [3m0s elapsed][0m[0m
-[0m[1mmodule.vmwleucvan103.azurerm_windows_virtual_machine.myterraformvm: Still creating... [3m0s elapsed][0m[0m
-[0m[1mmodule.vmwleucvan102.azurerm_windows_virtual_machine.myterraformvm: Still creating... [3m10s elapsed][0m[0m
+[0m[1mmodule.vmwleucvan201.azurerm_windows_virtual_machine.myterraformvm: Still creating... [3m0s elapsed][0m[0m
 [0m[1mmodule.vmwleucvan101.azurerm_windows_virtual_machine.myterraformvm: Still creating... [3m10s elapsed][0m[0m
-[0m[1mmodule.vmwleucvan103.azurerm_windows_virtual_machine.myterraformvm: Still creating... [3m10s elapsed][0m[0m
-[0m[1mmodule.vmwleucvan102.azurerm_windows_virtual_machine.myterraformvm: Still creating... [3m20s elapsed][0m[0m
+[0m[1mmodule.vmwleucvan201.azurerm_windows_virtual_machine.myterraformvm: Still creating... [3m10s elapsed][0m[0m
 [0m[1mmodule.vmwleucvan101.azurerm_windows_virtual_machine.myterraformvm: Still creating... [3m20s elapsed][0m[0m
-[0m[1mmodule.vmwleucvan103.azurerm_windows_virtual_machine.myterraformvm: Still creating... [3m20s elapsed][0m[0m
-[0m[1mmodule.vmwleucvan102.azurerm_windows_virtual_machine.myterraformvm: Still creating... [3m30s elapsed][0m[0m
+[0m[1mmodule.vmwleucvan201.azurerm_windows_virtual_machine.myterraformvm: Still creating... [3m20s elapsed][0m[0m
 [0m[1mmodule.vmwleucvan101.azurerm_windows_virtual_machine.myterraformvm: Still creating... [3m30s elapsed][0m[0m
-[0m[1mmodule.vmwleucvan103.azurerm_windows_virtual_machine.myterraformvm: Still creating... [3m30s elapsed][0m[0m
-[0m[1mmodule.vmwleucvan102.azurerm_windows_virtual_machine.myterraformvm: Still creating... [3m40s elapsed][0m[0m
+[0m[1mmodule.vmwleucvan201.azurerm_windows_virtual_machine.myterraformvm: Still creating... [3m30s elapsed][0m[0m
 [0m[1mmodule.vmwleucvan101.azurerm_windows_virtual_machine.myterraformvm: Still creating... [3m40s elapsed][0m[0m
-[0m[1mmodule.vmwleucvan103.azurerm_windows_virtual_machine.myterraformvm: Still creating... [3m40s elapsed][0m[0m
-[0m[1mmodule.vmwleucvan102.azurerm_windows_virtual_machine.myterraformvm: Still creating... [3m50s elapsed][0m[0m
+[0m[1mmodule.vmwleucvan201.azurerm_windows_virtual_machine.myterraformvm: Still creating... [3m40s elapsed][0m[0m
 [0m[1mmodule.vmwleucvan101.azurerm_windows_virtual_machine.myterraformvm: Still creating... [3m50s elapsed][0m[0m
-[0m[1mmodule.vmwleucvan103.azurerm_windows_virtual_machine.myterraformvm: Still creating... [3m50s elapsed][0m[0m
-[0m[1mmodule.vmwleucvan102.azurerm_windows_virtual_machine.myterraformvm: Still creating... [4m0s elapsed][0m[0m
+[0m[1mmodule.vmwleucvan201.azurerm_windows_virtual_machine.myterraformvm: Still creating... [3m50s elapsed][0m[0m
 [0m[1mmodule.vmwleucvan101.azurerm_windows_virtual_machine.myterraformvm: Still creating... [4m0s elapsed][0m[0m
-[0m[1mmodule.vmwleucvan103.azurerm_windows_virtual_machine.myterraformvm: Still creating... [4m0s elapsed][0m[0m
-[0m[1mmodule.vmwleucvan102.azurerm_windows_virtual_machine.myterraformvm: Still creating... [4m10s elapsed][0m[0m
+[0m[1mmodule.vmwleucvan201.azurerm_windows_virtual_machine.myterraformvm: Still creating... [4m0s elapsed][0m[0m
 [0m[1mmodule.vmwleucvan101.azurerm_windows_virtual_machine.myterraformvm: Still creating... [4m10s elapsed][0m[0m
-[0m[1mmodule.vmwleucvan103.azurerm_windows_virtual_machine.myterraformvm: Still creating... [4m10s elapsed][0m[0m
-[0m[1mmodule.vmwleucvan102.azurerm_windows_virtual_machine.myterraformvm: Still creating... [4m20s elapsed][0m[0m
+[0m[1mmodule.vmwleucvan201.azurerm_windows_virtual_machine.myterraformvm: Still creating... [4m10s elapsed][0m[0m
 [0m[1mmodule.vmwleucvan101.azurerm_windows_virtual_machine.myterraformvm: Still creating... [4m20s elapsed][0m[0m
-[0m[1mmodule.vmwleucvan103.azurerm_windows_virtual_machine.myterraformvm: Still creating... [4m20s elapsed][0m[0m
-[0m[1mmodule.vmwleucvan102.azurerm_windows_virtual_machine.myterraformvm: Still creating... [4m30s elapsed][0m[0m
+[0m[1mmodule.vmwleucvan201.azurerm_windows_virtual_machine.myterraformvm: Still creating... [4m20s elapsed][0m[0m
 [0m[1mmodule.vmwleucvan101.azurerm_windows_virtual_machine.myterraformvm: Still creating... [4m30s elapsed][0m[0m
-[0m[1mmodule.vmwleucvan103.azurerm_windows_virtual_machine.myterraformvm: Still creating... [4m30s elapsed][0m[0m
-[0m[1mmodule.vmwleucvan102.azurerm_windows_virtual_machine.myterraformvm: Still creating... [4m40s elapsed][0m[0m
+[0m[1mmodule.vmwleucvan201.azurerm_windows_virtual_machine.myterraformvm: Still creating... [4m30s elapsed][0m[0m
 [0m[1mmodule.vmwleucvan101.azurerm_windows_virtual_machine.myterraformvm: Still creating... [4m40s elapsed][0m[0m
-[0m[1mmodule.vmwleucvan103.azurerm_windows_virtual_machine.myterraformvm: Still creating... [4m40s elapsed][0m[0m
-[0m[1mmodule.vmwleucvan102.azurerm_windows_virtual_machine.myterraformvm: Still creating... [4m50s elapsed][0m[0m
+[0m[1mmodule.vmwleucvan201.azurerm_windows_virtual_machine.myterraformvm: Still creating... [4m40s elapsed][0m[0m
 [0m[1mmodule.vmwleucvan101.azurerm_windows_virtual_machine.myterraformvm: Still creating... [4m50s elapsed][0m[0m
-[0m[1mmodule.vmwleucvan103.azurerm_windows_virtual_machine.myterraformvm: Still creating... [4m50s elapsed][0m[0m
-[0m[1mmodule.vmwleucvan102.azurerm_windows_virtual_machine.myterraformvm: Still creating... [5m0s elapsed][0m[0m
+[0m[1mmodule.vmwleucvan201.azurerm_windows_virtual_machine.myterraformvm: Still creating... [4m50s elapsed][0m[0m
 [0m[1mmodule.vmwleucvan101.azurerm_windows_virtual_machine.myterraformvm: Still creating... [5m0s elapsed][0m[0m
-[0m[1mmodule.vmwleucvan103.azurerm_windows_virtual_machine.myterraformvm: Still creating... [5m0s elapsed][0m[0m
-[0m[1mmodule.vmwleucvan102.azurerm_windows_virtual_machine.myterraformvm: Still creating... [5m10s elapsed][0m[0m
+[0m[1mmodule.vmwleucvan201.azurerm_windows_virtual_machine.myterraformvm: Still creating... [5m0s elapsed][0m[0m
 [0m[1mmodule.vmwleucvan101.azurerm_windows_virtual_machine.myterraformvm: Still creating... [5m10s elapsed][0m[0m
-[0m[1mmodule.vmwleucvan103.azurerm_windows_virtual_machine.myterraformvm: Still creating... [5m10s elapsed][0m[0m
-[0m[1mmodule.vmwleucvan102.azurerm_windows_virtual_machine.myterraformvm: Still creating... [5m20s elapsed][0m[0m
+[0m[1mmodule.vmwleucvan201.azurerm_windows_virtual_machine.myterraformvm: Still creating... [5m10s elapsed][0m[0m
 [0m[1mmodule.vmwleucvan101.azurerm_windows_virtual_machine.myterraformvm: Still creating... [5m20s elapsed][0m[0m
-[0m[1mmodule.vmwleucvan103.azurerm_windows_virtual_machine.myterraformvm: Still creating... [5m20s elapsed][0m[0m
-[0m[1mmodule.vmwleucvan102.azurerm_windows_virtual_machine.myterraformvm: Still creating... [5m30s elapsed][0m[0m
+[0m[1mmodule.vmwleucvan201.azurerm_windows_virtual_machine.myterraformvm: Still creating... [5m20s elapsed][0m[0m
 [0m[1mmodule.vmwleucvan101.azurerm_windows_virtual_machine.myterraformvm: Still creating... [5m30s elapsed][0m[0m
-[0m[1mmodule.vmwleucvan103.azurerm_windows_virtual_machine.myterraformvm: Still creating... [5m30s elapsed][0m[0m
-[0m[1mmodule.vmwleucvan102.azurerm_windows_virtual_machine.myterraformvm: Still creating... [5m40s elapsed][0m[0m
+[0m[1mmodule.vmwleucvan201.azurerm_windows_virtual_machine.myterraformvm: Still creating... [5m30s elapsed][0m[0m
 [0m[1mmodule.vmwleucvan101.azurerm_windows_virtual_machine.myterraformvm: Still creating... [5m40s elapsed][0m[0m
-[0m[1mmodule.vmwleucvan103.azurerm_windows_virtual_machine.myterraformvm: Still creating... [5m40s elapsed][0m[0m
-[0m[1mmodule.vmwleucvan102.azurerm_windows_virtual_machine.myterraformvm: Still creating... [5m50s elapsed][0m[0m
+[0m[1mmodule.vmwleucvan201.azurerm_windows_virtual_machine.myterraformvm: Still creating... [5m40s elapsed][0m[0m
 [0m[1mmodule.vmwleucvan101.azurerm_windows_virtual_machine.myterraformvm: Still creating... [5m50s elapsed][0m[0m
-[0m[1mmodule.vmwleucvan103.azurerm_windows_virtual_machine.myterraformvm: Still creating... [5m50s elapsed][0m[0m
-[0m[1mmodule.vmwleucvan102.azurerm_windows_virtual_machine.myterraformvm: Still creating... [6m0s elapsed][0m[0m
+[0m[1mmodule.vmwleucvan201.azurerm_windows_virtual_machine.myterraformvm: Still creating... [5m50s elapsed][0m[0m
 [0m[1mmodule.vmwleucvan101.azurerm_windows_virtual_machine.myterraformvm: Still creating... [6m0s elapsed][0m[0m
-[0m[1mmodule.vmwleucvan103.azurerm_windows_virtual_machine.myterraformvm: Still creating... [6m0s elapsed][0m[0m
-[0m[1mmodule.vmwleucvan102.azurerm_windows_virtual_machine.myterraformvm: Creation complete after 6m7s [id=/subscriptions/1c3b43a4-90da-4988-9598-cab119913f5d/resourceGroups/rg-wl-prod-eucpackaging/providers/Microsoft.Compute/virtualMachines/vmwleucvan102][0m[0m
-[0m[1mmodule.vmwleucvan101.azurerm_windows_virtual_machine.myterraformvm: Creation complete after 6m6s [id=/subscriptions/1c3b43a4-90da-4988-9598-cab119913f5d/resourceGroups/rg-wl-prod-eucpackaging/providers/Microsoft.Compute/virtualMachines/vmwleucvan101][0m[0m
-[0m[1mmodule.vmwleucvan103.azurerm_windows_virtual_machine.myterraformvm: Creation complete after 6m6s [id=/subscriptions/1c3b43a4-90da-4988-9598-cab119913f5d/resourceGroups/rg-wl-prod-eucpackaging/providers/Microsoft.Compute/virtualMachines/vmwleucvan103][0m[0m
+[0m[1mmodule.vmwleucvan201.azurerm_windows_virtual_machine.myterraformvm: Still creating... [6m0s elapsed][0m[0m
+[0m[1mmodule.vmwleucvan101.azurerm_windows_virtual_machine.myterraformvm: Creation complete after 6m7s [id=/subscriptions/1c3b43a4-90da-4988-9598-cab119913f5d/resourceGroups/rg-wl-prod-eucpackaging/providers/Microsoft.Compute/virtualMachines/vmwleucvan101][0m[0m
+[0m[1mmodule.vmwleucvan201.azurerm_windows_virtual_machine.myterraformvm: Creation complete after 6m6s [id=/subscriptions/1c3b43a4-90da-4988-9598-cab119913f5d/resourceGroups/rg-wl-prod-eucpackaging/providers/Microsoft.Compute/virtualMachines/vmwleucvan201][0m[0m
 [0m[1m[32m
-Apply complete! Resources: 16 added, 0 changed, 0 destroyed.[0m
+Apply complete! Resources: 15 added, 0 changed, 0 destroyed.[0m
 [0m
 The state of your infrastructure has been saved to the path
 below. This state is required to modify and destroy your

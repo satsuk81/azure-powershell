@@ -42,16 +42,8 @@ module "vmwleucvan101" {
   myterraformnsgID = module.environment.myterraformnsg.id
 }
 
-module "vmwleucvan102" {
-  source = "./vmwleucvan102"
-
-  myterraformgroupName = module.environment.myterraformgroup.name
-  myterraformsubnetID = module.environment.myterraformsubnet.id
-  myterraformnsgID = module.environment.myterraformnsg.id
-}
-
-module "vmwleucvan103" {
-  source = "./vmwleucvan103"
+module "vmwleucvan201" {
+  source = "./vmwleucvan201"
 
   myterraformgroupName = module.environment.myterraformgroup.name
   myterraformsubnetID = module.environment.myterraformsubnet.id

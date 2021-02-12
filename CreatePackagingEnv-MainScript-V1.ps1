@@ -3,15 +3,18 @@ $RequireResourceGroups = $false
 $RequireUserGroups = $false
 $RequireRBAC = $false
 $RequireStorageAccount = $false
-$RequireUpdateStorage = $false
+$RequireUpdateStorage = $true
 $RequireVNET = $false
 #$RequireNSG = $false
 $RequirePublicIPs = $true
+
 $RequireHyperV = $false
 $RequireStandardVMs = $true
-$RequireAdminStudioVMs = $false
-
+$RequireAdminStudioVMs = $true
 $UseTerraform = $true
+$RequireCreate = $true
+$RequireConfigure = $true
+
 # Subscription ID If Required
 #$azSubscription = '743e9d63-59c8-42c3-b823-28bb773a88a6'
 $azSubscription = '1c3b43a4-90da-4988-9598-cab119913f5d'
@@ -43,10 +46,10 @@ $password = ConvertTo-SecureString “Password1234” -AsPlainText -Force       
 $VMCred = New-Object System.Management.Automation.PSCredential (“AppPackager”, $password)   # Local Admin User for VMs
 
 # VM Count and Name
-$NumberofStandardVMs = 3                                            # Specify number of Standard VMs to be provisioned
+$NumberofStandardVMs = 1                                            # Specify number of Standard VMs to be provisioned
 $NumberofAdminStudioVMs = 1                                         # Specify number of AdminStudio VMs to be provisioned
 $VMNamePrefixStandard = "vmwleucvan"                                # Specifies the first part of the Standard VM name (usually alphabetic)
-$VMNamePrefixAdminStudio = "vmwleucas"                              # Specifies the first part of the Admin Studio VM name (usually alphabetic)
+$VMNamePrefixAdminStudio = "vmwleucvan"                              # Specifies the first part of the Admin Studio VM name (usually alphabetic)
 $VMNumberStartStandard = 101                                        # Specifies the second part of the Standard VM name (usually numeric)
 $VMNumberStartAdminStudio = 201                                     # Specifies the second part of the Admin Studio VM name (usually numeric)
 $VMSizeStandard = "Standard_B2s"                                    # Specifies Azure Size to use for the Standard VM
@@ -57,6 +60,26 @@ $AutoShutdown = $true                                               # Configures
 $SubnetName = "default"
 
 Set-Item Env:\SuppressAzurePowerShellBreakingChangeWarnings "true"  # Turns off Breaking Changes warnings for Cmdlets
+
+function UpdateStorage {
+    if ($RequireUpdateStorage) {
+        Try {
+            $Key = Get-AzStorageAccountKey -ResourceGroupName $RGNameUAT -AccountName $StorAcc
+            $MapFileContent = (Get-Content -Path "$ContainerScripts\$MapFileTmpl").replace("xxxx", $StorAcc) #| Set-Content -path "$ContainerScripts\MapDrv.ps1"
+            $MapFileContent.replace("yyyy", $Key.value[0]) | Set-Content -Path "$ContainerScripts\MapDrv.ps1"      
+            $RunOnceContent = (Get-Content -Path "$ContainerScripts\RunOnceTmpl.ps1").replace("xxxx", $StorAcc)
+            $RunOnceContent.replace("rrrr", $RGNameUAT) | Set-Content -Path "$ContainerScripts\RunOnce.ps1"
+            $AdminStudioContent = (Get-Content -Path "$ContainerScripts\AdminStudioTmpl.ps1").replace("xxxx", $StorAcc)
+            $AdminStudioContent.replace("rrrr", $RGNameUAT) | Set-Content -Path "$ContainerScripts\AdminStudio.ps1"
+        }
+        Catch {
+            Write-Error "An error occured trying to create the customised scripts for the packaging share."
+            Write-Error $_.Exception.Message
+        }
+        . .\SyncFiles.ps1 -CallFromCreatePackaging             # Sync Files to Storage Blob
+        Write-Host "Storage Account has been Updated with files"
+    }
+}
 
 #=======================================================================================================================================================
 
@@ -79,15 +102,33 @@ if($RequireResourceGroups) {
     }
 }
 
-# Call additional scripts
+if($RequireCreate) {
+    # Environment Script
+    .\CreatePackagingEnv-Env-V2.ps1
 
-# Environment Script
-.\CreatePackagingEnv-Env-V2.ps1
+    # Create Packaging VM Script
+    .\CreatePackagingEnv-PackagingVms-V2.ps1
 
-# Environment Script
-.\CreatePackagingEnv-PackagingVms-V2.ps1
+    if($UseTerraform) {
+        cd .\terraform
+        $ARGUinit = "init"
+        $ARGUplan = "plan -out .\terraform.tfplan"
+        $ARGUapply = "apply -auto-approve .\terraform.tfplan"
+        Start-Process -FilePath .\terraform.exe -ArgumentList $ARGUinit -Wait -RedirectStandardOutput .\terraform-init.txt -RedirectStandardError .\terraform-error-init.txt
+        Start-Process -FilePath .\terraform.exe -ArgumentList $ARGUplan -Wait -RedirectStandardOutput .\terraform-plan.txt -RedirectStandardError .\terraform-error-plan.txt
+        Start-Process -FilePath .\terraform.exe -ArgumentList $ARGUapply -Wait -RedirectStandardOutput .\terraform-apply.txt -RedirectStandardError .\terraform-error-apply.txt
+        cd ..
+    }
+}
 
-# Environment Script
+# Update Storage
+if($RequireUpdateStorage) {
+    UpdateStorage
+}
+# Configure Packaging VM Script
+.\CreatePackagingEnv-PackagingVms-Configure.ps1
+
+# Create Hyper-V Script
 if($RequireHyperV) {
     .\CreatePackagingEnv-HyperVServer-V1.ps1
 }
