@@ -1,4 +1,4 @@
-﻿$RequireCreate = $true
+﻿$RequireCreate = $false
 $RequireConfigure = $true
 $UseTerraform = $false
 
@@ -12,9 +12,9 @@ $RequireVNET = $true
 $RequireNSG = $true
 $RequirePublicIPs = $true
 
-$RequireHyperV = $false
-$RequireStandardVMs = $true
-$RequireAdminStudioVMs = $true
+$RequireHyperV = $true
+$RequireStandardVMs = $false
+$RequireAdminStudioVMs = $false
 
 
 # Subscription ID If Required
@@ -105,11 +105,20 @@ if($RequireResourceGroups) {
 }
 
 if($RequireCreate) {
+    if ($UseTerraform) {
+        $TerraformMainTemplate = Get-Content -Path ".\Terraform\Root Template\main.tf" | Set-Content -Path ".\Terraform\main.tf"    
+    }
+
     # Environment Script
     .\CreatePackagingEnv-Env-V2.ps1
 
     # Create Packaging VM Script
     .\CreatePackagingEnv-PackagingVms-V2.ps1
+
+    # Create Hyper-V Script
+    if ($RequireHyperV) {
+        .\CreatePackagingEnv-HyperVServer-V1.ps1
+    }
 
     if($UseTerraform) {
         cd .\terraform
@@ -127,11 +136,14 @@ if($RequireCreate) {
 if($RequireUpdateStorage) {
     UpdateStorage
 }
-# Configure Packaging VM Script
-.\CreatePackagingEnv-PackagingVms-Configure.ps1
 
-# Create Hyper-V Script
-if($RequireHyperV) {
-    .\CreatePackagingEnv-HyperVServer-V1.ps1
+if ($RequireConfigure) {
+    # Configure Packaging VM Script
+    .\CreatePackagingEnv-PackagingVms-Configure.ps1
+
+    # Configure Hyper-V Script
+    if($RequireHyperV) {
+        .\CreatePackagingEnv-HyperVServer-Configure.ps1
+    }
 }
 Write-Host "All Scripts Completed"

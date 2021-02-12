@@ -18,14 +18,6 @@
 }
 
 function CreateStandardVM-Terraform($VMName) {
-    #$VMCreate = New-AzVM @Params -SystemAssignedIdentity
-    #$ARGUinit = "init"
-    #$ARGUplan = "plan -var vmname=" + [char]34 + "$VMName" + [char]34 + " -var vmnic=" + [char]34 + "$VMName-nic" + [char]34 + " -var vmip=" + [char]34 + "$VMName-ip" + [char]34 + " -var vmosdisk=" + [char]34 + "$VMName-osdisk" + [char]34 + " -out .\$VMName.tfplan"
-    #$ARGUapply = "apply -auto-approve .\$VMName.tfplan"
-    #Start-Process -FilePath .\terraform.exe -ArgumentList $ARGUinit -Wait
-    #Start-Process -FilePath .\terraform.exe -ArgumentList $ARGUplan -Wait -RedirectStandardOutput .\$VMName-plan.txt
-    #Start-Process -FilePath .\terraform.exe -ArgumentList $ARGUapply -Wait -RedirectStandardOutput .\$VMName-apply.txt
-
     mkdir -Path ".\Terraform\" -Name "$VMName" -Force
     $TerraformVMVariables = (Get-Content -path ".\Terraform\template\variables.tf").Replace("xxxx",$VMName) | Set-Content -path ".\Terraform\$VMName\variables.tf"
     $TerraformVMMain = (Get-Content -Path ".\Terraform\template\main.tf") | Set-Content -Path ".\Terraform\$VMName\main.tf"
@@ -93,7 +85,6 @@ module " + [char]34 + $VMName + [char]34 + " {
 }
 
 function TerraformBuild {
-    $TerraformMainTemplate = Get-Content -Path ".\Terraform\Root Template\main.tf" | Set-Content -Path ".\Terraform\main.tf"
     # Build Standard VMs
     if ($RequireStandardVMs) {
         # Create VMs
