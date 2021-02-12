@@ -1,7 +1,7 @@
 ﻿function CreateHyperVVM-Terraform($VMName) {
     mkdir -Path ".\Terraform\" -Name "$VMName" -Force
-    $TerraformVMVariables = (Get-Content -Path ".\Terraform\template\variables.tf").Replace("xxxx", $VMName) | Set-Content -Path ".\Terraform\$VMName\variables.tf"
-    $TerraformVMMain = (Get-Content -Path ".\Terraform\template\main.tf") | Set-Content -Path ".\Terraform\$VMName\main.tf"
+    $TerraformVMVariables = (Get-Content -Path ".\Terraform\template-server2019\variables.tf").Replace("xxxx", $VMName) | Set-Content -Path ".\Terraform\$VMName\variables.tf"
+    $TerraformVMMain = (Get-Content -Path ".\Terraform\template-server2019\main.tf") | Set-Content -Path ".\Terraform\$VMName\main.tf"
 
     $TerraformText = "
 module " + [char]34 + $VMName + [char]34 + " {

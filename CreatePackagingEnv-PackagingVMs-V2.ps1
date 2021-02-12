@@ -19,8 +19,8 @@
 
 function CreateStandardVM-Terraform($VMName) {
     mkdir -Path ".\Terraform\" -Name "$VMName" -Force
-    $TerraformVMVariables = (Get-Content -path ".\Terraform\template\variables.tf").Replace("xxxx",$VMName) | Set-Content -path ".\Terraform\$VMName\variables.tf"
-    $TerraformVMMain = (Get-Content -Path ".\Terraform\template\main.tf") | Set-Content -Path ".\Terraform\$VMName\main.tf"
+    $TerraformVMVariables = (Get-Content -path ".\Terraform\template-win10\variables.tf").Replace("xxxx",$VMName) | Set-Content -path ".\Terraform\$VMName\variables.tf"
+    $TerraformVMMain = (Get-Content -Path ".\Terraform\template-win10\main.tf") | Set-Content -Path ".\Terraform\$VMName\main.tf"
 
     $TerraformText = "
 module "+[char]34+$VMName+[char]34+" {
@@ -66,8 +66,8 @@ function CreateAdminStudioVM-Terraform($VMName) {
     #Start-Process -FilePath .\terraform.exe -ArgumentList $ARGUapply -Wait -RedirectStandardOutput .\$VMName-apply.txt
 
     mkdir -Path ".\Terraform\" -Name "$VMName" -Force
-    $TerraformVMVariables = (Get-Content -Path ".\Terraform\template\variables.tf").Replace("xxxx", $VMName) | Set-Content -Path ".\Terraform\$VMName\variables.tf"
-    $TerraformVMMain = (Get-Content -Path ".\Terraform\template\main.tf") | Set-Content -Path ".\Terraform\$VMName\main.tf"
+    $TerraformVMVariables = (Get-Content -Path ".\Terraform\template-win10\variables.tf").Replace("xxxx", $VMName) | Set-Content -Path ".\Terraform\$VMName\variables.tf"
+    $TerraformVMMain = (Get-Content -Path ".\Terraform\template-win10\main.tf") | Set-Content -Path ".\Terraform\$VMName\main.tf"
 
     $TerraformText = "
 module " + [char]34 + $VMName + [char]34 + " {

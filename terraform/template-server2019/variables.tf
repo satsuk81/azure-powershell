@@ -1,19 +1,19 @@
 # Variables
 variable "vmname" {
     type = string
-    default = "vmwleucvan101"
+    default = "xxxx"
 }
 variable "vmnic" {
     type = string
-    default = "vmwleucvan101-nic"
+    default = "xxxx-nic"
 }
 variable "vmip" {
     type = string
-    default = "vmwleucvan101-ip"
+    default = "xxxx-ip"
 }
 variable "vmosdisk" {
     type = string
-    default = "vmwleucvan101-osdisk"
+    default = "xxxx-osdisk"
 }
 
 variable "myterraformgroupName" {

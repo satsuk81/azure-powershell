@@ -1,15 +1,15 @@
 ﻿$RequireCreate = $false
 $RequireConfigure = $true
-$UseTerraform = $false
+$UseTerraform = $true
 
 # Which Script Components to Install
-$RequireResourceGroups = $true
+$RequireResourceGroups = $false
 $RequireUserGroups = $false
 $RequireRBAC = $false
-$RequireStorageAccount = $true
+$RequireStorageAccount = $false
 $RequireUpdateStorage = $true
-$RequireVNET = $true
-$RequireNSG = $true
+$RequireVNET = $false
+$RequireNSG = $false
 $RequirePublicIPs = $true
 
 $RequireHyperV = $true
@@ -94,17 +94,16 @@ Set-Location $PSScriptRoot
 #Connect-AzAccount -Credential $Cred -Subscription $azSubscription  # Non-MFA
 #Connect-AzureAD -Credential $Cred                                  #Old Module
 
-# Create Resource Groups
-if($RequireResourceGroups) {
-    $RG = New-AzResourceGroup -Name $RGNamePROD -Location $Location
-    if ($RG.ResourceGroupName -eq $RGNamePROD) {Write-Host "PROD Resource Group created successfully"}Else{Write-Host "*** Unable to create PROD Resource Group! ***"}
-    if (!($RGNameUAT -match $RGNamePROD)) {
-        $RG = New-AzResourceGroup -Name $RGNameUAT -Location $Location
-        if ($RG.ResourceGroupName -eq $RGNameUAT) { Write-Host "UAT Resource Group created successfully" }Else { Write-Host "*** Unable to create UAT Resource Group! ***" }
-    }
-}
-
 if($RequireCreate) {
+    # Create Resource Groups
+    if($RequireResourceGroups) {
+        $RG = New-AzResourceGroup -Name $RGNamePROD -Location $Location
+        if ($RG.ResourceGroupName -eq $RGNamePROD) {Write-Host "PROD Resource Group created successfully"}Else{Write-Host "*** Unable to create PROD Resource Group! ***"}
+        if (!($RGNameUAT -match $RGNamePROD)) {
+            $RG = New-AzResourceGroup -Name $RGNameUAT -Location $Location
+            if ($RG.ResourceGroupName -eq $RGNameUAT) { Write-Host "UAT Resource Group created successfully" }Else { Write-Host "*** Unable to create UAT Resource Group! ***" }
+        }
+    }
     if ($UseTerraform) {
         $TerraformMainTemplate = Get-Content -Path ".\Terraform\Root Template\main.tf" | Set-Content -Path ".\Terraform\main.tf"    
     }

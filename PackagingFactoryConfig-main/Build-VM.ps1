@@ -9,14 +9,18 @@ $VMCheckpointFolder = "Checkpoints"                             # Specify the fo
 $VMCount = 10                                                   # Specify number of VMs to be provisioned
 $VmNamePrefix = "EUC-PROD-"                                     # Specifies the first part of the VM name (usually alphabetic)
 $VmNumberStart = 101                                            # Specifies the second part of the VM name (usually numeric)
-$VMRamSize = "4GB"
-$VMVHDSize = "100GB"
+$VMRamSize = 4GB
+$VMVHDSize = 100GB
 $VMCPUCount = 4
 $VMSwitchName = "Packaging Switch"
 
-New-EventLog -LogName $EventlogName -Source $EventlogSource
-Limit-EventLog -OverflowAction OverWriteAsNeeded -MaximumSize 64KB -LogName $EventlogName
-Write-EventLog -LogName $EventlogName -Source $EventlogSource -EventId 25101 -EntryType Information -Message "Running $scriptname Script"
+try {
+    New-EventLog -LogName $EventlogName -Source $EventlogSource
+    Limit-EventLog -OverflowAction OverWriteAsNeeded -MaximumSize 64KB -LogName $EventlogName
+    Write-EventLog -LogName $EventlogName -Source $EventlogSource -EventId 25101 -EntryType Information -Message "Running $scriptname Script"
+} catch {
+    Write-EventLog -LogName $EventlogName -Source $EventlogSource -EventId 25101 -EntryType Error -Message $error[0].Exception
+} 
  
 Try {
     Import-Module Hyper-V -Force

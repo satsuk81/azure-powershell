@@ -70,7 +70,7 @@ resource "azurerm_windows_virtual_machine" "myterraformvm" {
     location              = "eastus"
     resource_group_name   = var.myterraformgroupName
     network_interface_ids = [azurerm_network_interface.myterraformnic.id]
-    size                  = "Standard_B2s"
+    size                  = "Standard_D16s_v4"
 
     os_disk {
         name              = var.vmosdisk
@@ -79,9 +79,9 @@ resource "azurerm_windows_virtual_machine" "myterraformvm" {
     }
 
     source_image_reference {
-        publisher = "MicrosoftWindowsDesktop"
-        offer     = "Windows-10"
-        sku       = "20h2-ent"
+        publisher = "MicrosoftWindowsServer"
+        offer     = "WindowsServer"
+        sku       = "2019-Datacenter"
         version   = "latest"
     }
 
