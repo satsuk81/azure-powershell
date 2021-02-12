@@ -1,19 +1,21 @@
-﻿# Which Components to Install
-$RequireResourceGroups = $false
+﻿$RequireCreate = $true
+$RequireConfigure = $true
+$UseTerraform = $false
+
+# Which Script Components to Install
+$RequireResourceGroups = $true
 $RequireUserGroups = $false
 $RequireRBAC = $false
-$RequireStorageAccount = $false
+$RequireStorageAccount = $true
 $RequireUpdateStorage = $true
-$RequireVNET = $false
-#$RequireNSG = $false
+$RequireVNET = $true
+$RequireNSG = $true
 $RequirePublicIPs = $true
 
 $RequireHyperV = $false
 $RequireStandardVMs = $true
 $RequireAdminStudioVMs = $true
-$UseTerraform = $true
-$RequireCreate = $true
-$RequireConfigure = $true
+
 
 # Subscription ID If Required
 #$azSubscription = '743e9d63-59c8-42c3-b823-28bb773a88a6'

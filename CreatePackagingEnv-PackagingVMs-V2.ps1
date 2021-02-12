@@ -15,41 +15,6 @@
     }
 
     $VMCreate = New-AzVm @Params -SystemAssignedIdentity
-    if (!$requirePublicIPs) { 
-        $VMNic = Get-AzNetworkInterface -Name $VMCreate.Name -ResourceGroup $RGNameUAT
-        $VMNic.IpConfigurations.publicipaddress.id = $null
-        Set-AzNetworkInterface -NetworkInterface $VMNic | Out-Null
-        Remove-AzPublicIpAddress -Name $PublicIpAddressName -ResourceGroupName $RGNameUAT -Force
-    }
-
-    If ($VMCreate.ProvisioningState -eq "Succeeded") 
-        {
-        Write-Host "Virtual Machine $VMName created successfully"
-        If ($AutoShutdown)
-           {
-            $VMName = $VMCreate.Name
-            $SubscriptionId = (Get-AzContext).Subscription.Id
-            $VMResourceId = $VMCreate.Id
-            $ScheduledShutdownResourceId = "/subscriptions/$SubscriptionId/resourceGroups/$RGNameUAT/providers/microsoft.devtestlab/schedules/shutdown-computevm-$VMName"
-
-            $Properties = @{}
-            $Properties.Add('status', 'Enabled')
-            $Properties.Add('taskType', 'ComputeVmShutdownTask')
-            $Properties.Add('dailyRecurrence', @{'time'= 1800})
-            $Properties.Add('timeZoneId', "GMT Standard Time")
-            $Properties.Add('notificationSettings', @{status='Disabled'; timeInMinutes=15})
-            $Properties.Add('targetResourceId', $VMResourceId)
-            New-AzResource -Location $location -ResourceId $ScheduledShutdownResourceId -Properties $Properties -Force | Out-Null
-            Write-Host "Auto Shutdown Enabled for 1800"
-            }
-        $NewVm = Get-AzADServicePrincipal -displayname $VMName
-        $Group = Get-AzADGroup -searchstring $rbacContributor
-        Add-AzADGroupMember -TargetGroupObjectId $Group.Id -MemberObjectId $NewVm.Id
-        }
-    Else
-    {
-    Write-Host "*** Unable to create Virtual Machine $VMName! ***"
-    }
 }
 
 function CreateStandardVM-Terraform($VMName) {
@@ -97,38 +62,6 @@ function CreateAdminStudioVM-Script($VMName) {
     }
 
     $VMCreate = New-AzVM @Params -SystemAssignedIdentity
-    if (!$requirePublicIPs) { 
-        $VMNic = Get-AzNetworkInterface -Name $VMCreate.Name -ResourceGroup $RGNameUAT
-        $VMNic.IpConfigurations.publicipaddress.id = $null
-        Set-AzNetworkInterface -NetworkInterface $VMNic | Out-Null
-        Remove-AzPublicIpAddress -Name $PublicIpAddressName -ResourceGroupName $RGNameUAT -Force
-    }
-
-    If ($VMCreate.ProvisioningState -eq "Succeeded") {
-        Write-Host "Virtual Machine $VMName created successfully"
-        If ($AutoShutdown) {
-            $VMName = $VMCreate.Name
-            $SubscriptionId = (Get-AzContext).Subscription.Id
-            $VMResourceId = $VMCreate.Id
-            $ScheduledShutdownResourceId = "/subscriptions/$SubscriptionId/resourceGroups/$RGNameUAT/providers/microsoft.devtestlab/schedules/shutdown-computevm-$VMName"
-
-            $Properties = @{}
-            $Properties.Add('status', 'Enabled')
-            $Properties.Add('taskType', 'ComputeVmShutdownTask')
-            $Properties.Add('dailyRecurrence', @{'time' = 1800 })
-            $Properties.Add('timeZoneId', "GMT Standard Time")
-            $Properties.Add('notificationSettings', @{status = 'Disabled'; timeInMinutes = 15 })
-            $Properties.Add('targetResourceId', $VMResourceId)
-            New-AzResource -Location $location -ResourceId $ScheduledShutdownResourceId -Properties $Properties -Force | Out-Null
-            Write-Host "Auto Shutdown Enabled for 1800"
-        }
-        $NewVm = Get-AzADServicePrincipal -DisplayName $VMName
-        $Group = Get-AzADGroup -searchstring $rbacContributor
-        Add-AzADGroupMember -TargetGroupObjectId $Group.Id -MemberObjectId $NewVm.Id
-    }
-    Else {
-        Write-Host "*** Unable to create Virtual Machine $VMName! ***"
-    }
 }
 
 function CreateAdminStudioVM-Terraform($VMName) {
