@@ -1,5 +1,5 @@
 ﻿function ConfigureNetwork {
-    if($RequireVNET) {
+    if ($RequireVNET -and !$UseTerraform) {
         $virtualNetworkPROD = New-AzVirtualNetwork -ResourceGroupName $RGNamePROD -Location $Location -Name $VNetPROD -AddressPrefix 10.0.0.0/16
         $subnetConfigPROD = Add-AzVirtualNetworkSubnetConfig -Name default -AddressPrefix 10.0.0.0/24 -VirtualNetwork $virtualNetworkPROD
         if (!($RGNameUAT -match $RGNamePROD)) {
@@ -31,13 +31,13 @@ function CreateRBACConfig {
     $ContributorGroup = Get-AzAdGroup -DisplayName $rbacContributor
     $ReadOnlyGroup = Get-AzAdGroup -DisplayName $rbacReadOnly
 
-    if($RequireUserGroups) {
+    if ($RequireUserGroups -and !$UseTerraform) {
         if ($OwnerGroup -eq $null){$Owner = New-AzADGroup -DisplayName $rbacOwner -MailNickName "NotSet"}Else{Write-Host "Owner RBAC group already exists";$Owner=$OwnerGroup}
         if ($ContributorGroup -eq $null){$Contributor = New-AzADGroup -DisplayName $rbacContributor -MailNickName "NotSet"}Else{Write-Host "Contributor RBAC group already exists";$Contributor=$ContributorGroup}
         if ($ReadOnlyGroup -eq $null){$ReadOnly = New-AzADGroup -DisplayName $rbacReadOnly -MailNickName "NotSet"}Else{Write-Host "ReadOnly RBAC group already exists";$ReadOnly=$ReadOnlyGroup}   
     }
 
-    if($RequireRBAC) {
+    if ($RequireRBAC -and !$UseTerraform) {
         Start-Sleep -s 20
         Try {
             New-AzRoleAssignment -ObjectId $Owner.Id -RoleDefinitionName "Owner" -ResourceGroupName $RGNamePROD | Out-Null
@@ -56,7 +56,7 @@ function CreateRBACConfig {
 }
 
 function CreateStorageAccount {
-    if ($RequireStorageAccount -eq $true) {
+    if ($RequireStorageAccount -and !$UseTerraform) {
         $storageAccount = New-AzStorageAccount -ResourceGroupName $RGNameUAT -AccountName $StorAcc -Location uksouth -SkuName Standard_LRS
         $ctx = $storageAccount.Context
         $Container = New-AzStorageContainer -Name $ContainerName -Context $ctx -Permission Blob

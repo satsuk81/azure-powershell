@@ -1,25 +1,29 @@
-﻿$RequireCreate = $false
+﻿# Subscription ID If Required
+$azSubscription = (Get-Content ".\subscriptions.txt")[1]
+
+#$Cred = Get-Credential
+#Connect-AzAccount -Subscription $azSubscription                    # MFA Account
+#Connect-AzAccount -Credential $Cred -Subscription $azSubscription  # Non-MFA
+#Connect-AzureAD -Credential $Cred                                  #Old Module
+
+$RequireCreate = $true
 $RequireConfigure = $true
 $UseTerraform = $true
 
 # Which Script Components to Install
-$RequireResourceGroups = $false
 $RequireUserGroups = $false
 $RequireRBAC = $false
-$RequireStorageAccount = $false
+
+$RequireResourceGroups = $true
+$RequireStorageAccount = $true
 $RequireUpdateStorage = $true
-$RequireVNET = $false
-$RequireNSG = $false
+$RequireVNET = $true
+$RequireNSG = $true
 $RequirePublicIPs = $true
 
 $RequireHyperV = $true
-$RequireStandardVMs = $false
-$RequireAdminStudioVMs = $false
-
-
-# Subscription ID If Required
-#$azSubscription = '743e9d63-59c8-42c3-b823-28bb773a88a6'
-$azSubscription = '1c3b43a4-90da-4988-9598-cab119913f5d'
+$RequireStandardVMs = $true
+$RequireAdminStudioVMs = $true
 
 # General Variables
 $location = "eastus"                                               # Azure Region for resources to be built into
@@ -44,7 +48,7 @@ $MapFileTmpl = "MapDrvTmpl.ps1"                                     # Filename o
 #$MapDriveCmd = 'New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce" -Name "MapPackagingDrive" -Value 'powershell -ExecutionPolicy Unrestricted -Command cmd.exe /C "cmdkey /add:`"xxxx.file.core.windows.net`" /user:`"Azure\xxxx`" /pass:`"yyyy`"" ; New-PSDrive -Name L -PSProvider FileSystem -Root "\\xxxx.file.core.windows.net\packaging" -Persist' -PropertyType "String"'                                  
 
 # VM Admin Account
-$password = ConvertTo-SecureString “Password1234” -AsPlainText -Force                       # Local Admin Password for VMs 
+$password = Get-Content ".\password.txt" | ConvertTo-SecureString -AsPlainText -Force                       # Local Admin Password for VMs 
 $VMCred = New-Object System.Management.Automation.PSCredential (“AppPackager”, $password)   # Local Admin User for VMs
 
 # VM Count and Name
@@ -89,14 +93,9 @@ function UpdateStorage {
 
 Set-Location $PSScriptRoot
 
-#$Cred = Get-Credential
-#Connect-AzAccount -Subscription $azSubscription                    # MFA Account
-#Connect-AzAccount -Credential $Cred -Subscription $azSubscription  # Non-MFA
-#Connect-AzureAD -Credential $Cred                                  #Old Module
-
 if($RequireCreate) {
     # Create Resource Groups
-    if($RequireResourceGroups) {
+    if($RequireResourceGroups -and !$UseTerraform) {
         $RG = New-AzResourceGroup -Name $RGNamePROD -Location $Location
         if ($RG.ResourceGroupName -eq $RGNamePROD) {Write-Host "PROD Resource Group created successfully"}Else{Write-Host "*** Unable to create PROD Resource Group! ***"}
         if (!($RGNameUAT -match $RGNamePROD)) {
