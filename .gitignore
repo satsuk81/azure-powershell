@@ -11,3 +11,4 @@ subscriptions.txt
 password.txt
 /terraform/
 *.msi
+*.tf
