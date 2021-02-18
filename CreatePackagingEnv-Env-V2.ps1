@@ -36,23 +36,6 @@ function CreateRBACConfig {
         if ($ContributorGroup -eq $null){$Contributor = New-AzADGroup -DisplayName $rbacContributor -MailNickName "NotSet"}Else{Write-Host "Contributor RBAC group already exists";$Contributor=$ContributorGroup}
         if ($ReadOnlyGroup -eq $null){$ReadOnly = New-AzADGroup -DisplayName $rbacReadOnly -MailNickName "NotSet"}Else{Write-Host "ReadOnly RBAC group already exists";$ReadOnly=$ReadOnlyGroup}   
     }
-
-    if ($RequireRBAC -and !$UseTerraform) {
-        Start-Sleep -s 20
-        Try {
-            New-AzRoleAssignment -ObjectId $Owner.Id -RoleDefinitionName "Owner" -ResourceGroupName $RGNamePROD | Out-Null
-            New-AzRoleAssignment -ObjectId $Contributor.Id -RoleDefinitionName "Contributor" -ResourceGroupName $RGNamePROD | Out-Null
-            New-AzRoleAssignment -ObjectId $ReadOnly.Id -RoleDefinitionName "Reader" -ResourceGroupName $RGNamePROD | Out-Null
-            if (!($RGNameUAT -match $RGNamePROD)) {
-                New-AzRoleAssignment -ObjectId $Owner.Id -RoleDefinitionName "Owner" -ResourceGroupName $RGNameUAT | Out-Null
-                New-AzRoleAssignment -ObjectId $Contributor.Id -RoleDefinitionName "Contributor" -ResourceGroupName $RGNameUAT | Out-Null
-                New-AzRoleAssignment -ObjectId $ReadOnly.Id -RoleDefinitionName "Reader" -ResourceGroupName $RGNameUAT | Out-Null
-            }
-            Write-Host "Role Assignments Set"
-        } Catch {
-            Write-Error $_.Exception.Message
-        }
-    }
 }
 
 function CreateStorageAccount {

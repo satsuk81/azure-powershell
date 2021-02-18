@@ -26,12 +26,12 @@
         }
         $NewVm = Get-AzADServicePrincipal -DisplayName $VMName
         $Group = Get-AzADGroup -searchstring $rbacContributor
-        Add-AzADGroupMember -TargetGroupObjectId $Group.Id -MemberObjectId $NewVm.Id
+        Add-AzADGroupMember -TargetGroupObjectId $Group.Id -MemberObjectId $NewVm.Id -Verbose
 
         Restart-AzVM -ResourceGroupName $RGNameUAT -Name $VMName | Out-Null
         Write-Host "Restarting VM..."
         RunVMConfig "$VMName" "https://$StorAcc.blob.core.windows.net/data/RunOnce.ps1" "RunOnce.ps1"
-        RunVMConfig "$VMName" "https://$StorAcc.blob.core.windows.net/data/VMConfig.ps1" "VMConfig.ps1"
+        RunVMConfig "$VMName" "https://$StorAcc.blob.core.windows.net/data/ORCA.ps1" "ORCA.ps1"
         
         # Shutdown VM if $VMShutdown is true
         if ($VMShutdown) {
@@ -77,7 +77,6 @@ function ConfigureAdminStudioVM($VMName) {
         Restart-AzVM -ResourceGroupName $RGNameUAT -Name $VMName | Out-Null
         Write-Host "Restarting VM..."
         RunVMConfig "$VMName" "https://$StorAcc.blob.core.windows.net/data/RunOnce.ps1" "RunOnce.ps1"
-        RunVMConfig "$VMName" "https://$StorAcc.blob.core.windows.net/data/VMConfig.ps1" "VMConfig.ps1"
         #RunVMConfig "$VM" "https://$StorAcc.blob.core.windows.net/data/AdminStudio.ps1" "AdminStudio.ps1"
         
         # Shutdown VM if $VMShutdown is true

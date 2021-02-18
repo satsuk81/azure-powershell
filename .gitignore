@@ -9,3 +9,5 @@
 subscriptions.txt
 *.json
 password.txt
+/terraform/
+*.msi
