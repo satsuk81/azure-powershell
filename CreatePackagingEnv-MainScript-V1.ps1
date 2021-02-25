@@ -1,6 +1,6 @@
 ﻿#region Setup
 # Subscription ID If Required
-$azSubscription = (Get-Content ".\subscriptions.txt")[1]
+$azSubscription = (Get-Content ".\subscriptions.txt")[0]
 
 #$Cred = Get-Credential
 #Connect-AzAccount -Subscription $azSubscription                    # MFA Account
@@ -22,14 +22,14 @@ $RequireVNET = $true
 $RequireNSG = $true
 $RequirePublicIPs = $true
 
-$RequireHyperV = $false
-$RequireStandardVMs = $true
+$RequireHyperV = $true
+$RequireStandardVMs = $false
 $RequireAdminStudioVMs = $false
 
 # General Variables
 $location = "eastus"                                                # Azure Region for resources to be built into
-$RGNameUAT = "rg-wl-prod-eucpackaging"                              # UAT Resource group name
-$RGNamePROD = "rg-wl-prod-eucpackaging"                             # PROD Resource group name
+$RGNameUAT = "rg-wl-prod-eucpackaging2"                              # UAT Resource group name
+$RGNamePROD = "rg-wl-prod-eucpackaging2"                             # PROD Resource group name
 $VNetUAT = "PackagingVnetUAT"                                       # Environment Virtual Network name
 $VNetPROD = "PackagingVnetPROD"                                     # Environment Virtual Network name
 $NsgNameUAT = "PackagingNsgUAT"                                     # Network Security Group name (firewall)
@@ -42,7 +42,7 @@ $rbacReadOnly = "euc-rbac-readonly"
 
 # Storage Account and Container Names
 $StorAccRequired = $RequireStorageAccount                           # Specifies if a Storage Account and Container should be created
-$StorAcc = "stwleucpackaging01"                                     # Storage account name (if used)
+$StorAcc = "stwleucpackaging02"                                     # Storage account name (if used)
 $ContainerName = "data"                                             # Storage container name (if used)
 $ContainerScripts = "C:\Users\d.ames\OneDrive - Avanade\Documents\GitHub\azure-powershell\PackagingFactoryConfig-main" # All files in this path will be copied up to the Storage Account Container, so available to be run on the remote VMs (includes template script for packaging share mapping
 $MapFileTmpl = "MapDrvTmpl.ps1"                                     # Filename of Script template for mapping drive to Packaging file share
@@ -73,6 +73,8 @@ function UpdateStorage {
     if ($RequireUpdateStorage) {
         Try {
             $Key = Get-AzStorageAccountKey -ResourceGroupName $RGNameUAT -AccountName $StorAcc
+            $HyperVContent = (Get-Content -Path "$ContainerScripts\EnableHyperVTmpl.ps1").replace("xxxx", $StorAcc)
+            $HyperVContent.replace("rrrr", $RGNameUAT) | Set-Content -Path "$ContainerScripts\EnableHyperV.ps1"      
             $MapFileContent = (Get-Content -Path "$ContainerScripts\$MapFileTmpl").replace("xxxx", $StorAcc) #| Set-Content -path "$ContainerScripts\MapDrv.ps1"
             $MapFileContent.replace("yyyy", $Key.value[0]) | Set-Content -Path "$ContainerScripts\MapDrv.ps1"      
             $VMConfigContent = (Get-Content -Path "$ContainerScripts\VMConfigTmpl.ps1").replace("xxxx", $StorAcc)

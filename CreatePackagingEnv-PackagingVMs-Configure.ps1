@@ -32,6 +32,11 @@
         Write-Host "Restarting VM..."
         RunVMConfig "$VMName" "https://$StorAcc.blob.core.windows.net/data/RunOnce.ps1" "RunOnce.ps1"
         RunVMConfig "$VMName" "https://$StorAcc.blob.core.windows.net/data/ORCA.ps1" "ORCA.ps1"
+        #RunVMConfig "$VMName" "https://$StorAcc.blob.core.windows.net/data/GlassWire.ps1" "GlassWire.ps1"
+        RunVMConfig "$VMName" "https://$StorAcc.blob.core.windows.net/data/7-Zip.ps1" "7-Zip.ps1"
+        RunVMConfig "$VMName" "https://$StorAcc.blob.core.windows.net/data/InstEd.ps1" "InstEd.ps1"
+        RunVMConfig "$VMName" "https://$StorAcc.blob.core.windows.net/data/IntuneWinUtility.ps1" "IntuneWinUtility.ps1"
+        RunVMConfig "$VMName" "https://$StorAcc.blob.core.windows.net/data/DesktopApps.ps1" "DesktopApps.ps1"
         
         # Shutdown VM if $VMShutdown is true
         if ($VMShutdown) {
@@ -77,7 +82,14 @@ function ConfigureAdminStudioVM($VMName) {
         Restart-AzVM -ResourceGroupName $RGNameUAT -Name $VMName | Out-Null
         Write-Host "Restarting VM..."
         RunVMConfig "$VMName" "https://$StorAcc.blob.core.windows.net/data/RunOnce.ps1" "RunOnce.ps1"
-        #RunVMConfig "$VM" "https://$StorAcc.blob.core.windows.net/data/AdminStudio.ps1" "AdminStudio.ps1"
+        #RunVMConfig "$VMName" "https://$StorAcc.blob.core.windows.net/data/AdminStudio.ps1" "AdminStudio.ps1"
+        RunVMConfig "$VMName" "https://$StorAcc.blob.core.windows.net/data/ORCA.ps1" "ORCA.ps1"
+        RunVMConfig "$VMName" "https://$StorAcc.blob.core.windows.net/data/GlassWire.ps1" "GlassWire.ps1"
+        RunVMConfig "$VMName" "https://$StorAcc.blob.core.windows.net/data/7-Zip.ps1" "7-Zip.ps1"
+        RunVMConfig "$VMName" "https://$StorAcc.blob.core.windows.net/data/InstEd.ps1" "InstEd.ps1"
+        RunVMConfig "$VMName" "https://$StorAcc.blob.core.windows.net/data/IntuneWinUtility.ps1" "IntuneWinUtility.ps1"
+        RunVMConfig "$VMName" "https://$StorAcc.blob.core.windows.net/data/DesktopApps.ps1" "DesktopApps.ps1"
+        
         
         # Shutdown VM if $VMShutdown is true
         if ($VMShutdown) {

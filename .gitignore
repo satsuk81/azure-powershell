@@ -10,5 +10,8 @@ subscriptions.txt
 *.json
 password.txt
 /terraform/
+/Media Files/
 *.msi
 *.tf
+PackagingFactoryConfig-main/DomainCred.xml
+PackagingFactoryConfig-main/LocalCred.xml

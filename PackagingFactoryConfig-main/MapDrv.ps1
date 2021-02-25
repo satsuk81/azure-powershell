@@ -1,2 +1,2 @@
-cmd.exe /C cmdkey /add:`"stwleucpackaging01.file.core.windows.net`" /user:`"Azure\stwleucpackaging01`" /pass:`"gO0EnE2pG/CGSO/9kUx76Bea+Ffbd6amFYwl4qyAVaYNYS08Spak6So42LJ2gs++6MBmU10JfbAkQsFUd2V51w==`"
-New-PSDrive -Name Z -PSProvider FileSystem -Root "\\stwleucpackaging01.file.core.windows.net\packaging" -Persist
+cmd.exe /C cmdkey /add:`"stwleucpackaging02.file.core.windows.net`" /user:`"Azure\stwleucpackaging02`" /pass:`"+w2P2NqhmR+9ZoEJCL4YpUZuVbuxHfZYlxXlUDvJ6GZEnKKfwbi+TYlFtDJZX5Y360R/WNRFD/Squc3m2XUN8A==`"
+New-PSDrive -Name Z -PSProvider FileSystem -Root "\\stwleucpackaging02.file.core.windows.net\packaging" -Persist

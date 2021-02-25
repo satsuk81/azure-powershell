@@ -55,7 +55,7 @@ Catch
 Try {
     Write-EventLog -LogName $EventlogName -Source $EventlogSource -EventID 25101 -EntryType Information -Message "Atempting to download $app from Azure storage account to C:\Windows\Temp"
 
-    $StorAcc = get-azstorageaccount -resourcegroupname rg-wl-prod-eucpackaging -name stwleucpackaging01
+    $StorAcc = get-azstorageaccount -resourcegroupname rg-wl-prod-eucpackaging2 -name stwleucpackaging02
     if ($zip) {
         $Result = Get-AzStorageBlobContent -Container data -Blob "./Media/$filename" -destination "c:\Windows\temp\" -context $StorAcc.context
         If ($Result.Name -eq "Media/$filename") {

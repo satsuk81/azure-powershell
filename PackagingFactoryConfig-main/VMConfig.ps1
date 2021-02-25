@@ -31,7 +31,7 @@ Catch
 Try
     {
     Write-EventLog -LogName $EventlogName -Source $EventlogSource -EventID 25101 -EntryType Information -Message "Copying MapDrv script"
-    $ctx = get-azstorageaccount -ResourceGroupName rg-wl-prod-eucpackaging -name stwleucpackaging01
+    $ctx = get-azstorageaccount -ResourceGroupName rg-wl-prod-eucpackaging2 -name stwleucpackaging02
     $ctx | Get-AzStorageBlobContent -Container "data" -Blob "MapDrv.ps1" -Destination "C:\Users\Public\Desktop"
     }
     Catch

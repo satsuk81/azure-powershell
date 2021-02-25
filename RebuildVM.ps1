@@ -1,5 +1,5 @@
 Param(
-    [Parameter(Mandatory = $false)][string]$RVMVMName = "vmwleucvan101",
+    [Parameter(Mandatory = $false)][string]$RVMVMName = "",
     [Parameter(Mandatory = $false)][ValidateSet('Standard', 'AdminStudio')][string]$RVMSpec = "Standard"
 )
 
@@ -193,7 +193,13 @@ function ConfigureAdminStudioVM($VMName) {
         Restart-AzVM -ResourceGroupName $RVMResourceGroupName -Name $VMName | Out-Null
         Write-Host "Restarting VM..."
         RunVMConfig "$VMName" "https://$RVMStorageAccountName.blob.core.windows.net/data/RunOnce.ps1" "RunOnce.ps1"
-        #RunVMConfig "$VM" "https://$RVMStorageAccountName.blob.core.windows.net/data/AdminStudio.ps1" "AdminStudio.ps1"
+        RunVMConfig "$VMName" "https://$RVMStorageAccountName.blob.core.windows.net/data/AdminStudio.ps1" "AdminStudio.ps1"
+        RunVMConfig "$VMName" "https://$RVMStorageAccountName.blob.core.windows.net/data/ORCA.ps1" "ORCA.ps1"
+        RunVMConfig "$VMName" "https://$RVMStorageAccountName.blob.core.windows.net/data/GlassWire.ps1" "GlassWire.ps1"
+        RunVMConfig "$VMName" "https://$RVMStorageAccountName.blob.core.windows.net/data/7-Zip.ps1" "7-Zip.ps1"
+        RunVMConfig "$VMName" "https://$RVMStorageAccountName.blob.core.windows.net/data/InstEd.ps1" "InstEd.ps1"
+        RunVMConfig "$VMName" "https://$RVMStorageAccountName.blob.core.windows.net/data/IntuneWinUtility.ps1" "IntuneWinUtility.ps1"
+        RunVMConfig "$VMName" "https://$RVMStorageAccountName.blob.core.windows.net/data/DesktopApps.ps1" "DesktopApps.ps1"
         
         # Shutdown VM if $VMShutdown is true
         if ($VMShutdown) {
@@ -227,7 +233,7 @@ function ScriptBuild-Config {
             ConfigureStandardVM "$RVMVMName"
         }
         "AdminStudio" {
-            ConfigureAdminStudioVM-Script "$RVMVMName"
+            ConfigureAdminStudioVM "$RVMVMName"
 
         }
     }
@@ -239,8 +245,12 @@ Write-Host "Running RebuildVM.ps1"
 
 if($RVMVMName -eq "") {
     $VMlist = Get-AzVM -Name * -ResourceGroupName $RVMResourceGroupName
-    $RVMVMName = ($VMlist | where { $_.Name -ne "vmwleuchyperv1" } | select Name | ogv -Title "Select Virtual Machine to Rebuild" -PassThru).Name  
+    $RVMVMName = ($VMlist | where { $_.Name -ne "vmwleuchyperv1" } | select Name | ogv -Title "Select Virtual Machine to Rebuild" -PassThru).Name
+
+    $VMSpec = @("Standard","AdminStudio")
+    $RVMSpec = $VMSpec | ogv -Title "Select Virtual Machine Spec" -PassThru
 }
+
 Write-Host "Rebuilding $RVMVMName"
 Try {
     ScriptBuild-Create
