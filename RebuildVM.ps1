@@ -5,7 +5,7 @@ Param(
 
 #region Setup
 # Subscription ID If Required
-$azSubscription = (Get-Content ".\subscriptions.txt")[1]
+$azSubscription = (Get-Content ".\subscriptions.txt")[0]
 
 #Connect-AzAccount -Subscription $azSubscription # MFA Account
 #Connect-AzAccount -Credential $Cred -Subscription $azSubscription # Non-MFA
@@ -15,8 +15,8 @@ $password = Get-Content ".\password.txt" | ConvertTo-SecureString -AsPlainText -
 $RVMVMCred = New-Object System.Management.Automation.PSCredential ("AppPackager", $password)   # Local Admin User for VMs
 
 $RequirePublicIPs = $true
-$RVMResourceGroupName = "rg-wl-prod-eucpackaging"
-$RVMStorageAccountName = "stwleucpackaging01"
+$RVMResourceGroupName = "rg-wl-prod-eucpackaging2"
+$RVMStorageAccountName = "stwleucpackaging02"
 $RVMContainerName = "data"
 $RVMVNet = "PackagingVnetPROD"                                     # Environment Virtual Network name
 $RVMNsgName = "PackagingNsgPROD"

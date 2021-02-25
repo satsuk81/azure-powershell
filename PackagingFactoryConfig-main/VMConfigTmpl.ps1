@@ -1,42 +1,29 @@
-﻿#set-executionpolicy Unrestricted -scope currentuser -Force
+﻿$scriptname = "VMConfig.ps1"
+$EventlogName = "Accenture"
+$EventlogSource = "VM Configure Script"
 
-Try
-    {
-    $EventlogName = "HigginsonConsultancy"
-    $EventlogSource = "VM Build Script"
-    New-EventLog -LogName $EventlogName -Source $EventlogSource
-    Limit-EventLog -OverflowAction OverWriteAsNeeded -MaximumSize 64KB -LogName $EventlogName
-    Write-EventLog -LogName $EventlogName -Source $EventlogSource -EventID 25101 -EntryType Information -Message "Starting VM Build Script"
-    }
-    
-    Catch
-    {
-    }
+# Create Error Trap
+trap {
+    Write-Error $error[0]
+    Write-EventLog -LogName $EventlogName -Source $EventlogSource -EventID 25101 -EntryType Error -Message $error[0].Exception
+    break
+}
+
+# Enable Logging to the EventLog
+New-EventLog -LogName $EventlogName -Source $EventlogSource
+Limit-EventLog -OverflowAction OverWriteAsNeeded -MaximumSize 64KB -LogName $EventlogName
+Write-EventLog -LogName $EventlogName -Source $EventlogSource -EventID 25101 -EntryType Information -Message "Starting $scriptname Script"
 
 # Load Modules and Connect to Azure
-Try
-    {
-    Write-EventLog -LogName $EventlogName -Source $EventlogSource -EventID 25101 -EntryType Information -Message "Loading modules and attempting to connect to Azure"
+Write-EventLog -LogName $EventlogName -Source $EventlogSource -EventID 25101 -EntryType Information -Message "Loading NuGet module"
+Install-PackageProvider -Name NuGet -Force -ErrorAction Stop
+Write-EventLog -LogName $EventlogName -Source $EventlogSource -EventID 25101 -EntryType Information -Message "Loading Az.Storage module"
+Install-Module -Name Az.Storage -Force -ErrorAction Stop
+Write-EventLog -LogName $EventlogName -Source $EventlogSource -EventID 25101 -EntryType Information -Message "Attempting to connect to Azure"    
+Connect-AzAccount -identity -ErrorAction Stop
 
-    Install-PackageProvider -Name NuGet -scope currentuser -Force 
-    Install-Module -Name Az.Storage -scope currentuser -Force
-    Connect-AzAccount -identity
+Write-EventLog -LogName $EventlogName -Source $EventlogSource -EventID 25101 -EntryType Information -Message "Copying MapDrv script"
+$ctx = get-azstorageaccount -ResourceGroupName rrrr -name xxxx
+$ctx | Get-AzStorageBlobContent -Container "data" -Blob "MapDrv.ps1" -Destination "C:\Users\Public\Desktop"
 
-    }
-Catch
-    {
-    Write-EventLog -LogName $EventlogName -Source $EventlogSource -EventID 25101 -EntryType Error -Message $error[0].Exception
-    }
-
-Try
-    {
-    Write-EventLog -LogName $EventlogName -Source $EventlogSource -EventID 25101 -EntryType Information -Message "Copying MapDrv script"
-    $ctx = get-azstorageaccount -ResourceGroupName rrrr -name xxxx
-    $ctx | Get-AzStorageBlobContent -Container "data" -Blob "MapDrv.ps1" -Destination "C:\Users\Public\Desktop"
-    }
-    Catch
-    {
-    Write-EventLog -LogName $EventlogName -Source $EventlogSource -EventID 25101 -EntryType Error -Message $error[0].Exception
-    }
-
-Write-EventLog -LogName $EventlogName -Source $EventlogSource -EventID 25101 -EntryType Information -Message "VM Build Script Completed"
+Write-EventLog -LogName $EventlogName -Source $EventlogSource -EventId 25101 -EntryType Information -Message "Completed $scriptname"

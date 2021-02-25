@@ -22,8 +22,8 @@ $RequireVNET = $true
 $RequireNSG = $true
 $RequirePublicIPs = $true
 
-$RequireHyperV = $true
-$RequireStandardVMs = $false
+$RequireHyperV = $false
+$RequireStandardVMs = $true
 $RequireAdminStudioVMs = $false
 
 # General Variables
@@ -55,8 +55,8 @@ $VMCred = New-Object System.Management.Automation.PSCredential ("AppPackager", $
 # VM Count and Name
 $NumberofStandardVMs = 1                                            # Specify number of Standard VMs to be provisioned
 $NumberofAdminStudioVMs = 1                                         # Specify number of AdminStudio VMs to be provisioned
-$VMNamePrefixStandard = "vmwleucvan"                                # Specifies the first part of the Standard VM name (usually alphabetic)
-$VMNamePrefixAdminStudio = "vmwleucvan"                              # Specifies the first part of the Admin Studio VM name (usually alphabetic)
+$VMNamePrefixStandard = "vmwleucvan2"                                # Specifies the first part of the Standard VM name (usually alphabetic)
+$VMNamePrefixAdminStudio = "vmwleucvan2"                             # Specifies the first part of the Admin Studio VM name (usually alphabetic)
 $VMNumberStartStandard = 101                                        # Specifies the second part of the Standard VM name (usually numeric)
 $VMNumberStartAdminStudio = 201                                     # Specifies the second part of the Admin Studio VM name (usually numeric)
 $VMSizeStandard = "Standard_B2s"                                    # Specifies Azure Size to use for the Standard VM
@@ -100,8 +100,8 @@ function UpdateStorage {
             Write-Error "An error occured trying to create the customised scripts for the packaging share."
             Write-Error $_.Exception.Message
         }
-        #. .\SyncFiles.ps1 -CallFromCreatePackaging -Recurse            # Sync Files to Storage Blob
-        . .\SyncFiles.ps1 -CallFromCreatePackaging            # Sync Files to Storage Blob
+        . .\SyncFiles.ps1 -CallFromCreatePackaging -Recurse            # Sync Files to Storage Blob
+        #. .\SyncFiles.ps1 -CallFromCreatePackaging            # Sync Files to Storage Blob
         Write-Host "Storage Account has been Updated with files"
     }
 }

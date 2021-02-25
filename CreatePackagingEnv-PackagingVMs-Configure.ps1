@@ -114,7 +114,7 @@ function RunVMConfig($VMName, $BlobFilePath, $Blob) {
     }
 
     $VMConfigure = Set-AzVMCustomScriptExtension @Params
-    If ($VMConfigure.IsSuccessStatusCode -eq $True) {Write-Host "Virtual Machine $VMName configured successfully"}Else{Write-Host "*** Unable to configure Virtual Machine $VMName! ***"}
+    If ($VMConfigure.IsSuccessStatusCode -eq $True) { Write-Host "Virtual Machine $VMName configured with $Blob successfully" }Else { Write-Host "*** Unable to configure Virtual Machine $VMName with $Blob ***" }
 }
 
 function TerraformBuild {

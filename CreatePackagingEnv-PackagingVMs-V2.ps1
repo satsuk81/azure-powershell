@@ -124,7 +124,7 @@ function ScriptBuild {
         While ($Count -le $NumberofStandardVMs) {
             Write-Host "Creating $Count of $NumberofStandardVMs VMs"
             $VM = $VMNamePrefixStandard + $VMNumberStart
-            $VMCheck = Get-AzVM -Name "$VM" -ResourceGroup $RGNameUAT
+            $VMCheck = Get-AzVM -Name "$VM" -ResourceGroup $RGNameUAT -ErrorAction SilentlyContinue
             if (!$VMCheck) {
                 CreateStandardVM-Script "$VM"
             }
