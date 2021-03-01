@@ -100,6 +100,7 @@ function ScriptBuild {
     }
 }
 
+#region Main
 #=======================================================================================================================================================
 
 # Main Script
@@ -121,3 +122,4 @@ else {
     ScriptBuild
 }
 Write-Host "Hyper-V Configure Script Completed"
+#endregion Main

@@ -19,6 +19,7 @@ $VMSwitchName = "Packaging Switch"
 $LocalCredUser = "DESKTOP-7O8HROP\admin"
 $DomainCredUser = "space\administrator"
 $Domain = "space"
+$OUPath = "OU=Workstations,OU=Computers,OU=Space,DC=space,DC=dan"
 
 cd $PSScriptRoot
 
@@ -131,7 +132,7 @@ function Create-VM {
             $joined = $true
             $attempts++
             try {
-                Add-Computer -LocalCredential $Using:LocalCred -DomainName $Using:Domain -Credential $Using:DomainCred -Restart -Verbose -ErrorAction Stop
+                Add-Computer -LocalCredential $Using:LocalCred -DomainName $Using:Domain -Credential $Using:DomainCred -Restart -Verbose -ErrorAction Stop -OUPath $Using:OUPath
                 # -NewName $CP -OUPath $OU 
             } catch {              
                 $joined = $false

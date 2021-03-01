@@ -90,20 +90,24 @@ function ScriptBuild {
     }
 }
 
+#region Main
 #=======================================================================================================================================================
 
 # Main Script
 # Create Hyper-V server
 $NumberofHyperVVMs = 1                                                            # Specify number of VMs to be provisioned
-$VMHyperVNamePrefix = "vmwleuchyperv"                                             # Specifies the first part of the VM name (usually alphabetic)
+$VMHyperVNamePrefix = "vmwleushyperv"                                             # Specifies the first part of the VM name (usually alphabetic)
 $VmHyperVNumberStart = 01                                                         # Specifies the second part of the VM name (usually numeric)
-#$VmSize = "Standard_D16s_v4"                                                # Specifies Azure Size to use for the VM
-$VmSize = "Standard_D2s_v4"                                                # Specifies Azure Size to use for the VM
+$VmSize = "Standard_D16s_v4"                                                # Specifies Azure Size to use for the VM
+#$VmSize = "Standard_D2s_v4"                                                # Specifies Azure Size to use for the VM
 $VmImage = "MicrosoftWindowsServer:WindowsServer:2019-Datacenter:latest"    # Specifies the Publisher, Offer, SKU and Version of the image to be used to provision the VM
 $VmShutdown = $true
-$dataDiskTier = "S10"
-$dataDiskSKU = "Standard_LRS"
-$dataDiskSize = 128
+$dataDiskTier = "P50"
+$dataDiskSKU = "Premium_LRS"
+$dataDiskSize = 4096
+#$dataDiskTier = "S10"
+#$dataDiskSKU = "Standard_LRS"
+#$dataDiskSize = 128
 
 if ($UseTerraform) {
     TerraformBuild
@@ -112,3 +116,4 @@ else {
     ScriptBuild
 }
 Write-Host "Hyper-V Create Script Completed"
+#endregion Main

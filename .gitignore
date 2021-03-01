@@ -11,6 +11,7 @@ subscriptions.txt
 password.txt
 /terraform/
 /Media Files/
+/Old Files/
 *.msi
 *.tf
 PackagingFactoryConfig-main/DomainCred.xml

@@ -173,6 +173,7 @@ function ScriptBuild {
     }
 }
 
+#region Main
 #=======================================================================================================================================================
 
 # Main Script
@@ -184,3 +185,4 @@ else {
 }
 
 Write-Host "Configure Packaging VM Script Completed"
+#endregion Main
