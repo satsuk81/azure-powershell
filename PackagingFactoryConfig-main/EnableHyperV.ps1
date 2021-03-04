@@ -9,17 +9,28 @@ trap {
     break
 }
 
+# Enable Logging to the EventLog
 New-EventLog -LogName $EventlogName -Source $EventlogSource
 Limit-EventLog -OverflowAction OverWriteAsNeeded -MaximumSize 64KB -LogName $EventlogName
-Write-EventLog -LogName $EventlogName -Source $EventlogSource -EventId 25101 -EntryType Information -Message "Running $scriptname Script"
+Write-EventLog -LogName $EventlogName -Source $EventlogSource -EventID 25101 -EntryType Information -Message "Starting $app Install Script"
 
+# Load Modules and Connect to Azure
+Write-EventLog -LogName $EventlogName -Source $EventlogSource -EventID 25101 -EntryType Information -Message "Loading NuGet module"
+Install-PackageProvider -Name NuGet -Force -ErrorAction Stop
+Write-EventLog -LogName $EventlogName -Source $EventlogSource -EventID 25101 -EntryType Information -Message "Loading Az.Storage module"
+Install-Module -Name Az.Storage -Force -ErrorAction Stop
+Write-EventLog -LogName $EventlogName -Source $EventlogSource -EventID 25101 -EntryType Information -Message "Attempting to connect to Azure"    
+Connect-AzAccount -identity -ErrorAction Stop -Subscription 1c3b43a4-90da-4988-9598-cab119913f5d
+
+# Install Hyper-V
 Write-EventLog -LogName $EventlogName -Source $EventlogSource -EventID 25101 -EntryType Information -Message "Enable Hyper-V"
 Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V -All -NoRestart
 
+# Install Tools
 Write-EventLog -LogName $EventlogName -Source $EventlogSource -EventID 25101 -EntryType Information -Message "Enable Management Tools"
 Install-WindowsFeature -Name Hyper-V -IncludeManagementTools
 
-$StorAcc = Get-AzStorageAccount -ResourceGroupName rg-wl-prod-eucpackaging2 -Name stwleucpackaging02
+$StorAcc = Get-AzStorageAccount -ResourceGroupName rg-wl-prod-packaging -Name wlprodeusprodpkgstr01tmp
 $Result1 = Get-AzStorageBlobContent -Container data -Blob "LocalCred.xml" -Destination "c:\Windows\temp\" -Context $StorAcc.context
 $Result2 = Get-AzStorageBlobContent -Container data -Blob "DomainCred.xml" -Destination "c:\Windows\temp\" -Context $StorAcc.context
 

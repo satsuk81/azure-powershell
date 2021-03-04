@@ -20,12 +20,12 @@ Install-PackageProvider -Name NuGet -Force -ErrorAction Stop
 Write-EventLog -LogName $EventlogName -Source $EventlogSource -EventID 25101 -EntryType Information -Message "Loading Az.Storage module"
 Install-Module -Name Az.Storage -Force -ErrorAction Stop
 Write-EventLog -LogName $EventlogName -Source $EventlogSource -EventID 25101 -EntryType Information -Message "Attempting to connect to Azure"    
-Connect-AzAccount -identity -ErrorAction Stop
+Connect-AzAccount -identity -ErrorAction Stop -Subscription 1c3b43a4-90da-4988-9598-cab119913f5d
 
 # Copy MapDrv.ps1 to local drive
 Write-EventLog -LogName $EventlogName -Source $EventlogSource -EventID 25101 -EntryType Information -Message "Atempting to download MapDrv.ps1 from Azure storage account to C:\Windows\Temp"
 
-$StorAcc = get-azstorageaccount -resourcegroupname rg-wl-prod-eucpackaging2 -name stwleucpackaging02
+$StorAcc = get-azstorageaccount -resourcegroupname rg-wl-prod-packaging -name wlprodeusprodpkgstr01tmp
 $Result = Get-AzStorageBlobContent -Container data -Blob "MapDrv.ps1" -destination "c:\Windows\temp\" -context $StorAcc.context
 If ($Result.Name -eq "MapDrv.ps1") {
 	new-itemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce" -Name "MapPackagingDrive" -Value "Powershell.exe -ExecutionPolicy Unrestricted -file `"C:\Windows\Temp\MapDrv.ps1`"" -PropertyType "String"

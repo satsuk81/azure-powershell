@@ -25,11 +25,11 @@ Install-PackageProvider -Name NuGet -Force -ErrorAction Stop
 Write-EventLog -LogName $EventlogName -Source $EventlogSource -EventID 25101 -EntryType Information -Message "Loading Az.Storage module"
 Install-Module -Name Az.Storage -Force -ErrorAction Stop
 Write-EventLog -LogName $EventlogName -Source $EventlogSource -EventID 25101 -EntryType Information -Message "Attempting to connect to Azure"    
-Connect-AzAccount -identity -ErrorAction Stop
+Connect-AzAccount -identity -ErrorAction Stop -Subscription 1c3b43a4-90da-4988-9598-cab119913f5d
 
 # Copy AdminStudio exe to local drive and install
 Write-EventLog -LogName $EventlogName -Source $EventlogSource -EventID 25101 -EntryType Information -Message "Atempting to download $app from Azure storage account to C:\Windows\Temp"
-$StorAcc = get-azstorageaccount -resourcegroupname rg-wl-prod-eucpackaging2 -name stwleucpackaging02
+$StorAcc = get-azstorageaccount -resourcegroupname rg-wl-prod-packaging -name wlprodeusprodpkgstr01tmp
 $Result = Get-AzStorageBlobContent -Container data -Blob "./Media/$filename" -destination "c:\Windows\temp\" -context $StorAcc.context
 If ($Result.Name -eq "Media/$filename") {
     cd C:\Windows\Temp\Media\
@@ -38,3 +38,4 @@ If ($Result.Name -eq "Media/$filename") {
 Else {
     Write-EventLog -LogName $EventlogName -Source $EventlogSource -EventID 25101 -EntryType Error -Message "Failed to download $app"
 }
+Write-EventLog -LogName $EventlogName -Source $EventlogSource -EventId 25101 -EntryType Information -Message "Completed $app Install Script"

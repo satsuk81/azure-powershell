@@ -4,28 +4,37 @@ Param(
 )
 
 #region Setup
+cd $PSScriptRoot
+
 # Subscription ID If Required
 $azSubscription = (Get-Content ".\subscriptions.txt")[0]
 
-#Connect-AzAccount -Subscription $azSubscription # MFA Account
 #Connect-AzAccount -Credential $Cred -Subscription $azSubscription # Non-MFA
+Connect-AzAccount -Subscription $azSubscription # MFA Account
+
+$SubscriptionId = (Get-AzContext).Subscription.Id
+if(!($azSubscription -eq $SubscriptionId)) {
+    Write-Error "Subscription ID Mismatch!!!!"
+    exit
+}
 
 # VM Admin Account
 $password = Get-Content ".\password.txt" | ConvertTo-SecureString -AsPlainText -Force       # Local Admin Password for VMs 
 $RVMVMCred = New-Object System.Management.Automation.PSCredential ("AppPackager", $password)   # Local Admin User for VMs
 
 $RequirePublicIPs = $true
-$RVMResourceGroupName = "rg-wl-prod-eucpackaging2"
-$RVMStorageAccountName = "stwleucpackaging02"
-$RVMContainerName = "data"
-$RVMVNet = "PackagingVnetPROD"                                     # Environment Virtual Network name
-$RVMNsgName = "PackagingNsgPROD"
+$RVMResourceGroupName = "rg-wl-prod-packaging"
+$RVMStorageAccountName = "wlprodeusprodpkgstr01tmp"
+$ContainerName = "data"                                             # Storage container name (if used)
+$FileShareName = "pkgazfiles01"                                     # Storage FileShare name (if used)
+$RVMVNet = "rg-wl-prod-vnet"                                     # Environment Virtual Network name
+$RVMSubnetName = "snet-wl-eus-prod-packaging"                       # Environment Virtual Subnet name
+$RVMNsgName = "nsg-wl-eus-prod-packaging"
 $VMSizeStandard = "Standard_B2s"                                    # Specifies Azure Size to use for the Standard VM
 $VMSizeAdminStudio = "Standard_D2_v2" 
 $VMImage = "MicrosoftWindowsDesktop:Windows-10:20h2-ent:latest"     # Specifies the Publisher, Offer, SKU and Version of the image to be used to provision the VM
 $VMShutdown = $false                                                 # Specifies if the newly provisioned VM should be shutdown (can save costs)
 $AutoShutdown = $true                                               # Configures Windows 10 VMs to shutdown at a specified time                                             
-$RVMSubnetName = "default"
 $RVMLocation = "eastus"  
 
 # Environment variables
@@ -137,6 +146,7 @@ function ConfigureStandardVM($VMName) {
         $NewVm = Get-AzADServicePrincipal -DisplayName $VMName
         $Group = Get-AzADGroup -searchstring $rbacContributor
         Add-AzADGroupMember -TargetGroupObjectId $Group.Id -MemberObjectId $NewVm.Id -Verbose
+        New-AzRoleAssignment -ObjectId $NewVm.Id -RoleDefinitionName "Contributor" -Scope "/subscriptions/$SubscriptionId/resourceGroups/$RVMResourceGroupName/providers/Microsoft.Storage/storageAccounts/$RVMStorageAccountName" -Verbose
 
         Restart-AzVM -ResourceGroupName $RVMResourceGroupName -Name $VMName | Out-Null
         Write-Host "Restarting VM..."
@@ -189,6 +199,7 @@ function ConfigureAdminStudioVM($VMName) {
         $NewVm = Get-AzADServicePrincipal -DisplayName $VMName
         $Group = Get-AzADGroup -searchstring $rbacContributor
         Add-AzADGroupMember -TargetGroupObjectId $Group.Id -MemberObjectId $NewVm.Id
+        New-AzRoleAssignment -ObjectId $NewVm.Id -RoleDefinitionName "Contributor" -Scope "/subscriptions/$SubscriptionId/resourceGroups/$RVMResourceGroupName/providers/Microsoft.Storage/storageAccounts/$RVMStorageAccountName" -Verbose
 
         Restart-AzVM -ResourceGroupName $RVMResourceGroupName -Name $VMName | Out-Null
         Write-Host "Restarting VM..."

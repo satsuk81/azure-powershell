@@ -1,19 +1,26 @@
 ﻿#region Setup
+cd $PSScriptRoot
+
 # Subscription ID If Required
 $azSubscription = (Get-Content ".\subscriptions.txt")[1]
 
-#$Cred = Get-Credential
-#Connect-AzAccount -Credential $Cred -Subscription $azSubscription  # Non-MFA
-Connect-AzAccount -Subscription $azSubscription                    # MFA Account
+#Connect-AzAccount -Credential $(Get-Credential) -Subscription $azSubscription   # Non-MFA
+Connect-AzAccount -Subscription $azSubscription                                 # MFA Account
 
-$RequireCreate = $false
-$RequireConfigure = $false
+$SubscriptionId = (Get-AzContext).Subscription.Id
+if (!($azSubscription -eq $SubscriptionId)) {
+    Write-Error "Subscription ID Mismatch!!!!"
+    exit
+}
+
+$RequireCreate = $true
+$RequireConfigure = $true
 $UseTerraform = $false
 $RequireUpdateStorage = $true
 
 # Which Script Components to Install
 $RequireUserGroups = $false
-$RequireRBAC = $false
+$RequireRBAC = $true
 
 $RequireResourceGroups = $true
 $RequireStorageAccount = $true
@@ -26,14 +33,14 @@ $RequireStandardVMs = $true
 $RequireAdminStudioVMs = $false
 
 # General Variables
-$location = "eastus"                                             # Azure Region for resources to be built into
-$RGNameUAT = "rg-wl-prod-packaging"                              # UAT Resource group name
-$RGNamePROD = "rg-wl-prod-packaging"                             # PROD Resource group name
-$VNetUAT = "rg-wl-prod-vnet"                                     # Environment Virtual Network name
-$VNetPROD = "rg-wl-prod-vnet"
-$SubnetName = "snet-wl-eus-prod-packaging"                       # Environment Virtual Network name
-$NsgNameUAT = "nsg-wl-eus-prod-packaging"                        # Network Security Group name (firewall)
-$NsgNamePROD = "nsg-wl-eus-prod-packaging"                       # Network Security Group name (firewall)
+$location = "eastus"                                            # Azure Region for resources to be built into
+$RGNameUAT = "rg-wl-prod-packaging"                             # UAT Resource group name
+$RGNamePROD = "rg-wl-prod-packaging"                            # PROD Resource group name
+$VNetUAT = "rg-wl-prod-vnet"                                    # UAT Environment Virtual Network name
+$VNetPROD = "rg-wl-prod-vnet"                                   # PROD Environment Virtual Network name
+$SubnetName = "snet-wl-eus-prod-packaging"                      # Environment Virtual Subnet name
+$NsgNameUAT = "nsg-wl-eus-prod-packaging"                       # UAT Network Security Group name (firewall)
+$NsgNamePROD = "nsg-wl-eus-prod-packaging"                      # PROD Network Security Group name (firewall)
 
 # Environment variables
 $rbacOwner = "euc-rbac-owner"
@@ -42,21 +49,20 @@ $rbacReadOnly = "euc-rbac-readonly"
 
 # Storage Account and Container Names
 $StorAccRequired = $RequireStorageAccount                           # Specifies if a Storage Account and Container should be created
-$StorAcc = "wlprodeusprodpkgstr01"                                  # Storage account name (if used)
+$StorAcc = "wlprodeusprodpkgstr01tmp"                               # Storage account name (if used) (24 chars maximum)
 $ContainerName = "data"                                             # Storage container name (if used)
+$FileShareName = "pkgazfiles01"                                     # Storage FileShare name (if used)
 $ContainerScripts = "C:\Users\d.ames\OneDrive - Avanade\Documents\GitHub\azure-powershell\PackagingFactoryConfig-main" # All files in this path will be copied up to the Storage Account Container, so available to be run on the remote VMs (includes template script for packaging share mapping
-#$MapFileTmpl = "MapDrvTmpl.ps1"                                     # Filename of Script template for mapping drive to Packaging file share
-#$MapDriveCmd = 'New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce" -Name "MapPackagingDrive" -Value 'powershell -ExecutionPolicy Unrestricted -Command cmd.exe /C "cmdkey /add:`"xxxx.file.core.windows.net`" /user:`"Azure\xxxx`" /pass:`"yyyy`"" ; New-PSDrive -Name L -PSProvider FileSystem -Root "\\xxxx.file.core.windows.net\packaging" -Persist' -PropertyType "String"'                                  
 
 # VM Admin Account
-$password = Get-Content ".\password.txt" | ConvertTo-SecureString -AsPlainText -Force                       # Local Admin Password for VMs 
-$VMCred = New-Object System.Management.Automation.PSCredential ("AppPackager", $password)   # Local Admin User for VMs
+$password = Get-Content ".\password.txt" | ConvertTo-SecureString -AsPlainText -Force           # Local Admin Password for VMs 
+$VMCred = New-Object System.Management.Automation.PSCredential ("AppPackager", $password)       # Local Admin User for VMs
 
-# VM Count and Name
+# VM Count, Name, Spec, and Settings
 $NumberofStandardVMs = 1                                            # Specify number of Standard VMs to be provisioned
 $NumberofAdminStudioVMs = 1                                         # Specify number of AdminStudio VMs to be provisioned
-$VMNamePrefixStandard = "vmwleusvanwin10-"                          # Specifies the first part of the Standard VM name (usually alphabetic)
-$VMNamePrefixAdminStudio = "vmwleusaswin10-"                        # Specifies the first part of the Admin Studio VM name (usually alphabetic)
+$VMNamePrefixStandard = "vmwleusvan"                                # Specifies the first part of the Standard VM name (usually alphabetic) (15 chars max)
+$VMNamePrefixAdminStudio = "vmwleusas"                              # Specifies the first part of the Admin Studio VM name (usually alphabetic) (15 chars max)
 $VMNumberStartStandard = 101                                        # Specifies the second part of the Standard VM name (usually numeric)
 $VMNumberStartAdminStudio = 201                                     # Specifies the second part of the Admin Studio VM name (usually numeric)
 $VMSizeStandard = "Standard_B2s"                                    # Specifies Azure Size to use for the Standard VM
@@ -74,34 +80,46 @@ function UpdateStorage {
         Try {
             #$Key = Get-AzStorageAccountKey -ResourceGroupName $RGNameUAT -AccountName $StorAcc
             $HyperVContent = (Get-Content -Path "$ContainerScripts\EnableHyperVTmpl.ps1").replace("xxxx", $StorAcc)
+            $HyperVContent = $HyperVContent.replace("ssss", $azSubscription)
             $HyperVContent.replace("rrrr", $RGNameUAT) | Set-Content -Path "$ContainerScripts\EnableHyperV.ps1"      
-            $MapFileContent = (Get-Content -Path "$ContainerScripts\MapDrvTmpl.ps1").replace("xxxx", $StorAcc)
-            $MapFileContent.replace("yyyy", $RGNameUAT) | Set-Content -Path "$ContainerScripts\MapDrv.ps1"      
             $VMConfigContent = (Get-Content -Path "$ContainerScripts\VMConfigTmpl.ps1").replace("xxxx", $StorAcc)
+            $VMConfigContent = $VMConfigContent.replace("ssss", $azSubscription)
             $VMConfigContent.replace("rrrr", $RGNameUAT) | Set-Content -Path "$ContainerScripts\VMConfig.ps1"
             $RunOnceContent = (Get-Content -Path "$ContainerScripts\RunOnceTmpl.ps1").replace("xxxx", $StorAcc)
+            $RunOnceContent = $RunOnceContent.replace("ssss", $azSubscription)
             $RunOnceContent.replace("rrrr", $RGNameUAT) | Set-Content -Path "$ContainerScripts\RunOnce.ps1"
             $AdminStudioContent = (Get-Content -Path "$ContainerScripts\AdminStudioTmpl.ps1").replace("xxxx", $StorAcc)
+            $AdminStudioContent = $AdminStudioContent.replace("ssss", $azSubscription)
             $AdminStudioContent.replace("rrrr", $RGNameUAT) | Set-Content -Path "$ContainerScripts\AdminStudio.ps1"
             $ORCAContent = (Get-Content -Path "$ContainerScripts\ORCATmpl.ps1").replace("xxxx", $StorAcc)
+            $ORCAContent = $ORCAContent.replace("ssss", $azSubscription)
             $ORCAContent.replace("rrrr", $RGNameUAT) | Set-Content -Path "$ContainerScripts\ORCA.ps1"
             $GlassWireContent = (Get-Content -Path "$ContainerScripts\GlassWireTmpl.ps1").replace("xxxx", $StorAcc)
+            $GlassWireContent = $GlassWireContent.replace("ssss", $azSubscription)
             $GlassWireContent.replace("rrrr", $RGNameUAT) | Set-Content -Path "$ContainerScripts\GlassWire.ps1"
             $7zipContent = (Get-Content -Path "$ContainerScripts\7-ZipTmpl.ps1").replace("xxxx", $StorAcc)
+            $7zipContent = $7zipContent.replace("ssss", $azSubscription)
             $7zipContent.replace("rrrr", $RGNameUAT) | Set-Content -Path "$ContainerScripts\7-Zip.ps1"
             $DesktopAppsContent = (Get-Content -Path "$ContainerScripts\DesktopAppsTmpl.ps1").replace("xxxx", $StorAcc)
+            $DesktopAppsContent = $DesktopAppsContent.replace("ssss", $azSubscription)
             $DesktopAppsContent.replace("rrrr", $RGNameUAT) | Set-Content -Path "$ContainerScripts\DesktopApps.ps1"
             $InstEdContent = (Get-Content -Path "$ContainerScripts\InstEdTmpl.ps1").replace("xxxx", $StorAcc)
+            $InstEdContent = $InstEdContent.replace("ssss", $azSubscription)
             $InstEdContent.replace("rrrr", $RGNameUAT) | Set-Content -Path "$ContainerScripts\InstEd.ps1"
             $IntuneWinUtilityContent = (Get-Content -Path "$ContainerScripts\IntuneWinUtilityTmpl.ps1").replace("xxxx", $StorAcc)
+            $IntuneWinUtilityContent = $IntuneWinUtilityContent.replace("ssss", $azSubscription)
             $IntuneWinUtilityContent.replace("rrrr", $RGNameUAT) | Set-Content -Path "$ContainerScripts\IntuneWinUtility.ps1"
+
+            $MapFileContent = (Get-Content -Path "$ContainerScripts\MapDrvTmpl.ps1").replace("xxxx", $StorAcc)
+            $MapFileContent.replace("yyyy", $RGNameUAT) | Set-Content -Path "$ContainerScripts\MapDrv.ps1"      
+            
         }
         Catch {
             Write-Error "An error occured trying to create the customised scripts for the packaging share."
             Write-Error $_.Exception.Message
         }
-        #. .\SyncFiles.ps1 -CallFromCreatePackaging -Recurse        # Sync Files to Storage Blob
-        . .\SyncFiles.ps1 -CallFromCreatePackaging                  # Sync Files to Storage Blob
+        . .\SyncFiles.ps1 -CallFromCreatePackaging -Recurse        # Sync Files to Storage Blob
+        #. .\SyncFiles.ps1 -CallFromCreatePackaging                  # Sync Files to Storage Blob
         Write-Host "Storage Account has been Updated with files"
     }
 }

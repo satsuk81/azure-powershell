@@ -27,6 +27,7 @@
         $NewVm = Get-AzADServicePrincipal -DisplayName $VMName
         $Group = Get-AzADGroup -searchstring $rbacContributor
         Add-AzADGroupMember -TargetGroupObjectId $Group.Id -MemberObjectId $NewVm.Id -Verbose
+        New-AzRoleAssignment -ObjectId $NewVm.Id -RoleDefinitionName "Contributor" -Scope "/subscriptions/$SubscriptionId/resourceGroups/$RGNameUAT/providers/Microsoft.Storage/storageAccounts/$StorAcc"
 
         Restart-AzVM -ResourceGroupName $RGNameUAT -Name $VMName | Out-Null
         Write-Host "Restarting VM..."
@@ -78,6 +79,7 @@ function ConfigureAdminStudioVM($VMName) {
         $NewVm = Get-AzADServicePrincipal -DisplayName $VMName
         $Group = Get-AzADGroup -searchstring $rbacContributor
         Add-AzADGroupMember -TargetGroupObjectId $Group.Id -MemberObjectId $NewVm.Id
+        New-AzRoleAssignment -ObjectId $NewVm.Id -RoleDefinitionName "Contributor" -Scope "/subscriptions/$SubscriptionId/resourceGroups/$RGNameUAT/providers/Microsoft.Storage/storageAccounts/$StorAcc"
 
         Restart-AzVM -ResourceGroupName $RGNameUAT -Name $VMName | Out-Null
         Write-Host "Restarting VM..."
