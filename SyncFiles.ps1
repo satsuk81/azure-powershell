@@ -1,15 +1,22 @@
 Param(
-    [switch]$CallFromCreatePackaging,
-    [switch]$ScriptsOnly,
-    [switch]$Recurse
+    [switch]$CallFromCreatePackaging = $false,
+    [switch]$ScriptsOnly = $false,
+    [switch]$Recurse = $false
 )
 
 cd $PSScriptRoot
 
-$azSubscription = '743e9d63-59c8-42c3-b823-28bb773a88a6'
-#$azSubscription = '1c3b43a4-90da-4988-9598-cab119913f5d'
-#Connect-AzAccount -Subscription $azSubscription # MFA Account
+# Subscription ID If Required
+#$azSubscription = (Get-Content ".\subscriptions.txt")[1]
+
 #Connect-AzAccount -Credential $Cred -Subscription $azSubscription # Non-MFA
+#Connect-AzAccount -Subscription $azSubscription # MFA Account
+
+$SubscriptionId = (Get-AzContext).Subscription.Id
+if (!($azSubscription -eq $SubscriptionId)) {
+    Write-Error "Subscription ID Mismatch!!!!"
+    exit
+}
 
 $SFLocalPath = "C:\Users\d.ames\OneDrive - Avanade\Documents\GitHub\azure-powershell\PackagingFactoryConfig-main"
 $SFResourceGroupName = "rg-wl-prod-eucpackaging"

@@ -7,11 +7,11 @@ Param(
 cd $PSScriptRoot
 
 # Subscription ID If Required
-$azSubscription = (Get-Content ".\subscriptions.txt")[0]
+$azSubscription = (Get-Content ".\subscriptions.txt")[2]            # 2 is LIVE
 
-#Connect-AzAccount -Credential $Cred -Subscription $azSubscription # Non-MFA
-Connect-AzAccount -Subscription $azSubscription # MFA Account
-
+#Connect-AzAccount -Credential $Cred -Subscription $azSubscription  # Non-MFA
+#Connect-AzAccount -Subscription $azSubscription                     # MFA Account
+#Connect-AzAccount -Subscription $azSubscription -DeviceCode        # Device Code
 $SubscriptionId = (Get-AzContext).Subscription.Id
 if(!($azSubscription -eq $SubscriptionId)) {
     Write-Error "Subscription ID Mismatch!!!!"
@@ -19,30 +19,33 @@ if(!($azSubscription -eq $SubscriptionId)) {
 }
 
 # VM Admin Account
-$password = Get-Content ".\password.txt" | ConvertTo-SecureString -AsPlainText -Force       # Local Admin Password for VMs 
-$RVMVMCred = New-Object System.Management.Automation.PSCredential ("AppPackager", $password)   # Local Admin User for VMs
+$password = Get-Content ".\password.txt" | ConvertTo-SecureString -AsPlainText -Force           # Local Admin Password for VMs 
+$RVMVMCred = New-Object System.Management.Automation.PSCredential ("AppPackager", $password)    # Local Admin User for VMs
 
 $RequirePublicIPs = $true
 $RVMResourceGroupName = "rg-wl-prod-packaging"
-$RVMStorageAccountName = "wlprodeusprodpkgstr01tmp"
+#$RVMResourceGroupName = "rg-wl-prod-eucpackaging"
+$RVMStorageAccountName = "wlprodeusprodpkgstr01"
+#$RVMStorageAccountName = "stwleucpackaging01"
 $ContainerName = "data"                                             # Storage container name (if used)
 $FileShareName = "pkgazfiles01"                                     # Storage FileShare name (if used)
-$RVMVNet = "rg-wl-prod-vnet"                                     # Environment Virtual Network name
+$RVMVNet = "rg-wl-prod-vnet"                                        # Environment Virtual Network name
 $RVMSubnetName = "snet-wl-eus-prod-packaging"                       # Environment Virtual Subnet name
 $RVMNsgName = "nsg-wl-eus-prod-packaging"
 $VMSizeStandard = "Standard_B2s"                                    # Specifies Azure Size to use for the Standard VM
-$VMSizeAdminStudio = "Standard_D2_v2" 
+$VMSizeAdminStudio = "Standard_D2_v2"                               # Specifies Azure Size to use for the AdminStudio VM
 $VMImage = "MicrosoftWindowsDesktop:Windows-10:20h2-ent:latest"     # Specifies the Publisher, Offer, SKU and Version of the image to be used to provision the VM
-$VMShutdown = $false                                                 # Specifies if the newly provisioned VM should be shutdown (can save costs)
+$VMShutdown = $false                                                # Specifies if the newly provisioned VM should be shutdown (can save costs)
 $AutoShutdown = $true                                               # Configures Windows 10 VMs to shutdown at a specified time                                             
 $RVMLocation = "eastus"  
+$ContainerScripts = "C:\Users\d.ames\OneDrive - Avanade\Documents\GitHub\azure-powershell\PackagingFactoryConfig-main" # All files in this path will be copied up to the Storage Account Container, so available to be run on the remote VMs (includes template script for packaging share mapping
 
 # Environment variables
 $rbacOwner = "euc-rbac-owner"
 $rbacContributor = "euc-rbac-contributor"
 $rbacReadOnly = "euc-rbac-readonly"
 
-cd $PSScriptRoot
+Import-Module AZ.Compute
 #endregion Setup
 
 function CreateStandardVM-Script($VMName) {
@@ -251,16 +254,70 @@ function ScriptBuild-Config {
 
 }
 
+function UpdateStorage {
+    if ($true) {
+        Try {
+            $RGNameUAT = $RVMResourceGroupName
+            $StorAcc = $RVMStorageAccountName
+            #$Key = Get-AzStorageAccountKey -ResourceGroupName $RGNameUAT -AccountName $StorAcc
+            $HyperVContent = (Get-Content -Path "$ContainerScripts\EnableHyperVTmpl.ps1").replace("xxxx", $StorAcc)
+            $HyperVContent = $HyperVContent.replace("ssss", $azSubscription)
+            $HyperVContent.replace("rrrr", $RGNameUAT) | Set-Content -Path "$ContainerScripts\EnableHyperV.ps1"      
+            $VMConfigContent = (Get-Content -Path "$ContainerScripts\VMConfigTmpl.ps1").replace("xxxx", $StorAcc)
+            $VMConfigContent = $VMConfigContent.replace("ssss", $azSubscription)
+            $VMConfigContent.replace("rrrr", $RGNameUAT) | Set-Content -Path "$ContainerScripts\VMConfig.ps1"
+            $RunOnceContent = (Get-Content -Path "$ContainerScripts\RunOnceTmpl.ps1").replace("xxxx", $StorAcc)
+            $RunOnceContent = $RunOnceContent.replace("ssss", $azSubscription)
+            $RunOnceContent.replace("rrrr", $RGNameUAT) | Set-Content -Path "$ContainerScripts\RunOnce.ps1"
+            $AdminStudioContent = (Get-Content -Path "$ContainerScripts\AdminStudioTmpl.ps1").replace("xxxx", $StorAcc)
+            $AdminStudioContent = $AdminStudioContent.replace("ssss", $azSubscription)
+            $AdminStudioContent.replace("rrrr", $RGNameUAT) | Set-Content -Path "$ContainerScripts\AdminStudio.ps1"
+            $ORCAContent = (Get-Content -Path "$ContainerScripts\ORCATmpl.ps1").replace("xxxx", $StorAcc)
+            $ORCAContent = $ORCAContent.replace("ssss", $azSubscription)
+            $ORCAContent.replace("rrrr", $RGNameUAT) | Set-Content -Path "$ContainerScripts\ORCA.ps1"
+            $GlassWireContent = (Get-Content -Path "$ContainerScripts\GlassWireTmpl.ps1").replace("xxxx", $StorAcc)
+            $GlassWireContent = $GlassWireContent.replace("ssss", $azSubscription)
+            $GlassWireContent.replace("rrrr", $RGNameUAT) | Set-Content -Path "$ContainerScripts\GlassWire.ps1"
+            $7zipContent = (Get-Content -Path "$ContainerScripts\7-ZipTmpl.ps1").replace("xxxx", $StorAcc)
+            $7zipContent = $7zipContent.replace("ssss", $azSubscription)
+            $7zipContent.replace("rrrr", $RGNameUAT) | Set-Content -Path "$ContainerScripts\7-Zip.ps1"
+            $DesktopAppsContent = (Get-Content -Path "$ContainerScripts\DesktopAppsTmpl.ps1").replace("xxxx", $StorAcc)
+            $DesktopAppsContent = $DesktopAppsContent.replace("ssss", $azSubscription)
+            $DesktopAppsContent.replace("rrrr", $RGNameUAT) | Set-Content -Path "$ContainerScripts\DesktopApps.ps1"
+            $InstEdContent = (Get-Content -Path "$ContainerScripts\InstEdTmpl.ps1").replace("xxxx", $StorAcc)
+            $InstEdContent = $InstEdContent.replace("ssss", $azSubscription)
+            $InstEdContent.replace("rrrr", $RGNameUAT) | Set-Content -Path "$ContainerScripts\InstEd.ps1"
+            $IntuneWinUtilityContent = (Get-Content -Path "$ContainerScripts\IntuneWinUtilityTmpl.ps1").replace("xxxx", $StorAcc)
+            $IntuneWinUtilityContent = $IntuneWinUtilityContent.replace("ssss", $azSubscription)
+            $IntuneWinUtilityContent.replace("rrrr", $RGNameUAT) | Set-Content -Path "$ContainerScripts\IntuneWinUtility.ps1"
+
+            $MapFileContent = (Get-Content -Path "$ContainerScripts\MapDrvTmpl.ps1").replace("xxxx", $StorAcc)
+            $MapFileContent.replace("yyyy", $RGNameUAT) | Set-Content -Path "$ContainerScripts\MapDrv.ps1"      
+            
+        }
+        Catch {
+            Write-Error "An error occured trying to create the customised scripts for the packaging share."
+            Write-Error $_.Exception.Message
+        }
+        #. .\SyncFiles.ps1 -CallFromCreatePackaging -Recurse        # Sync Files to Storage Blob
+        . .\SyncFiles.ps1 -CallFromCreatePackaging                  # Sync Files to Storage Blob
+        Write-Host "Storage Account has been Updated with files"
+    }
+}
+
 #region Main
 Write-Host "Running RebuildVM.ps1"
 
 if($RVMVMName -eq "") {
     $VMlist = Get-AzVM -Name * -ResourceGroupName $RVMResourceGroupName
     $RVMVMName = ($VMlist | where { $_.Name -ne "vmwleuchyperv1" } | select Name | ogv -Title "Select Virtual Machine to Rebuild" -PassThru).Name
-
+    if (!$RVMVMName) {exit}
     $VMSpec = @("Standard","AdminStudio")
     $RVMSpec = $VMSpec | ogv -Title "Select Virtual Machine Spec" -PassThru
 }
+
+Write-Host "Syncing Files"
+UpdateStorage
 
 Write-Host "Rebuilding $RVMVMName"
 Try {

@@ -2,10 +2,10 @@
 cd $PSScriptRoot
 
 # Subscription ID If Required
-$azSubscription = (Get-Content ".\subscriptions.txt")[1]
+$azSubscription = (Get-Content ".\subscriptions.txt")[2]                        # 2 is LIVE
 
 #Connect-AzAccount -Credential $(Get-Credential) -Subscription $azSubscription   # Non-MFA
-Connect-AzAccount -Subscription $azSubscription                                 # MFA Account
+#Connect-AzAccount -Subscription $azSubscription                                 # MFA Account
 
 $SubscriptionId = (Get-AzContext).Subscription.Id
 if (!($azSubscription -eq $SubscriptionId)) {
@@ -13,8 +13,8 @@ if (!($azSubscription -eq $SubscriptionId)) {
     exit
 }
 
-$RequireCreate = $true
-$RequireConfigure = $true
+$RequireCreate = $false
+$RequireConfigure = $false
 $UseTerraform = $false
 $RequireUpdateStorage = $true
 
@@ -49,7 +49,7 @@ $rbacReadOnly = "euc-rbac-readonly"
 
 # Storage Account and Container Names
 $StorAccRequired = $RequireStorageAccount                           # Specifies if a Storage Account and Container should be created
-$StorAcc = "wlprodeusprodpkgstr01tmp"                               # Storage account name (if used) (24 chars maximum)
+$StorAcc = "wlprodeusprodpkgstr01"                               # Storage account name (if used) (24 chars maximum)
 $ContainerName = "data"                                             # Storage container name (if used)
 $FileShareName = "pkgazfiles01"                                     # Storage FileShare name (if used)
 $ContainerScripts = "C:\Users\d.ames\OneDrive - Avanade\Documents\GitHub\azure-powershell\PackagingFactoryConfig-main" # All files in this path will be copied up to the Storage Account Container, so available to be run on the remote VMs (includes template script for packaging share mapping
@@ -118,8 +118,8 @@ function UpdateStorage {
             Write-Error "An error occured trying to create the customised scripts for the packaging share."
             Write-Error $_.Exception.Message
         }
-        . .\SyncFiles.ps1 -CallFromCreatePackaging -Recurse        # Sync Files to Storage Blob
-        #. .\SyncFiles.ps1 -CallFromCreatePackaging                  # Sync Files to Storage Blob
+        #. .\SyncFiles.ps1 -CallFromCreatePackaging -Recurse        # Sync Files to Storage Blob
+        . .\SyncFiles.ps1 -CallFromCreatePackaging                  # Sync Files to Storage Blob
         Write-Host "Storage Account has been Updated with files"
     }
 }
