@@ -9,7 +9,7 @@
         VirtualNetworkName  = $VNetPROD
         SubnetName          = $SubnetName
         SecurityGroupName   = $NsgNamePROD
-        PublicIpAddressName = $PublicIpAddressName
+        PublicIpAddressName = '""'
         ImageName           = $VMImage
         Credential          = $VMCred
     }
@@ -48,7 +48,7 @@ function CreateAdminStudioVM-Script($VMName) {
         VirtualNetworkName  = $VNetPROD
         SubnetName          = $SubnetName
         SecurityGroupName   = $NsgNamePROD
-        PublicIpAddressName = $PublicIpAddressName
+        PublicIpAddressName = '""'
         ImageName           = $VMImage
         Credential          = $VMCred
     }

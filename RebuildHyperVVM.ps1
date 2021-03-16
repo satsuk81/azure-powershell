@@ -7,11 +7,11 @@ $scriptname = "Build-VM.ps1"                                    # This file's fi
 $EventlogName = "Accenture"                                     # Event Log Folder Name
 $EventlogSource = "Hyper-V VM Build Script"                     # Event Log Source Name
 
-$VMDrive = "C:"                                                 # Specify the root disk drive to use
+$VMDrive = "F:"                                                 # Specify the root disk drive to use
 $VMFolder = "Virtual Machines"                                  # Specify the folder to store the VM data
 $VHDFolder = "Virtual Hard Disks"                               # Specify the folder to store the VHDs
 $VMCheckpointFolder = "Checkpoints"                             # Specify the folder to store the Checkpoints
-$VmNamePrefix = "EUC-PROD-"
+$VmNamePrefix = "EUC-UAT-"
 $VMRamSize = 2GB
 $VMVHDSize = 100GB
 $VMCPUCount = 4
@@ -19,8 +19,19 @@ $VMSwitchName = "Packaging Switch"
 
 $LocalCredUser = "DESKTOP-7O8HROP\admin"
 $DomainCredUser = "space\administrator"
+
 $Domain = "space"
-$OUPath = "OU=Workstations,OU=Computers,OU=Space,DC=space,DC=dan"
+#$OUPath = "OU=Workstations,OU=Computers,OU=Space,DC=space,DC=dan"
+
+$Domain = "wella.team"
+$OUPath = "OU=Packaging,OU=Servers,DC=wella,DC=team"
+
+$IPAddress = ""
+$IPSubnetPrefix = "26"
+$IPGateway = "10.22.255.129"
+$IPDNS = @("10.21.224.10","10.21.224.11","10.21.239.196")
+
+$VMListData = Import-Csv .\hyperv-vms.csv
 
 cd $PSScriptRoot
 
@@ -99,9 +110,21 @@ function Create-VM {
     $VMObject | Start-VM -Verbose -ErrorAction Stop
     Start-Sleep -Seconds 60
 
+    $IPAddress = ($VMListData | where {$_.Name -eq $VMName}).IPAddress
+
         # Pre Domain Join
     Remove-Variable erroric -ErrorAction SilentlyContinue
     Invoke-Command -VMName $VMName -Credential $LocalCred -ErrorVariable erroric -ScriptBlock {
+        $NetAdapter = Get-NetAdapter -Physical | where {$_.Status -eq "Up"}
+        if (($NetAdapter | Get-NetIPConfiguration).IPv4Address.IPAddress) {
+            $NetAdapter | Remove-NetIPAddress -AddressFamily IPv4 -Confirm:$false
+        }
+        if (($NetAdapter | Get-NetIPConfiguration).Ipv4DefaultGateway) {
+            $NetAdapter | Remove-NetRoute -AddressFamily IPv4 -Confirm:$false
+        }
+        $NetAdapter | New-NetIPAddress -AddressFamily IPv4 -IPAddress $Using:IPAddress -PrefixLength $Using:IPSubnetPrefix -DefaultGateway $Using:IPGateway
+        $NetAdapter | Set-DnsClientServerAddress -ServerAddresses $Using:IPDNS
+
         if(!(Test-Connection "1.1.1.1" -Quiet)) { Write-Error "Internet Issue" }
         if(!(Test-Connection "google.com" -Quiet)) { Write-Error "DNS Issue" }
     }
@@ -126,7 +149,7 @@ function Create-VM {
             $joined = $true
             $attempts++
             try {
-                Add-Computer -LocalCredential $Using:LocalCred -DomainName $Using:Domain -Credential $Using:DomainCred -Restart -Verbose -ErrorAction Stop -OUPath $Using:OUPath
+                #Add-Computer -LocalCredential $Using:LocalCred -DomainName $Using:Domain -Credential $Using:DomainCred -Restart -Verbose -ErrorAction Stop -OUPath $Using:OUPath
                 # -NewName $CP -OUPath $OU 
             } catch {              
                 $joined = $false
@@ -144,9 +167,7 @@ function Create-VM {
     }    
         # Post Domain Join - LocalCred wont work anymore.
     Remove-Variable erroric -ErrorAction SilentlyContinue
-    Invoke-Command -VMName $VMName -Credential $DomainCred -ErrorVariable erroric -ScriptBlock {
-
-    }
+    #Invoke-Command -VMName $VMName -Credential $DomainCred -ErrorVariable erroric -ScriptBlock {}
     if($erroric) {
         Write-EventLog -LogName $EventlogName -Source $EventlogSource -EventID 25101 -EntryType Error -Message $error[0].Exception
     }  
@@ -159,8 +180,9 @@ function Create-VM {
 Write-Host "Running RebuildHyperVVM.ps1"
 
 if($RVMVMName -eq "") {
-    $VMlist = Get-VM -Name *
-    $RVMVMName = ($VMlist | where { $_.Name -like "$VmNamePrefix*" } | select Name | ogv -Title "Select Virtual Machine to Rebuild" -PassThru).Name
+    #$VMList = Get-VM -Name *
+    $VMList = $VMListData
+    $RVMVMName = ($VMList | where { $_.Name -like "$VmNamePrefix*" } | select * | ogv -Title "Select Virtual Machine to Rebuild" -PassThru).Name
 }
 
 Write-Host "Rebuilding $RVMVMName"

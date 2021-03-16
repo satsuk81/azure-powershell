@@ -44,6 +44,7 @@ function CreateHyperVVM-Script($VMName) {
             VirtualNetworkName = $VNetPROD
             SubnetName         = $SubnetName
             SecurityGroupName  = $NsgNamePROD
+            PublicIpAddressName = '""'
             ImageName          = $VmImage
             Credential         = $VMCred
         }   

@@ -30,7 +30,7 @@ Connect-AzAccount -identity -ErrorAction Stop -Subscription fdbeeaa5-02f9-4806-b
 # Copy zip file to local drive and install
 Write-EventLog -LogName $EventlogName -Source $EventlogSource -EventID 25101 -EntryType Information -Message "Atempting to download $app from Azure storage account to C:\Windows\Temp"
 
-$StorAcc = get-azstorageaccount -resourcegroupname rg-wl-prod-eucpackaging -name stwleucpackaging01
+$StorAcc = get-azstorageaccount -resourcegroupname rg-wl-prod-packaging -name wlprodeusprodpkgstr01
 if ($zip) {
     $Result = Get-AzStorageBlobContent -Container data -Blob "./Media/$filename" -destination "c:\Windows\temp\" -context $StorAcc.context
     If ($Result.Name -eq "Media/$filename") {

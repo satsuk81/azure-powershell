@@ -19,8 +19,8 @@ if (!($azSubscription -eq $SubscriptionId)) {
 }
 
 $SFLocalPath = "C:\Users\d.ames\OneDrive - Avanade\Documents\GitHub\azure-powershell\PackagingFactoryConfig-main"
-$SFResourceGroupName = "rg-wl-prod-eucpackaging"
-$SFStorageAccountName = "stwleucpackaging01"
+$SFResourceGroupName = "rg-wl-prod-packaging"
+$SFStorageAccountName = "wlprodeusprodpkgstr01"
 $SFContainerName = "data"
 
 function SyncFiles {

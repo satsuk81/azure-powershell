@@ -4,7 +4,7 @@ $scriptname = "Build-VM.ps1"                                    # This file's fi
 $EventlogName = "Accenture"                                     # Event Log Folder Name
 $EventlogSource = "Hyper-V VM Build Script"                     # Event Log Source Name
 
-$VMDrive = "C:"                                                 # Specify the root disk drive to use
+$VMDrive = "F:"                                                 # Specify the root disk drive to use
 $VMFolder = "Virtual Machines"                                  # Specify the folder to store the VM data
 $VHDFolder = "Virtual Hard Disks"                               # Specify the folder to store the VHDs
 $VMCheckpointFolder = "Checkpoints"                             # Specify the folder to store the Checkpoints

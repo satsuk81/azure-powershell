@@ -16,3 +16,5 @@ password.txt
 *.tf
 PackagingFactoryConfig-main/DomainCred.xml
 PackagingFactoryConfig-main/LocalCred.xml
+StorageSP.xml
+tenant.txt

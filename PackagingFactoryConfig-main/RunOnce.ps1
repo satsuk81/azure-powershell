@@ -25,7 +25,7 @@ Connect-AzAccount -identity -ErrorAction Stop -Subscription fdbeeaa5-02f9-4806-b
 # Copy MapDrv.ps1 to local drive
 Write-EventLog -LogName $EventlogName -Source $EventlogSource -EventID 25101 -EntryType Information -Message "Atempting to download MapDrv.ps1 from Azure storage account to C:\Windows\Temp"
 
-$StorAcc = get-azstorageaccount -resourcegroupname rg-wl-prod-eucpackaging -name stwleucpackaging01
+$StorAcc = get-azstorageaccount -resourcegroupname rg-wl-prod-packaging -name wlprodeusprodpkgstr01
 $Result = Get-AzStorageBlobContent -Container data -Blob "MapDrv.ps1" -destination "c:\Windows\temp\" -context $StorAcc.context
 If ($Result.Name -eq "MapDrv.ps1") {
 	new-itemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce" -Name "MapPackagingDrive" -Value "Powershell.exe -ExecutionPolicy Unrestricted -file `"C:\Windows\Temp\MapDrv.ps1`"" -PropertyType "String"

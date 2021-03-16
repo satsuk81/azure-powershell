@@ -25,9 +25,12 @@
             Write-Host "Auto Shutdown Enabled for 1800"
         }
         $NewVm = Get-AzADServicePrincipal -DisplayName $VMName
-        $Group = Get-AzADGroup -searchstring $rbacContributor
-        Add-AzADGroupMember -TargetGroupObjectId $Group.Id -MemberObjectId $NewVm.Id -Verbose
+        #$Group = Get-AzADGroup -searchstring $rbacContributor
+        #Add-AzADGroupMember -TargetGroupObjectId $Group.Id -MemberObjectId $NewVm.Id -Verbose
+
+        Get-AzContext -Name "StorageSP" | Select-AzContext
         New-AzRoleAssignment -ObjectId $NewVm.Id -RoleDefinitionName "Contributor" -Scope "/subscriptions/$SubscriptionId/resourceGroups/$RGNameUAT/providers/Microsoft.Storage/storageAccounts/$StorAcc"
+        Get-AzContext -Name "User" | Select-AzContext
 
         Restart-AzVM -ResourceGroupName $RGNameUAT -Name $VMName | Out-Null
         Write-Host "Restarting VM..."
@@ -77,9 +80,12 @@ function ConfigureAdminStudioVM($VMName) {
             Write-Host "Auto Shutdown Enabled for 1800"
         }
         $NewVm = Get-AzADServicePrincipal -DisplayName $VMName
-        $Group = Get-AzADGroup -searchstring $rbacContributor
-        Add-AzADGroupMember -TargetGroupObjectId $Group.Id -MemberObjectId $NewVm.Id
+        #$Group = Get-AzADGroup -searchstring $rbacContributor
+        #Add-AzADGroupMember -TargetGroupObjectId $Group.Id -MemberObjectId $NewVm.Id
+
+        Get-AzContext -Name "StorageSP" | Select-AzContext
         New-AzRoleAssignment -ObjectId $NewVm.Id -RoleDefinitionName "Contributor" -Scope "/subscriptions/$SubscriptionId/resourceGroups/$RGNameUAT/providers/Microsoft.Storage/storageAccounts/$StorAcc"
+        Get-AzContext -Name "User" | Select-AzContext
 
         Restart-AzVM -ResourceGroupName $RGNameUAT -Name $VMName | Out-Null
         Write-Host "Restarting VM..."

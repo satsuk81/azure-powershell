@@ -30,7 +30,7 @@ Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V -All -NoRes
 Write-EventLog -LogName $EventlogName -Source $EventlogSource -EventID 25101 -EntryType Information -Message "Enable Management Tools"
 Install-WindowsFeature -Name Hyper-V -IncludeManagementTools
 
-$StorAcc = Get-AzStorageAccount -ResourceGroupName rg-wl-prod-eucpackaging -Name stwleucpackaging01
+$StorAcc = Get-AzStorageAccount -ResourceGroupName rg-wl-prod-packaging -Name wlprodeusprodpkgstr01
 $Result1 = Get-AzStorageBlobContent -Container data -Blob "LocalCred.xml" -Destination "c:\Windows\temp\" -Context $StorAcc.context
 $Result2 = Get-AzStorageBlobContent -Container data -Blob "DomainCred.xml" -Destination "c:\Windows\temp\" -Context $StorAcc.context
 

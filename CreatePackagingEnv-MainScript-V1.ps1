@@ -1,17 +1,29 @@
 ﻿#region Setup
 cd $PSScriptRoot
 
+# Tenant
+$azTenant = "ab90ccb8-7c86-44ce-a472-e122f71345d0"
+
 # Subscription ID If Required
 $azSubscription = (Get-Content ".\subscriptions.txt")[2]                        # 2 is LIVE
 
 #Connect-AzAccount -Credential $(Get-Credential) -Subscription $azSubscription   # Non-MFA
-#Connect-AzAccount -Subscription $azSubscription                                 # MFA Account
+Connect-AzAccount -Tenant $aztenant -Subscription $azSubscription                                 # MFA Account
 
 $SubscriptionId = (Get-AzContext).Subscription.Id
 if (!($azSubscription -eq $SubscriptionId)) {
     Write-Error "Subscription ID Mismatch!!!!"
     exit
 }
+Get-AzContext | Rename-AzContext -TargetName "User" -Force
+
+$StorageSP = Import-Clixml .\StorageSP.xml
+Connect-AzAccount -Tenant $azTenant -Subscription $azSubscription -Credential $StorageSP -ServicePrincipal
+Get-AzContext | Rename-AzContext -TargetName "StorageSP" -Force
+#Get-AzContext -Name "StorageSP" | Select-AzContext
+Get-AzContext -Name "User" | Select-AzContext
+#Get-AzContext -ListAvailable | ForEach-Object { Remove-AzContext $_.Name }
+#Get-AzContext -ListAvailable | ForEach-Object { Select-AzContext -DefaultProfile }
 
 $RequireCreate = $false
 $RequireConfigure = $false
@@ -20,24 +32,24 @@ $RequireUpdateStorage = $true
 
 # Which Script Components to Install
 $RequireUserGroups = $false
-$RequireRBAC = $true
+$RequireRBAC = $false
 
-$RequireResourceGroups = $true
-$RequireStorageAccount = $true
-$RequireVNET = $true
-$RequireNSG = $true
-$RequirePublicIPs = $true
+$RequireResourceGroups = $false
+$RequireStorageAccount = $false
+$RequireVNET = $false
+$RequireNSG = $false
+$RequirePublicIPs = $false
 
 $RequireHyperV = $false
-$RequireStandardVMs = $true
+$RequireStandardVMs = $false
 $RequireAdminStudioVMs = $false
 
 # General Variables
 $location = "eastus"                                            # Azure Region for resources to be built into
 $RGNameUAT = "rg-wl-prod-packaging"                             # UAT Resource group name
 $RGNamePROD = "rg-wl-prod-packaging"                            # PROD Resource group name
-$VNetUAT = "rg-wl-prod-vnet"                                    # UAT Environment Virtual Network name
-$VNetPROD = "rg-wl-prod-vnet"                                   # PROD Environment Virtual Network name
+$VNetUAT = "vnet-wl-eus-prod"                                   # UAT Environment Virtual Network name
+$VNetPROD = "vnet-wl-eus-prod"                                  # PROD Environment Virtual Network name
 $SubnetName = "snet-wl-eus-prod-packaging"                      # Environment Virtual Subnet name
 $NsgNameUAT = "nsg-wl-eus-prod-packaging"                       # UAT Network Security Group name (firewall)
 $NsgNamePROD = "nsg-wl-eus-prod-packaging"                      # PROD Network Security Group name (firewall)
@@ -53,6 +65,8 @@ $StorAcc = "wlprodeusprodpkgstr01"                               # Storage accou
 $ContainerName = "data"                                             # Storage container name (if used)
 $FileShareName = "pkgazfiles01"                                     # Storage FileShare name (if used)
 $ContainerScripts = "C:\Users\d.ames\OneDrive - Avanade\Documents\GitHub\azure-powershell\PackagingFactoryConfig-main" # All files in this path will be copied up to the Storage Account Container, so available to be run on the remote VMs (includes template script for packaging share mapping
+
+
 
 # VM Admin Account
 $password = Get-Content ".\password.txt" | ConvertTo-SecureString -AsPlainText -Force           # Local Admin Password for VMs 
@@ -78,7 +92,7 @@ Set-Item Env:\SuppressAzurePowerShellBreakingChangeWarnings "true"  # Turns off 
 function UpdateStorage {
     if ($RequireUpdateStorage) {
         Try {
-            #$Key = Get-AzStorageAccountKey -ResourceGroupName $RGNameUAT -AccountName $StorAcc
+            $Key = Get-AzStorageAccountKey -ResourceGroupName $RGNameUAT -AccountName $StorAcc
             $HyperVContent = (Get-Content -Path "$ContainerScripts\EnableHyperVTmpl.ps1").replace("xxxx", $StorAcc)
             $HyperVContent = $HyperVContent.replace("ssss", $azSubscription)
             $HyperVContent.replace("rrrr", $RGNameUAT) | Set-Content -Path "$ContainerScripts\EnableHyperV.ps1"      
@@ -111,7 +125,7 @@ function UpdateStorage {
             $IntuneWinUtilityContent.replace("rrrr", $RGNameUAT) | Set-Content -Path "$ContainerScripts\IntuneWinUtility.ps1"
 
             $MapFileContent = (Get-Content -Path "$ContainerScripts\MapDrvTmpl.ps1").replace("xxxx", $StorAcc)
-            $MapFileContent.replace("yyyy", $RGNameUAT) | Set-Content -Path "$ContainerScripts\MapDrv.ps1"      
+            $MapFileContent.replace("yyyy", $key.value[0]) | Set-Content -Path "$ContainerScripts\MapDrv.ps1"      
             
         }
         Catch {
@@ -193,7 +207,7 @@ if($RequireUpdateStorage) {
 }
 
 if ($RequireConfigure) {
-    UpdateRBAC
+    #UpdateRBAC
 
     # Configure Packaging VM Script
     .\CreatePackagingEnv-PackagingVms-Configure.ps1
