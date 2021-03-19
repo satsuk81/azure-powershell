@@ -22,8 +22,12 @@ Install-Module -Name Az.Storage -Force -ErrorAction Stop
 Write-EventLog -LogName $EventlogName -Source $EventlogSource -EventID 25101 -EntryType Information -Message "Attempting to connect to Azure"    
 Connect-AzAccount -identity -ErrorAction Stop -Subscription fdbeeaa5-02f9-4806-b4b6-3450ce500f51
 
-Write-EventLog -LogName $EventlogName -Source $EventlogSource -EventID 25101 -EntryType Information -Message "Copying MapDrv script"
-$ctx = get-azstorageaccount -ResourceGroupName rg-wl-prod-packaging -name wlprodeusprodpkgstr01
-$ctx | Get-AzStorageBlobContent -Container "data" -Blob "MapDrv.ps1" -Destination "C:\Users\Public\Desktop"
+Write-EventLog -LogName $EventlogName -Source $EventlogSource -EventID 25101 -EntryType Information -Message "Adding Standard User - eucuser"
+$user = Get-LocalUser -Name eucuser 
+$password = ConvertTo-SecureString -String "Password1234" -AsPlainText -Force
+if(!($user)) {
+    $newuser = New-LocalUser -Name eucuser -AccountNeverExpires -Password $password -PasswordNeverExpires -UserMayNotChangePassword
+    Add-LocalGroupMember -Group "Remote Desktop Users" -Member $newuser
+}
 
 Write-EventLog -LogName $EventlogName -Source $EventlogSource -EventId 25101 -EntryType Information -Message "Completed $scriptname"

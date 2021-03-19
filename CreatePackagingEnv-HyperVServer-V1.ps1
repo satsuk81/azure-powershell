@@ -35,21 +35,17 @@ function CreateHyperVVM-Script($VMName) {
             Credential          = $VMCred
         }
     }
-    else {
-        $Params = @{
-            ResourceGroupName  = $RGNamePROD
-            Name               = $VMName
-            Size               = $VmSize
-            Location           = $Location
-            VirtualNetworkName = $VNetPROD
-            SubnetName         = $SubnetName
-            SecurityGroupName  = $NsgNamePROD
-            PublicIpAddressName = '""'
-            ImageName          = $VmImage
-            Credential         = $VMCred
-        }   
-    }
-    $VMCreate = New-AzVM @Params -SystemAssignedIdentity    
+    $Vnet = Get-AzVirtualNetwork -Name $VNetPROD -ResourceGroupName "rg-wl-prod-vnet"
+    $Subnet = Get-AzVirtualNetworkSubnetConfig -Name $SubnetName -VirtualNetwork $vnet
+    $NIC = New-AzNetworkInterface -Name "$VMName-nic" -ResourceGroupName $RGNamePROD -Location $Location -SubnetId $Subnet.Id
+    $VirtualMachine = New-AzVMConfig -VMName $VMName -VMSize $VmSize -IdentityType SystemAssigned
+    $VirtualMachine = Set-AzVMOperatingSystem -VM $VirtualMachine -Windows -ComputerName $VMName -Credential $VMCred #-ProvisionVMAgent -EnableAutoUpdate
+    $VirtualMachine = Add-AzVMNetworkInterface -VM $VirtualMachine -Id $NIC.Id
+    #$VirtualMachine = Set-AzVMSourceImage -VM $VirtualMachine -PublisherName 'MicrosoftWindowsDesktop' -Offer 'Windows-10' -Skus '20h2-ent' -Version 'latest'
+    $VirtualMachine = Set-AzVMSourceImage -VM $VirtualMachine -PublisherName 'MicrosoftWindowsServer' -Offer 'WindowsServer' -Skus '2019-Datacenter' -Version latest
+    $VirtualMachine = Set-AzVMBootDiagnostic -VM $VirtualMachine -Disable
+
+    New-AzVM -ResourceGroupName $RGNamePROD -Location $Location -VM $VirtualMachine -Verbose  
 }
 
 function TerraformBuild {

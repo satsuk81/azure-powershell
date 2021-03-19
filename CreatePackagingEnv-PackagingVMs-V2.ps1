@@ -1,20 +1,14 @@
 ﻿function CreateStandardVM-Script($VMName) {
-    $PublicIpAddressName = $VMName + "-ip"
+    $Vnet = Get-AzVirtualNetwork -Name $VNetPROD -ResourceGroupName "rg-wl-prod-vnet"
+    $Subnet = Get-AzVirtualNetworkSubnetConfig -Name $SubnetName -VirtualNetwork $vnet
+    $NIC = New-AzNetworkInterface -Name "$VMName-nic" -ResourceGroupName $RGNamePROD -Location $Location -SubnetId $Subnet.Id
+    $VirtualMachine = New-AzVMConfig -VMName $VMName -VMSize $VMSizeStandard -IdentityType SystemAssigned
+    $VirtualMachine = Set-AzVMOperatingSystem -VM $VirtualMachine -Windows -ComputerName $VMName -Credential $VMCred #-ProvisionVMAgent -EnableAutoUpdate
+    $VirtualMachine = Add-AzVMNetworkInterface -VM $VirtualMachine -Id $NIC.Id
+    $VirtualMachine = Set-AzVMSourceImage -VM $VirtualMachine -PublisherName 'MicrosoftWindowsDesktop' -Offer 'Windows-10' -Skus '20h2-ent' -Version 'latest'
+    $VirtualMachine = Set-AzVMBootDiagnostic -VM $VirtualMachine -Disable
 
-    $Params = @{
-        ResourceGroupName   = $RGNameUAT
-        Name                = $VMName
-        Size                = $VMSizeStandard
-        Location            = $Location
-        VirtualNetworkName  = $VNetPROD
-        SubnetName          = $SubnetName
-        SecurityGroupName   = $NsgNamePROD
-        PublicIpAddressName = '""'
-        ImageName           = $VMImage
-        Credential          = $VMCred
-    }
-
-    $VMCreate = New-AzVm @Params -SystemAssignedIdentity
+    New-AzVM -ResourceGroupName $RGNamePROD -Location $Location -VM $VirtualMachine -Verbose
 }
 
 function CreateStandardVM-Terraform($VMName) {
@@ -38,22 +32,16 @@ module "+[char]34+$VMName+[char]34+" {
 }
 
 function CreateAdminStudioVM-Script($VMName) {
-    $PublicIpAddressName = $VMName + "-ip"
+    $Vnet = Get-AzVirtualNetwork -Name $VNetPROD -ResourceGroupName "rg-wl-prod-vnet"
+    $Subnet = Get-AzVirtualNetworkSubnetConfig -Name $SubnetName -VirtualNetwork $vnet
+    $NIC = New-AzNetworkInterface -Name "$VMName-nic" -ResourceGroupName $RGNamePROD -Location $Location -SubnetId $Subnet.Id
+    $VirtualMachine = New-AzVMConfig -VMName $VMName -VMSize $VMSizeAdminStudio -IdentityType SystemAssigned
+    $VirtualMachine = Set-AzVMOperatingSystem -VM $VirtualMachine -Windows -ComputerName $VMName -Credential $VMCred #-ProvisionVMAgent -EnableAutoUpdate
+    $VirtualMachine = Add-AzVMNetworkInterface -VM $VirtualMachine -Id $NIC.Id
+    $VirtualMachine = Set-AzVMSourceImage -VM $VirtualMachine -PublisherName 'MicrosoftWindowsDesktop' -Offer 'Windows-10' -Skus '20h2-ent' -Version 'latest'
+    $VirtualMachine = Set-AzVMBootDiagnostic -VM $VirtualMachine -Disable
 
-    $Params = @{
-        ResourceGroupName   = $RGNameUAT
-        Name                = $VMName
-        Size                = $VMSizeAdminStudio
-        Location            = $Location
-        VirtualNetworkName  = $VNetPROD
-        SubnetName          = $SubnetName
-        SecurityGroupName   = $NsgNamePROD
-        PublicIpAddressName = '""'
-        ImageName           = $VMImage
-        Credential          = $VMCred
-    }
-
-    $VMCreate = New-AzVM @Params -SystemAssignedIdentity
+    New-AzVM -ResourceGroupName $RGNamePROD -Location $Location -VM $VirtualMachine -Verbose
 }
 
 function CreateAdminStudioVM-Terraform($VMName) {

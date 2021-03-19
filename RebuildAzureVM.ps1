@@ -1,6 +1,6 @@
 Param(
-    [Parameter(Mandatory = $false)][string]$RVMVMName = "wleusvanwin112",
-    [Parameter(Mandatory = $false)][ValidateSet('Standard', 'AdminStudio')][string]$RVMSpec = "Standard"
+    [Parameter(Mandatory = $false)][string]$VMName = "",
+    [Parameter(Mandatory = $false)][ValidateSet('Standard', 'AdminStudio')][string]$Spec = "Standard"
 )
 
 #region Setup
@@ -11,7 +11,7 @@ Clear-AzContext -Force
 $azTenant = (Get-Content ".\tenant.txt")
 
 # Subscription ID If Required
-$azSubscription = (Get-Content ".\subscriptions.txt")[2]                            # 2 is LIVE
+$azSubscription = (Get-Content ".\subscription.txt")
 
 #Connect-AzAccount -Credential $(Get-Credential) -Subscription $azSubscription      # Non-MFA
 Connect-AzAccount -Tenant $aztenant -Subscription $azSubscription                   # MFA Account
@@ -24,31 +24,39 @@ if (!($azSubscription -eq $SubscriptionId)) {
 Get-AzContext | Rename-AzContext -TargetName "User" -Force
 
 $StorageSP = Import-Clixml .\StorageSP.xml
-Connect-AzAccount -Tenant $azTenant -Subscription $azSubscription -Credential $StorageSP -ServicePrincipal
+Connect-AzAccount -Tenant $azTenant -Subscription $azSubscription -Credential $StorageSP -ServicePrincipal | Out-Null
 Get-AzContext | Rename-AzContext -TargetName "StorageSP" -Force
 #Get-AzContext -Name "StorageSP" | Select-AzContext
-Get-AzContext -Name "User" | Select-AzContext
+Get-AzContext -Name "User" | Select-AzContext | Out-Null
 
 # VM Admin Account
-$password = Get-Content ".\password.txt" | ConvertTo-SecureString -AsPlainText -Force           # Local Admin Password for VMs 
-$RVMVMCred = New-Object System.Management.Automation.PSCredential ("AppPackager", $password)    # Local Admin User for VMs
+$password = Get-Content ".\password.txt" | ConvertTo-SecureString -AsPlainText -Force       # Local Admin Password for VMs 
+$VMCred = New-Object System.Management.Automation.PSCredential ("AppPackager", $password)   # Local Admin User for VMs
 
+$tags = @{
+    "Application" = "App Packaging"
+    "Compliance"  = "General"
+    "CostCentre"  = "5400200015"
+    "Criticality"   = "Mission Critical"
+    "Data Classification" = "General Business"
+    "Disaster Recovery" = "None"
+    "Envrionment" = "Prod"
+}
 $RequirePublicIPs = $false
-$RVMResourceGroupName = "rg-wl-prod-packaging"
-#$RVMResourceGroupName = "rg-wl-prod-eucpackaging"
-$RVMStorageAccountName = "wlprodeusprodpkgstr01"
-#$RVMStorageAccountName = "stwleucpackaging01"
+$ResourceGroupName = "rg-wl-prod-packaging"
+$StorageAccountName = "wlprodeusprodpkgstr01"
 $ContainerName = "data"                                             # Storage container name (if used)
 $FileShareName = "pkgazfiles01"                                     # Storage FileShare name (if used)
-$RVMVNet = "vnet-wl-eus-prod"                                        # Environment Virtual Network name
-$RVMSubnetName = "snet-wl-eus-prod-packaging"                       # Environment Virtual Subnet name
-$RVMNsgName = "nsg-wl-eus-prod-packaging"
+$VNet = "vnet-wl-eus-prod"                                          # Environment Virtual Network name
+$SubnetName = "snet-wl-eus-prod-packaging"                          # Environment Virtual Subnet name
+$NsgName = "nsg-wl-eus-prod-packaging"                              # NSG for Virtual Network
 $VMSizeStandard = "Standard_B2s"                                    # Specifies Azure Size to use for the Standard VM
-$VMSizeAdminStudio = "Standard_D2_v2"                               # Specifies Azure Size to use for the AdminStudio VM
+$VMSizeAdminStudio = "Standard_B2s"                                 # Specifies Azure Size to use for the AdminStudio VM
+#$VMSizeAdminStudio = "Standard_D2_v2"                              # Specifies Azure Size to use for the AdminStudio VM
 $VMImage = "MicrosoftWindowsDesktop:Windows-10:20h2-ent:latest"     # Specifies the Publisher, Offer, SKU and Version of the image to be used to provision the VM
 $VMShutdown = $false                                                # Specifies if the newly provisioned VM should be shutdown (can save costs)
 $AutoShutdown = $true                                               # Configures Windows 10 VMs to shutdown at a specified time                                             
-$RVMLocation = "eastus"  
+$Location = "eastus"  
 $ContainerScripts = "C:\Users\d.ames\OneDrive - Avanade\Documents\GitHub\azure-powershell\PackagingFactoryConfig-main" # All files in this path will be copied up to the Storage Account Container, so available to be run on the remote VMs (includes template script for packaging share mapping
 
 # Environment variables
@@ -59,108 +67,68 @@ $rbacReadOnly = "euc-rbac-readonly"
 Import-Module AZ.Compute
 #endregion Setup
 
-function CreateStandardVM-Scriptold($VMName) {
-    $PublicIpAddressName = $VMName + "-ip"
-
-    $Params = @{
-        ResourceGroupName   = $RVMResourceGroupName
-        Name                = $VMName
-        Size                = $VMSizeStandard
-        Location            = $RVMLocation
-        VirtualNetworkName  = $RVMVNet
-        SubnetName          = $RVMSubnetName
-        SecurityGroupName   = $RVMNsgName
-        PublicIpAddressName = $PublicIpAddressName
-        ImageName           = $VMImage
-        Credential          = $RVMVMCred
-    }
-
-    $VMCreate = New-AzVM @Params -SystemAssignedIdentity
-}
-
 function CreateStandardVM-Script($VMName) {
-    $Vnet = Get-AzVirtualNetwork -Name $RVMVNet -ResourceGroupName "rg-wl-prod-vnet"
-    $Subnet = Get-AzVirtualNetworkSubnetConfig -Name $RVMSubnetName -VirtualNetwork $vnet
-    $NIC = New-AzNetworkInterface -Name "$VMName-nic" -ResourceGroupName $RVMResourceGroupName -Location $RVMLocation -SubnetId $Subnet.Id
-    $VirtualMachine = New-AzVMConfig -VMName $VMName -VMSize $VMSizeStandard -IdentityType SystemAssigned
-    $VirtualMachine = Set-AzVMOperatingSystem -VM $VirtualMachine -Windows -ComputerName $VMName -Credential $RVMVMCred #-ProvisionVMAgent -EnableAutoUpdate
+    $Vnet = Get-AzVirtualNetwork -Name $VNet -ResourceGroupName "rg-wl-prod-vnet"
+    $Subnet = Get-AzVirtualNetworkSubnetConfig -Name $SubnetName -VirtualNetwork $vnet
+    $NIC = New-AzNetworkInterface -Name "$VMName-nic" -ResourceGroupName $ResourceGroupName -Location $Location -SubnetId $Subnet.Id -Tags $tags
+    $VirtualMachine = New-AzVMConfig -VMName $VMName -VMSize $VMSizeStandard -IdentityType SystemAssigned -Tags $tags
+    $VirtualMachine = Set-AzVMOperatingSystem -VM $VirtualMachine -Windows -ComputerName $VMName -Credential $VMCred #-ProvisionVMAgent -EnableAutoUpdate
     $VirtualMachine = Add-AzVMNetworkInterface -VM $VirtualMachine -Id $NIC.Id
-    #$VirtualMachine = Set-AzVMSourceImage -VM $VirtualMachine -PublisherName 'MicrosoftWindowsServer' -Offer 'WindowsServer' -Skus '2012-R2-Datacenter' -Version latest
     $VirtualMachine = Set-AzVMSourceImage -VM $VirtualMachine -PublisherName 'MicrosoftWindowsDesktop' -Offer 'Windows-10' -Skus '20h2-ent' -Version 'latest'
     $VirtualMachine = Set-AzVMBootDiagnostic -VM $VirtualMachine -Disable
-    #$VirtualMachine = Set-AzVMSourceImage -VM $VirtualMachine -Id $VMImage
 
-    New-AzVM -ResourceGroupName $RVMResourceGroupName -Location $RVMLocation -VM $VirtualMachine -Verbose
+    New-AzVM -ResourceGroupName $ResourceGroupName -Location $Location -VM $VirtualMachine -Verbose
 }
 
 function CreateAdminStudioVM-Script($VMName) {
-    $PublicIpAddressName = $VMName + "-ip"
+    $Vnet = Get-AzVirtualNetwork -Name $VNet -ResourceGroupName "rg-wl-prod-vnet"
+    $Subnet = Get-AzVirtualNetworkSubnetConfig -Name $SubnetName -VirtualNetwork $vnet
+    $NIC = New-AzNetworkInterface -Name "$VMName-nic" -ResourceGroupName $ResourceGroupName -Location $Location -SubnetId $Subnet.Id -Tags $tags
+    $VirtualMachine = New-AzVMConfig -VMName $VMName -VMSize $VMSizeAdminStudio -IdentityType SystemAssigned -Tags $tags
+    $VirtualMachine = Set-AzVMOperatingSystem -VM $VirtualMachine -Windows -ComputerName $VMName -Credential $VMCred #-ProvisionVMAgent -EnableAutoUpdate
+    $VirtualMachine = Add-AzVMNetworkInterface -VM $VirtualMachine -Id $NIC.Id
+    $VirtualMachine = Set-AzVMSourceImage -VM $VirtualMachine -PublisherName 'MicrosoftWindowsDesktop' -Offer 'Windows-10' -Skus '20h2-ent' -Version 'latest'
+    $VirtualMachine = Set-AzVMBootDiagnostic -VM $VirtualMachine -Disable
 
-    $Params = @{
-        ResourceGroupName   = $RVMResourceGroupName
-        Name                = $VMName
-        Size                = $VMSizeAdminStudio
-        Location            = $RVMLocation
-        VirtualNetworkName  = $RVMVNet
-        SubnetName          = $RVMSubnetName
-        SecurityGroupName   = $RVMNsgName
-        PublicIpAddressName = $PublicIpAddressName
-        ImageName           = $VMImage
-        Credential          = $RVMVMCred
-    }
-
-    $VMCreate = New-AzVM @Params -SystemAssignedIdentity
-}
-
-function ScriptBuild-Create {
-    switch($RVMSpec) {
-        "Standard" {
-            $VMCheck = Get-AzVM -Name "$RVMVMName" -ResourceGroup $RVMResourceGroupName -ErrorAction SilentlyContinue
-            if ($VMCheck) {
-                Remove-AzVM -Name $RVMVMName -ResourceGroupName $RVMResourceGroupName -Force -Verbose
-                Get-AzNetworkInterface -Name $RVMVMName* -ResourceGroupName $RVMResourceGroupName | Remove-AzNetworkInterface -Force -Verbose
-                Get-AzPublicIpAddress -Name $RVMVMName* -ResourceGroupName $RVMResourceGroupName | Remove-AzPublicIpAddress -Force -Verbose
-                Get-AzDisk -Name $RVMVMName* -ResourceGroupName $RVMResourceGroupName | Remove-AzDisk -Force -Verbose
-                CreateStandardVM-Script "$RVMVMName"
-            }
-            else {
-                Write-Host "Virtual Machine $RVMVMName doesn't exist!"
-                CreateStandardVM-Script "$RVMVMName"
-            }
-        }
-        "AdminStudio" {
-            $VMCheck = Get-AzVM -Name "$RVMVMName" -ResourceGroup $RVMResourceGroupName
-            if ($VMCheck) {
-                Remove-AzVM -Name $RVMVMName -ResourceGroupName $RVMResourceGroupName -Force -Verbose
-                Get-AzNetworkInterface -Name $RVMVMName* -ResourceGroupName $RVMResourceGroupName | Remove-AzNetworkInterface -Force -Verbose
-                Get-AzPublicIpAddress -Name $RVMVMName* -ResourceGroupName $RVMResourceGroupName | Remove-AzPublicIpAddress -Force -Verbose
-                Get-AzDisk -Name $RVMVMName* -ResourceGroupName $RVMResourceGroupName | Remove-AzDisk -Force -Verbose
-                CreateAdminStudioVM-Script "$RVMVMName"
-            }
-            else {
-                Write-Host "Virtual Machine $RVMVMName doesn't exist!"
-                CreateAdminStudioVM-Script "$RVMVMName"
-            }
-        }
-    }
+    New-AzVM -ResourceGroupName $ResourceGroupName -Location $Location -VM $VirtualMachine -Verbose
 }
 
 function ConfigureStandardVM($VMName) {
     $PublicIpAddressName = $VMName + "-ip"
-    $VMCreate = Get-AzVM -ResourceGroupName $RVMResourceGroupName -Name $VMName
+    $VMCreate = Get-AzVM -ResourceGroupName $ResourceGroupName -Name $VMName
     If ($VMCreate.ProvisioningState -eq "Succeeded") {
         Write-Host "Virtual Machine $VMName created successfully"
         #if (!$requirePublicIPs) { 
-        #    $VMNic = Get-AzNetworkInterface -Name $VMCreate.Name* -ResourceGroup $RVMResourceGroupName
+        #    $VMNic = Get-AzNetworkInterface -Name $VMCreate.Name* -ResourceGroup $ResourceGroupName
         #    $VMNic.IpConfigurations.publicipaddress.id = $null
         #    Set-AzNetworkInterface -NetworkInterface $VMNic | Out-Null
-        #    Remove-AzPublicIpAddress -Name $PublicIpAddressName -ResourceGroupName $RVMResourceGroupName -Force
+        #    Remove-AzPublicIpAddress -Name $PublicIpAddressName -ResourceGroupName $ResourceGroupName -Force
         #}
+        
+        $NewVm = Get-AzADServicePrincipal -DisplayName $VMName
+        #$Group = Get-AzADGroup -searchstring $rbacContributor
+        #Add-AzADGroupMember -TargetGroupObjectId $Group.Id -MemberObjectId $NewVm.Id -Verbose
+        
+        Get-AzContext -Name "StorageSP" | Select-AzContext | Out-Null
+        New-AzRoleAssignment -ObjectId $NewVm.Id -RoleDefinitionName "Contributor" -Scope "/subscriptions/$SubscriptionId/resourceGroups/$ResourceGroupName/providers/Microsoft.Storage/storageAccounts/$StorageAccountName" -Verbose -ErrorAction SilentlyContinue
+        Get-AzContext -Name "User" | Select-AzContext | Out-Null
+
+        Restart-AzVM -ResourceGroupName $ResourceGroupName -Name $VMName | Out-Null
+        Write-Host "Restarting VM..."
+        RunVMConfig "$VMName" "https://$StorageAccountName.blob.core.windows.net/data/VMConfig.ps1" "VMConfig.ps1"
+        RunVMConfig "$VMName" "https://$StorageAccountName.blob.core.windows.net/data/RunOnce.ps1" "RunOnce.ps1"
+        RunVMConfig "$VMName" "https://$StorageAccountName.blob.core.windows.net/data/ORCA.ps1" "ORCA.ps1"
+        RunVMConfig "$VMName" "https://$StorageAccountName.blob.core.windows.net/data/7-Zip.ps1" "7-Zip.ps1"
+        RunVMConfig "$VMName" "https://$StorageAccountName.blob.core.windows.net/data/InstEd.ps1" "InstEd.ps1"
+        RunVMConfig "$VMName" "https://$StorageAccountName.blob.core.windows.net/data/DesktopApps.ps1" "DesktopApps.ps1"
+        #RunVMConfig "$VMName" "https://$StorageAccountName.blob.core.windows.net/data/GlassWire.ps1" "GlassWire.ps1"
+        #RunVMConfig "$VMName" "https://$StorageAccountName.blob.core.windows.net/data/IntuneWinUtility.ps1" "IntuneWinUtility.ps1"
+        
         if ($AutoShutdown) {
             $VMName = $VMCreate.Name
             $SubscriptionId = (Get-AzContext).Subscription.Id
             $VMResourceId = $VMCreate.Id
-            $ScheduledShutdownResourceId = "/subscriptions/$SubscriptionId/resourceGroups/$RVMResourceGroupName/providers/microsoft.devtestlab/schedules/shutdown-computevm-$VMName"
+            $ScheduledShutdownResourceId = "/subscriptions/$SubscriptionId/resourceGroups/$ResourceGroupName/providers/microsoft.devtestlab/schedules/shutdown-computevm-$VMName"
 
             $Properties = @{}
             $Properties.Add('status', 'Enabled')
@@ -169,30 +137,13 @@ function ConfigureStandardVM($VMName) {
             $Properties.Add('timeZoneId', "GMT Standard Time")
             $Properties.Add('notificationSettings', @{status = 'Disabled'; timeInMinutes = 15 })
             $Properties.Add('targetResourceId', $VMResourceId)
-            New-AzResource -Location $RVMLocation -ResourceId $ScheduledShutdownResourceId -Properties $Properties -Force | Out-Null
+            New-AzResource -Location $Location -ResourceId $ScheduledShutdownResourceId -Properties $Properties -Force | Out-Null
             Write-Host "Auto Shutdown Enabled for 1800"
         }
-        $NewVm = Get-AzADServicePrincipal -DisplayName $VMName
-        #$Group = Get-AzADGroup -searchstring $rbacContributor
-        #Add-AzADGroupMember -TargetGroupObjectId $Group.Id -MemberObjectId $NewVm.Id -Verbose
-        
-        Get-AzContext -Name "StorageSP" | Select-AzContext
-        New-AzRoleAssignment -ObjectId $NewVm.Id -RoleDefinitionName "Contributor" -Scope "/subscriptions/$SubscriptionId/resourceGroups/$RVMResourceGroupName/providers/Microsoft.Storage/storageAccounts/$RVMStorageAccountName" -Verbose -ErrorAction SilentlyContinue
-        Get-AzContext -Name "User" | Select-AzContext
 
-        Restart-AzVM -ResourceGroupName $RVMResourceGroupName -Name $VMName | Out-Null
-        Write-Host "Restarting VM..."
-        RunVMConfig "$VMName" "https://$RVMStorageAccountName.blob.core.windows.net/data/RunOnce.ps1" "RunOnce.ps1"
-        RunVMConfig "$VMName" "https://$RVMStorageAccountName.blob.core.windows.net/data/ORCA.ps1" "ORCA.ps1"
-        #RunVMConfig "$VMName" "https://$RVMStorageAccountName.blob.core.windows.net/data/GlassWire.ps1" "GlassWire.ps1"
-        RunVMConfig "$VMName" "https://$RVMStorageAccountName.blob.core.windows.net/data/7-Zip.ps1" "7-Zip.ps1"
-        RunVMConfig "$VMName" "https://$RVMStorageAccountName.blob.core.windows.net/data/InstEd.ps1" "InstEd.ps1"
-        RunVMConfig "$VMName" "https://$RVMStorageAccountName.blob.core.windows.net/data/IntuneWinUtility.ps1" "IntuneWinUtility.ps1"
-        RunVMConfig "$VMName" "https://$RVMStorageAccountName.blob.core.windows.net/data/DesktopApps.ps1" "DesktopApps.ps1"
-        
         # Shutdown VM if $VMShutdown is true
         if ($VMShutdown) {
-            $Stopvm = Stop-AzVM -ResourceGroupName $RVMResourceGroupName -Name $VMName -Force
+            $Stopvm = Stop-AzVM -ResourceGroupName $ResourceGroupName -Name $VMName -Force
             if ($Stopvm.Status -eq "Succeeded") { Write-Host "VM $VMName shutdown successfully" }Else { Write-Host "*** Unable to shutdown VM $VMName! ***" }
         }
     }
@@ -203,20 +154,41 @@ function ConfigureStandardVM($VMName) {
 
 function ConfigureAdminStudioVM($VMName) {
     $PublicIpAddressName = $VMName + "-ip"
-    $VMCreate = Get-AzVM -ResourceGroupName $RVMResourceGroupName -Name $VMName
+    $VMCreate = Get-AzVM -ResourceGroupName $ResourceGroupName -Name $VMName
     If ($VMCreate.ProvisioningState -eq "Succeeded") {
         Write-Host "Virtual Machine $VMName created successfully"
-        if (!$requirePublicIPs) { 
-            $VMNic = Get-AzNetworkInterface -Name $VMCreate.Name -ResourceGroup $RVMResourceGroupName
-            $VMNic.IpConfigurations.publicipaddress.id = $null
-            Set-AzNetworkInterface -NetworkInterface $VMNic | Out-Null
-            Remove-AzPublicIpAddress -Name $PublicIpAddressName -ResourceGroupName $RVMResourceGroupName -Force
-        }
+        #if (!$requirePublicIPs) { 
+        #    $VMNic = Get-AzNetworkInterface -Name $VMCreate.Name -ResourceGroup $ResourceGroupName
+        #    $VMNic.IpConfigurations.publicipaddress.id = $null
+        #    Set-AzNetworkInterface -NetworkInterface $VMNic | Out-Null
+        #    Remove-AzPublicIpAddress -Name $PublicIpAddressName -ResourceGroupName $ResourceGroupName -Force
+        #}
+        
+        $NewVm = Get-AzADServicePrincipal -DisplayName $VMName
+        #$Group = Get-AzADGroup -searchstring $rbacContributor
+        #Add-AzADGroupMember -TargetGroupObjectId $Group.Id -MemberObjectId $NewVm.Id
+
+        Get-AzContext -Name "StorageSP" | Select-AzContext | Out-Null
+        New-AzRoleAssignment -ObjectId $NewVm.Id -RoleDefinitionName "Contributor" -Scope "/subscriptions/$SubscriptionId/resourceGroups/$ResourceGroupName/providers/Microsoft.Storage/storageAccounts/$StorageAccountName" -Verbose -ErrorAction SilentlyContinue
+        Get-AzContext -Name "User" | Select-AzContext | Out-Null
+        
+        Restart-AzVM -ResourceGroupName $ResourceGroupName -Name $VMName | Out-Null
+        Write-Host "Restarting VM..."
+        RunVMConfig "$VMName" "https://$StorageAccountName.blob.core.windows.net/data/VMConfig.ps1" "VMConfig.ps1"
+        RunVMConfig "$VMName" "https://$StorageAccountName.blob.core.windows.net/data/RunOnce.ps1" "RunOnce.ps1"
+        RunVMConfig "$VMName" "https://$StorageAccountName.blob.core.windows.net/data/AdminStudio.ps1" "AdminStudio.ps1"
+        RunVMConfig "$VMName" "https://$StorageAccountName.blob.core.windows.net/data/ORCA.ps1" "ORCA.ps1"
+        RunVMConfig "$VMName" "https://$StorageAccountName.blob.core.windows.net/data/GlassWire.ps1" "GlassWire.ps1"
+        RunVMConfig "$VMName" "https://$StorageAccountName.blob.core.windows.net/data/7-Zip.ps1" "7-Zip.ps1"
+        RunVMConfig "$VMName" "https://$StorageAccountName.blob.core.windows.net/data/InstEd.ps1" "InstEd.ps1"
+        RunVMConfig "$VMName" "https://$StorageAccountName.blob.core.windows.net/data/DesktopApps.ps1" "DesktopApps.ps1"
+        #RunVMConfig "$VMName" "https://$StorageAccountName.blob.core.windows.net/data/IntuneWinUtility.ps1" "IntuneWinUtility.ps1"
+        
         if ($AutoShutdown) {
             $VMName = $VMCreate.Name
             $SubscriptionId = (Get-AzContext).Subscription.Id
             $VMResourceId = $VMCreate.Id
-            $ScheduledShutdownResourceId = "/subscriptions/$SubscriptionId/resourceGroups/$RVMResourceGroupName/providers/microsoft.devtestlab/schedules/shutdown-computevm-$VMName"
+            $ScheduledShutdownResourceId = "/subscriptions/$SubscriptionId/resourceGroups/$ResourceGroupName/providers/microsoft.devtestlab/schedules/shutdown-computevm-$VMName"
 
             $Properties = @{}
             $Properties.Add('status', 'Enabled')
@@ -225,31 +197,13 @@ function ConfigureAdminStudioVM($VMName) {
             $Properties.Add('timeZoneId', "GMT Standard Time")
             $Properties.Add('notificationSettings', @{status = 'Disabled'; timeInMinutes = 15 })
             $Properties.Add('targetResourceId', $VMResourceId)
-            New-AzResource -Location $RVMLocation -ResourceId $ScheduledShutdownResourceId -Properties $Properties -Force | Out-Null
+            New-AzResource -Location $Location -ResourceId $ScheduledShutdownResourceId -Properties $Properties -Force | Out-Null
             Write-Host "Auto Shutdown Enabled for 1800"
         }
-        $NewVm = Get-AzADServicePrincipal -DisplayName $VMName
-        #$Group = Get-AzADGroup -searchstring $rbacContributor
-        #Add-AzADGroupMember -TargetGroupObjectId $Group.Id -MemberObjectId $NewVm.Id
 
-        Get-AzContext -Name "StorageSP" | Select-AzContext
-        New-AzRoleAssignment -ObjectId $NewVm.Id -RoleDefinitionName "Contributor" -Scope "/subscriptions/$SubscriptionId/resourceGroups/$RVMResourceGroupName/providers/Microsoft.Storage/storageAccounts/$RVMStorageAccountName" -Verbose -ErrorAction SilentlyContinue
-        Get-AzContext -Name "User" | Select-AzContext
-        
-        Restart-AzVM -ResourceGroupName $RVMResourceGroupName -Name $VMName | Out-Null
-        Write-Host "Restarting VM..."
-        RunVMConfig "$VMName" "https://$RVMStorageAccountName.blob.core.windows.net/data/RunOnce.ps1" "RunOnce.ps1"
-        RunVMConfig "$VMName" "https://$RVMStorageAccountName.blob.core.windows.net/data/AdminStudio.ps1" "AdminStudio.ps1"
-        RunVMConfig "$VMName" "https://$RVMStorageAccountName.blob.core.windows.net/data/ORCA.ps1" "ORCA.ps1"
-        RunVMConfig "$VMName" "https://$RVMStorageAccountName.blob.core.windows.net/data/GlassWire.ps1" "GlassWire.ps1"
-        RunVMConfig "$VMName" "https://$RVMStorageAccountName.blob.core.windows.net/data/7-Zip.ps1" "7-Zip.ps1"
-        RunVMConfig "$VMName" "https://$RVMStorageAccountName.blob.core.windows.net/data/InstEd.ps1" "InstEd.ps1"
-        RunVMConfig "$VMName" "https://$RVMStorageAccountName.blob.core.windows.net/data/IntuneWinUtility.ps1" "IntuneWinUtility.ps1"
-        RunVMConfig "$VMName" "https://$RVMStorageAccountName.blob.core.windows.net/data/DesktopApps.ps1" "DesktopApps.ps1"
-        
         # Shutdown VM if $VMShutdown is true
         if ($VMShutdown) {
-            $Stopvm = Stop-AzVM -ResourceGroupName $RVMResourceGroupName -Name $VMName -Force
+            $Stopvm = Stop-AzVM -ResourceGroupName $ResourceGroupName -Name $VMName -Force
             if ($Stopvm.Status -eq "Succeeded") { Write-Host "VM $VMName shutdown successfully" }Else { Write-Host "*** Unable to shutdown VM $VMName! ***" }
         }
     }
@@ -261,9 +215,9 @@ function ConfigureAdminStudioVM($VMName) {
 function RunVMConfig($VMName, $BlobFilePath, $Blob) {
 
     $Params = @{
-        ResourceGroupName = $RVMResourceGroupName
+        ResourceGroupName = $ResourceGroupName
         VMName            = $VMName
-        Location          = $RVMLocation
+        Location          = $Location
         FileUri           = $BlobFilePath
         Run               = $Blob
         Name              = "ConfigureVM"
@@ -273,13 +227,46 @@ function RunVMConfig($VMName, $BlobFilePath, $Blob) {
     If ($VMConfigure.IsSuccessStatusCode -eq $True) { Write-Host "Virtual Machine $VMName configured with $Blob successfully" }Else { Write-Host "*** Unable to configure Virtual Machine $VMName with $Blob ***" }
 }
 
-function ScriptBuild-Config {
-    switch ($RVMSpec) {
+function ScriptBuild-Create {
+    switch ($Spec) {
         "Standard" {
-            ConfigureStandardVM "$RVMVMName"
+            $VMCheck = Get-AzVM -Name "$VMName" -ResourceGroup $ResourceGroupName -ErrorAction SilentlyContinue -WarningAction SilentlyContinue
+            if ($VMCheck) {
+                Remove-AzVM -Name $VMName -ResourceGroupName $ResourceGroupName -Force -Verbose
+                Get-AzNetworkInterface -Name $VMName* -ResourceGroupName $ResourceGroupName | Remove-AzNetworkInterface -Force -Verbose
+                Get-AzPublicIpAddress -Name $VMName* -ResourceGroupName $ResourceGroupName | Remove-AzPublicIpAddress -Force -Verbose
+                Get-AzDisk -Name $VMName* -ResourceGroupName $ResourceGroupName | Remove-AzDisk -Force -Verbose
+                CreateStandardVM-Script "$VMName"
+            }
+            else {
+                Write-Host "Virtual Machine $VMName doesn't exist!"
+                CreateStandardVM-Script "$VMName"
+            }
         }
         "AdminStudio" {
-            ConfigureAdminStudioVM "$RVMVMName"
+            $VMCheck = Get-AzVM -Name "$VMName" -ResourceGroup $ResourceGroupName -ErrorAction SilentlyContinue -WarningAction SilentlyContinue
+            if ($VMCheck) {
+                Remove-AzVM -Name $VMName -ResourceGroupName $ResourceGroupName -Force -Verbose
+                Get-AzNetworkInterface -Name $VMName* -ResourceGroupName $ResourceGroupName | Remove-AzNetworkInterface -Force -Verbose
+                Get-AzPublicIpAddress -Name $VMName* -ResourceGroupName $ResourceGroupName | Remove-AzPublicIpAddress -Force -Verbose
+                Get-AzDisk -Name $VMName* -ResourceGroupName $ResourceGroupName | Remove-AzDisk -Force -Verbose
+                CreateAdminStudioVM-Script "$VMName"
+            }
+            else {
+                Write-Host "Virtual Machine $VMName doesn't exist!"
+                CreateAdminStudioVM-Script "$VMName"
+            }
+        }
+    }
+}
+
+function ScriptBuild-Config {
+    switch ($Spec) {
+        "Standard" {
+            ConfigureStandardVM "$VMName"
+        }
+        "AdminStudio" {
+            ConfigureAdminStudioVM "$VMName"
 
         }
     }
@@ -289,9 +276,9 @@ function ScriptBuild-Config {
 function UpdateStorage {
     if ($true) {
         Try {
-            $RGNameUAT = $RVMResourceGroupName
-            $StorAcc = $RVMStorageAccountName
-            #$Key = Get-AzStorageAccountKey -ResourceGroupName $RGNameUAT -AccountName $StorAcc
+            $RGNameUAT = $ResourceGroupName
+            $StorAcc = $StorageAccountName
+            $Key = Get-AzStorageAccountKey -ResourceGroupName $RGNameUAT -AccountName $StorAcc
             $HyperVContent = (Get-Content -Path "$ContainerScripts\EnableHyperVTmpl.ps1").replace("xxxx", $StorAcc)
             $HyperVContent = $HyperVContent.replace("ssss", $azSubscription)
             $HyperVContent.replace("rrrr", $RGNameUAT) | Set-Content -Path "$ContainerScripts\EnableHyperV.ps1"      
@@ -324,7 +311,7 @@ function UpdateStorage {
             $IntuneWinUtilityContent.replace("rrrr", $RGNameUAT) | Set-Content -Path "$ContainerScripts\IntuneWinUtility.ps1"
 
             $MapFileContent = (Get-Content -Path "$ContainerScripts\MapDrvTmpl.ps1").replace("xxxx", $StorAcc)
-            $MapFileContent.replace("yyyy", $RGNameUAT) | Set-Content -Path "$ContainerScripts\MapDrv.ps1"      
+            $MapFileContent.replace("yyyy", $Key) | Set-Content -Path "$ContainerScripts\MapDrv.ps1"      
             
         }
         Catch {
@@ -340,21 +327,21 @@ function UpdateStorage {
 #region Main
 Write-Host "Running RebuildVM.ps1"
 
-if($RVMVMName -eq "") {
-    $VMlist = Get-AzVM -Name * -ResourceGroupName $RVMResourceGroupName
-    $RVMVMName = ($VMlist | where { $_.Name -ne "vmwleuchyperv1" } | select Name | ogv -Title "Select Virtual Machine to Rebuild" -PassThru).Name
-    if (!$RVMVMName) {exit}
+if($VMName -eq "") {
+    $VMlist = Get-AzVM -Name * -ResourceGroupName $ResourceGroupName -ErrorAction SilentlyContinue
+    $VMName = ($VMlist | where { $_.Name -ne "wleushyperv01" } | select Name | ogv -Title "Select Virtual Machine to Rebuild" -PassThru).Name
+    if (!$VMName) {exit}
     $VMSpec = @("Standard","AdminStudio")
-    $RVMSpec = $VMSpec | ogv -Title "Select Virtual Machine Spec" -PassThru
+    $Spec = $VMSpec | ogv -Title "Select Virtual Machine Spec" -PassThru
 }
 
-Write-Host "Syncing Files"
+#Write-Host "Syncing Files"
 #UpdateStorage
 
-Write-Host "Rebuilding $RVMVMName"
+Write-Host "Rebuilding $VMName"
 Try {
     ScriptBuild-Create
-    #ScriptBuild-Config
+    ScriptBuild-Config
 } Catch {
     Write-Error $_.Exception.Message
 }
