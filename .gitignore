@@ -21,3 +21,5 @@ tenant.txt
 subscription.txt
 PackagingFactoryConfig-main/VMConfig.ps1
 PackagingFactoryConfig-main/VMConfigTmpl.ps1
+PackagingFactoryConfig-main/MapDrv.ps1
+sp.txt

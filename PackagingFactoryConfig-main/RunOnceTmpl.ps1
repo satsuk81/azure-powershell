@@ -28,7 +28,7 @@ Write-EventLog -LogName $EventlogName -Source $EventlogSource -EventID 25101 -En
 $StorAcc = get-azstorageaccount -resourcegroupname rrrr -name xxxx
 $Result = Get-AzStorageBlobContent -Container data -Blob "MapDrv.ps1" -destination "c:\Windows\temp\" -context $StorAcc.context
 If ($Result.Name -eq "MapDrv.ps1") {
-	new-itemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce" -Name "MapPackagingDrive" -Value "Powershell.exe -ExecutionPolicy Unrestricted -file `"C:\Windows\Temp\MapDrv.ps1`"" -PropertyType "String"
+	new-itemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" -Name "MapPackagingDrive" -Value "Powershell.exe -ExecutionPolicy Unrestricted -file `"C:\Windows\Temp\MapDrv.ps1`"" -PropertyType "String"
 }
 Else {
     Write-EventLog -LogName $EventlogName -Source $EventlogSource -EventID 25101 -EntryType Error -Message "Failed to download MapDrv.ps1 from Azure storage account to C:\Windows\Temp"

@@ -5,6 +5,13 @@ Param(
 
 #region Setup
 cd $PSScriptRoot
+
+Import-Module Az.Compute,Az.Accounts,Az.Storage,Az.Network,Az.Resources -ErrorAction SilentlyContinue
+if(!((Get-Module Az.Compute) -and (Get-Module Az.Accounts) -and (Get-Module Az.Storage) -and (Get-Module Az.Network) -and (Get-Module Az.Resources))) {
+    Install-Module Az.Compute,Az.Accounts,Az.Storage,Az.Network,Az.Resources -Repository PSGallery -Scope CurrentUser -Force
+    Import-Module AZ.Compute,Az.Accounts,Az.Storage,Az.Network,Az.Resources
+}
+
 Clear-AzContext -Force
 
 # Tenant
@@ -23,7 +30,12 @@ if (!($azSubscription -eq $SubscriptionId)) {
 }
 Get-AzContext | Rename-AzContext -TargetName "User" -Force
 
-$StorageSP = Import-Clixml .\StorageSP.xml
+$SPUser = (Get-Content ".\sp.txt")[0]
+$SPPassword = (Get-Content ".\sp.txt")[1]
+$SPSecurePassword = $SPPassword | ConvertTo-SecureString -AsPlainText -Force
+$StorageSP = New-Object System.Management.Automation.PSCredential ($SPUser, $SPSecurePassword)
+#$StorageSP = Import-Clixml .\StorageSP.xml
+
 Connect-AzAccount -Tenant $azTenant -Subscription $azSubscription -Credential $StorageSP -ServicePrincipal | Out-Null
 Get-AzContext | Rename-AzContext -TargetName "StorageSP" -Force
 #Get-AzContext -Name "StorageSP" | Select-AzContext
@@ -64,13 +76,12 @@ $rbacOwner = "euc-rbac-owner"
 $rbacContributor = "euc-rbac-contributor"
 $rbacReadOnly = "euc-rbac-readonly"
 
-Import-Module AZ.Compute
 #endregion Setup
 
 function CreateStandardVM-Script($VMName) {
     $Vnet = Get-AzVirtualNetwork -Name $VNet -ResourceGroupName "rg-wl-prod-vnet"
     $Subnet = Get-AzVirtualNetworkSubnetConfig -Name $SubnetName -VirtualNetwork $vnet
-    $NIC = New-AzNetworkInterface -Name "$VMName-nic" -ResourceGroupName $ResourceGroupName -Location $Location -SubnetId $Subnet.Id -Tags $tags
+    $NIC = New-AzNetworkInterface -Name "$VMName-nic" -ResourceGroupName $ResourceGroupName -Location $Location -SubnetId $Subnet.Id
     $VirtualMachine = New-AzVMConfig -VMName $VMName -VMSize $VMSizeStandard -IdentityType SystemAssigned -Tags $tags
     $VirtualMachine = Set-AzVMOperatingSystem -VM $VirtualMachine -Windows -ComputerName $VMName -Credential $VMCred #-ProvisionVMAgent -EnableAutoUpdate
     $VirtualMachine = Add-AzVMNetworkInterface -VM $VirtualMachine -Id $NIC.Id
@@ -83,7 +94,7 @@ function CreateStandardVM-Script($VMName) {
 function CreateAdminStudioVM-Script($VMName) {
     $Vnet = Get-AzVirtualNetwork -Name $VNet -ResourceGroupName "rg-wl-prod-vnet"
     $Subnet = Get-AzVirtualNetworkSubnetConfig -Name $SubnetName -VirtualNetwork $vnet
-    $NIC = New-AzNetworkInterface -Name "$VMName-nic" -ResourceGroupName $ResourceGroupName -Location $Location -SubnetId $Subnet.Id -Tags $tags
+    $NIC = New-AzNetworkInterface -Name "$VMName-nic" -ResourceGroupName $ResourceGroupName -Location $Location -SubnetId $Subnet.Id
     $VirtualMachine = New-AzVMConfig -VMName $VMName -VMSize $VMSizeAdminStudio -IdentityType SystemAssigned -Tags $tags
     $VirtualMachine = Set-AzVMOperatingSystem -VM $VirtualMachine -Windows -ComputerName $VMName -Credential $VMCred #-ProvisionVMAgent -EnableAutoUpdate
     $VirtualMachine = Add-AzVMNetworkInterface -VM $VirtualMachine -Id $NIC.Id
@@ -311,7 +322,7 @@ function UpdateStorage {
             $IntuneWinUtilityContent.replace("rrrr", $RGNameUAT) | Set-Content -Path "$ContainerScripts\IntuneWinUtility.ps1"
 
             $MapFileContent = (Get-Content -Path "$ContainerScripts\MapDrvTmpl.ps1").replace("xxxx", $StorAcc)
-            $MapFileContent.replace("yyyy", $Key) | Set-Content -Path "$ContainerScripts\MapDrv.ps1"      
+            $MapFileContent.replace("yyyy", $Key.value[0]) | Set-Content -Path "$ContainerScripts\MapDrv.ps1"      
             
         }
         Catch {
