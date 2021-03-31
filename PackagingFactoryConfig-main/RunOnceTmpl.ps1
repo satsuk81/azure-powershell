@@ -23,15 +23,15 @@ Write-EventLog -LogName $EventlogName -Source $EventlogSource -EventID 25101 -En
 Connect-AzAccount -identity -ErrorAction Stop -Subscription ssss
 
 # Copy MapDrv.ps1 to local drive
-Write-EventLog -LogName $EventlogName -Source $EventlogSource -EventID 25101 -EntryType Information -Message "Atempting to download MapDrv.ps1 from Azure storage account to C:\Windows\Temp"
+Write-EventLog -LogName $EventlogName -Source $EventlogSource -EventId 25101 -EntryType Information -Message "Atempting to download MapDrv.ps1 from Azure storage account to C:\Users\Public\Desktop"
 
 $StorAcc = get-azstorageaccount -resourcegroupname rrrr -name xxxx
-$Result = Get-AzStorageBlobContent -Container data -Blob "MapDrv.ps1" -destination "c:\Windows\temp\" -context $StorAcc.context
+$Result = Get-AzStorageBlobContent -Container data -Blob "MapDrv.ps1" -destination "C:\Users\Public\Desktop" -context $StorAcc.context
 If ($Result.Name -eq "MapDrv.ps1") {
-	new-itemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" -Name "MapPackagingDrive" -Value "Powershell.exe -ExecutionPolicy Unrestricted -file `"C:\Windows\Temp\MapDrv.ps1`"" -PropertyType "String"
+    New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" -Name "MapPackagingDrive" -Value "Powershell.exe -ExecutionPolicy Unrestricted -file `"C:\Users\Public\Desktop\MapDrv.ps1`"" -PropertyType "String"
 }
 Else {
-    Write-EventLog -LogName $EventlogName -Source $EventlogSource -EventID 25101 -EntryType Error -Message "Failed to download MapDrv.ps1 from Azure storage account to C:\Windows\Temp"
+    Write-EventLog -LogName $EventlogName -Source $EventlogSource -EventID 25101 -EntryType Error -Message "Failed to download MapDrv.ps1 from Azure storage account to C:\Users\Public\Desktop"
 }
 
 Write-EventLog -LogName $EventlogName -Source $EventlogSource -EventId 25101 -EntryType Information -Message "Completed $scriptname"

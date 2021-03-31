@@ -13,35 +13,16 @@ module " + [char]34 + $VMName + [char]34 + " {
 }"
 
     $TerraformMain = Get-Content -Path ".\Terraform\main.tf"
-    #$TerraformMain = $TerraformMain[0..($TerraformMain.Length - 2)]
-    #$TerraformMain | Set-Content -Path ".\Terraform\main.tf"
     $TerraformText | Add-Content -Path ".\Terraform\main.tf"
 }
 
 function CreateHyperVVM-Script($VMName) {
-    $PublicIpAddressName = $VMName + "-ip"
-
-    if ($RequirePublicIPs) {
-        $Params = @{
-            ResourceGroupName   = $RGNamePROD
-            Name                = $VMName
-            Size                = $VmSize
-            Location            = $Location
-            VirtualNetworkName  = $VNetPROD
-            SubnetName          = $SubnetName
-            SecurityGroupName   = $NsgNamePROD
-            PublicIpAddressName = $PublicIpAddressName
-            ImageName           = $VmImage
-            Credential          = $VMCred
-        }
-    }
-    $Vnet = Get-AzVirtualNetwork -Name $VNetPROD -ResourceGroupName "rg-wl-prod-vnet"
+    $Vnet = Get-AzVirtualNetwork -Name $VNetPROD -ResourceGroupName $RGNameVNET 
     $Subnet = Get-AzVirtualNetworkSubnetConfig -Name $SubnetName -VirtualNetwork $vnet
     $NIC = New-AzNetworkInterface -Name "$VMName-nic" -ResourceGroupName $RGNamePROD -Location $Location -SubnetId $Subnet.Id
     $VirtualMachine = New-AzVMConfig -VMName $VMName -VMSize $VmSize -IdentityType SystemAssigned
     $VirtualMachine = Set-AzVMOperatingSystem -VM $VirtualMachine -Windows -ComputerName $VMName -Credential $VMCred #-ProvisionVMAgent -EnableAutoUpdate
     $VirtualMachine = Add-AzVMNetworkInterface -VM $VirtualMachine -Id $NIC.Id
-    #$VirtualMachine = Set-AzVMSourceImage -VM $VirtualMachine -PublisherName 'MicrosoftWindowsDesktop' -Offer 'Windows-10' -Skus '20h2-ent' -Version 'latest'
     $VirtualMachine = Set-AzVMSourceImage -VM $VirtualMachine -PublisherName 'MicrosoftWindowsServer' -Offer 'WindowsServer' -Skus '2019-Datacenter' -Version latest
     $VirtualMachine = Set-AzVMBootDiagnostic -VM $VirtualMachine -Disable
 
@@ -49,7 +30,7 @@ function CreateHyperVVM-Script($VMName) {
 }
 
 function TerraformBuild {
-    # Build Hyper-V Server VM
+        # Build Hyper-V Server VM
     if ($RequireHyperV) {
         $Count = 1
         $VMNumberStart = $VMHyperVNumberStart
@@ -65,15 +46,14 @@ function TerraformBuild {
 }
 
 function ScriptBuild {
-    # Build Standard VMs
+        # Build Hyper-V Server VM
     if ($RequireHyperV) {
-        # Create VMs
         $Count = 1
         $VMNumberStart = $VMHyperVNumberStart
         While ($Count -le $NumberofHyperVVMs) {
             Write-Host "Creating $Count of $NumberofHyperVVMs VMs"
             $VM = $VMHyperVNamePrefix + $VMNumberStart
-            $VMCheck = Get-AzVM -Name "$VM" -ResourceGroup $RGNameUAT
+            $VMCheck = Get-AzVM -Name "$VM" -ResourceGroup $RGNameUAT -ErrorAction SilentlyContinue -WarningAction SilentlyContinue
             if (!$VMCheck) {
                 CreateHyperVVM-Script "$VM"
             }
@@ -89,16 +69,11 @@ function ScriptBuild {
 
 #region Main
 #=======================================================================================================================================================
-
-# Main Script
-# Create Hyper-V server
-$NumberofHyperVVMs = 1                                                            # Specify number of VMs to be provisioned
-$VMHyperVNamePrefix = "vmwleushyperv"                                             # Specifies the first part of the VM name (usually alphabetic)
-$VmHyperVNumberStart = 01                                                         # Specifies the second part of the VM name (usually numeric)
-$VmSize = "Standard_D16s_v4"                                                # Specifies Azure Size to use for the VM
-#$VmSize = "Standard_D2s_v4"                                                # Specifies Azure Size to use for the VM
-$VmImage = "MicrosoftWindowsServer:WindowsServer:2019-Datacenter:latest"    # Specifies the Publisher, Offer, SKU and Version of the image to be used to provision the VM
-$VmShutdown = $true
+$NumberofHyperVVMs = 1                                                  # Specify number of VMs to be provisioned
+$VMHyperVNamePrefix = "wlprodeushypv0"                                  # Specifies the first part of the VM name (usually alphabetic)
+$VmHyperVNumberStart = 1                                                # Specifies the second part of the VM name (usually numeric)
+$VmSize = "Standard_D16s_v4"                                           # Specifies Azure Size to use for the VM
+#$VmSize = "Standard_D2s_v4"                                             # Specifies Azure Size to use for the VM
 $dataDiskTier = "P50"
 $dataDiskSKU = "Premium_LRS"
 $dataDiskSize = 4096

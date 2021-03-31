@@ -1,6 +1,6 @@
 ﻿$scriptname = "ConfigureDataDisk.ps1"
-$EventlogName = "HigginsonConsultancy"
-$EventlogSource = "VM Build Script"
+$EventlogName = "Accenture"
+$EventlogSource = "VM Configure Data Disk Script"
 
 # Create Error Trap
 trap {

@@ -23,3 +23,10 @@ PackagingFactoryConfig-main/VMConfig.ps1
 PackagingFactoryConfig-main/VMConfigTmpl.ps1
 PackagingFactoryConfig-main/MapDrv.ps1
 sp.txt
+dj.txt
+PackagingFactoryConfig-main/DomainJoinTmpl.ps1
+PackagingFactoryConfig-main/DomainJoin.ps1
+PackagingFactoryConfig-main/Build-VM.ps1
+PackagingFactoryConfig-main/Build-VM.ps1
+PackagingFactoryConfig-main/Build-VM.ps1
+PackagingFactoryConfig-main/Prevision.ps1
